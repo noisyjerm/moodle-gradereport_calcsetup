@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="grade/report/calcsetup/db" VERSION="20220422" COMMENT="XMLDB file for Moodle grade/report/calcsetup"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+    <TABLES>
+        <TABLE NAME="gradereport_calcsetup_rules" COMMENT="gradereport_calcsetup rules table">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="31" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="idnumber" TYPE="char" LENGTH="15" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="desc" TYPE="char" LENGTH="127" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="calc" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="actions" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="cols" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="id" TYPE="primary" FIELDS="id" COMMENT="primary key"/>
+            </KEYS>
+        </TABLE>
+    </TABLES>
+</XMLDB>

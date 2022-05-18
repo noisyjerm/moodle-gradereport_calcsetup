@@ -1,0 +1,21 @@
+.category,
+.course {
+    font-weight: bold;
+}
+
+tr.mod.level-2 td:first-of-type,
+tr.item.level-2 td:first-of-type,
+tr.category.level-3 td:first-of-type {
+    padding-left:2em;
+}
+
+tr.mod.level-3 td:first-of-type,
+tr.item.level-3 td:first-of-type,
+tr.category.level-4 td:first-of-type {
+    padding-left:4em;
+}
+
+tr.mod.level-4 td:first-of-type,
+tr.item.level-4 td:first-of-type {
+    padding-left:6em;
+}
