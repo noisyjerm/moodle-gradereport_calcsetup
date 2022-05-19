@@ -1,5 +1,9 @@
 <div>
     <h3>{{fullname}}</h3>
+    <label for="catselector">{{#str}}choosecategory, core_grades{{/str}}</label>
+    <select class="custom-select" id="catselector">
+        {{#categories}}<option value="{{iteminstance}}" {{#selected}}selected="selected"{{/selected}}>{{{indent}}}{{fullname}}</option>{{/categories}}
+    </select>
     <dl>
         <dt>{{#str}}rule, gradereport_calcsetup {{/str}}</dt><dd>{{rulename}}</dd>
         <dt>{{#str}}idnumber, core {{/str}}</dt><dd>{{idnumber}}</dd>

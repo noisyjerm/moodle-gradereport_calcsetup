@@ -29,6 +29,11 @@ require_once($CFG->dirroot. "/grade/report/calcsetup/constants.php");
 
 class gradecategory {
     /**
+     * @var int
+     */
+    private $courseid;
+
+    /**
      * @var \stdClass
      */
     private $iteminfo;
@@ -44,9 +49,9 @@ class gradecategory {
     private $data;
 
 
-
     public function __construct($courseid = 0, $categoryid = 0) {
 
+        $this->courseid = $courseid;
         $this->data = $this->get_rawdata($courseid, $categoryid);
         $this->item = $this->set_item(array_shift($this->data));
 
@@ -57,6 +62,10 @@ class gradecategory {
         // Add the custom data.
         $this->add_customdata($this->data);
 
+    }
+
+    public function get_courseid() {
+        return $this->courseid;
     }
 
     public function get_data() {
@@ -148,16 +157,12 @@ class gradecategory {
         global $DB;
 
         if (is_null($categoryid)) {
-            $catid = $DB->get_field(
+            $categoryid = $DB->get_field(
                 'grade_items',
                 'iteminstance',
                 ['courseid' => $courseid, 'itemtype' => 'course']
             );
         }
-
-        $sqlwhere = is_null($categoryid)
-            ? '(gi.categoryid IS NULL OR gi.categoryid = ' . $catid .')'
-            : '(gi.categoryid = ? OR gi.iteminstance = ?)';
 
         $sql = "SELECT gi.*, gc.depth, gc2.depth itemdepth, gc.id thiscatid, gc.fullname, c.fullname coursename
                 FROM {grade_items} gi
@@ -166,11 +171,11 @@ class gradecategory {
                 LEFT JOIN {course} c ON c.id = gi.courseid
                 WHERE gi.courseid = ?
                 AND gi.grademax > 0
-                    AND gi.gradetype > 0
-                AND $sqlwhere
+                AND gi.gradetype > 0
+                AND (gc.parent = ? OR gi.categoryid = ? OR gi.iteminstance = ?)
                 ORDER BY gi.sortorder";
 
-        $items = $DB->get_records_sql($sql, [$courseid, $categoryid, $categoryid]);
+        $items = $DB->get_records_sql($sql, [$courseid, $categoryid, $categoryid, $categoryid]);
 
         return $items;
     }

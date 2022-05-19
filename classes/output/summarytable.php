@@ -112,10 +112,11 @@ class summarytable extends \flexible_table implements \renderable {
 
     private function get_name($result) {
         $name = "<span>$result->itemname</span>";
+        $missing = get_string('missingtotal', 'gradereport_calcsetup');
         if ($result->itemtype === 'category') {
             $link = new \moodle_url('index.php', ['id' => $this->courseid, 'catid' => $result->thiscatid] );
             $name = "<a href='$link'>$result->fullname</a>";
-            $name .= $result->itemname == '' ? '<p>Missing total name</p>' : "<p>$result->itemname</p>";
+            $name .= $result->itemname == '' ? "<p>$missing</p>" : "<p>$result->itemname</p>";
         }
         return $name;
     }
@@ -131,8 +132,9 @@ class summarytable extends \flexible_table implements \renderable {
     }
 
     private function get_headers($columndata) {
-        // Todo: String it up.
-        $headers = ['Item name'];
+        $headers = [
+            get_string('gradeitem', 'core_grades')
+        ];
 
         foreach ($columndata as $col) {
             $headers[] = $col->name;

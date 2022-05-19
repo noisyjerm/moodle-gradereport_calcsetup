@@ -25,12 +25,13 @@
 
 
 require_once('../../../config.php');
+require_once($CFG->dirroot.'/grade/lib.php');
 
 $courseid = required_param('id', PARAM_INT);
 $categoryid = optional_param('catid', null, PARAM_INT);
 
-$PAGE->set_url(new moodle_url('/grade/report/calcsetup/index.php', array('id' => $courseid)));
-$PAGE->set_pagelayout('report');
+$pageurl = new moodle_url('/grade/report/calcsetup/index.php', array('id' => $courseid));
+$PAGE->set_url($pageurl);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     throw new moodle_exception('invalidcourseid');
@@ -42,14 +43,21 @@ require_login($course);
 $context = context_course::instance($course->id);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pageheader', 'gradereport_calcsetup'));
+$PAGE->requires->js_call_amd('gradereport_calcsetup/calcsetup','init', [$pageurl->out()]);
+
 // This is the normal requirements.
 require_capability('gradereport/calcsetup:view', $context);
 require_capability('moodle/grade:viewall', $context);
 require_capability('moodle/grade:edit', $context);
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('pluginname', 'gradereport_calcsetup'));
+// last selected report session tracking
+if (!isset($USER->grade_last_report)) {
+    $USER->grade_last_report = array();
+}
+$USER->grade_last_report[$course->id] = 'calcsetup';
 
+$reportname = get_string('pluginname', 'gradereport_calcsetup');
+print_grade_page_head($courseid, 'report', 'calcsetup', $reportname);
 
 $context = context_course::instance($course->id);
 require_capability('gradereport/calcsetup:view', $context);

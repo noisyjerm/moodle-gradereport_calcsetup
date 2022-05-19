@@ -43,14 +43,43 @@ use stdClass;
 class catinfo implements renderable, templatable {
 
     private $data;
+    private $courseid;
+
     public function __construct($gradecategory) {
         $this->data = $gradecategory->get_item();
         $this->data->rulename = $gradecategory->get_rule()->name;
+        $this->courseid = $gradecategory->get_courseid();
+        $this->item = $gradecategory->get_item();
     }
 
     public function export_for_template(renderer_base $output) {
+        $this->data->categories = $this->get_catselector();
+
         $this->data->display = $this->get_displaytypename($this->data->display);
         return $this->data;
+    }
+
+    private function get_catselector() {
+        global $DB;
+        $sql = 'SELECT gi.*, gc.fullname, gc.depth, c.fullname coursename FROM {grade_items} gi
+                LEFT JOIN {grade_categories} gc ON gc.id = gi.iteminstance
+                JOIN {course} c ON c.id = gi.courseid
+                WHERE gi.courseid = ?
+                AND itemtype IN (?, ?)
+                AND gi.gradetype > 0
+                AND gi.grademax > 0
+                ORDER BY gi.sortorder';
+        $categories = $DB->get_records_sql($sql, [$this->courseid, 'category', 'course']);
+        foreach ($categories as $category) {
+            if ($category->itemtype === 'course') {
+                $category->fullname = $category->coursename;
+            }
+            if ($category->id === $this->data->id) {
+                $category->selected = true;
+            }
+            $category->indent = str_repeat('&nbsp;&nbsp;', $category->depth);
+        }
+        return array_values($categories);
     }
 
     private function get_displaytypename($display) {
