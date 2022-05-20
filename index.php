@@ -43,14 +43,14 @@ require_login($course);
 $context = context_course::instance($course->id);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pageheader', 'gradereport_calcsetup'));
-$PAGE->requires->js_call_amd('gradereport_calcsetup/calcsetup','init', [$pageurl->out()]);
+$PAGE->requires->js_call_amd('gradereport_calcsetup/calcsetup', 'init', [$pageurl->out()]);
 
 // This is the normal requirements.
 require_capability('gradereport/calcsetup:view', $context);
 require_capability('moodle/grade:viewall', $context);
 require_capability('moodle/grade:edit', $context);
 
-// last selected report session tracking
+// Last selected report session tracking.
 if (!isset($USER->grade_last_report)) {
     $USER->grade_last_report = array();
 }
@@ -71,6 +71,6 @@ $reporttable = new \gradereport_calcsetup\output\summarytable("gradebook", $grad
 $reporttable->display();
 // Show the caclulation.
 $calculation = new \gradereport_calcsetup\output\calculation($gradecategory);
-$calculation->export_for_template($OUTPUT);
+$calculation->display();
 
 echo $OUTPUT->footer();

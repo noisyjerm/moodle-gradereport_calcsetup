@@ -39,7 +39,7 @@ class gradecategory {
     private $iteminfo;
 
     /**
-     * @var string
+     * @var \stdClass
      */
     private $rule;
 
@@ -56,7 +56,7 @@ class gradecategory {
         $this->item = $this->set_item(array_shift($this->data));
 
         // Extract the rule.
-        $this->iteminfo = $this->extract_iteminfo($this->item);
+        $this->iteminfo = self::extract_iteminfo($this->item);
         $this->rule = $this->extract_rule($this->iteminfo);
 
         // Add the custom data.
@@ -107,8 +107,8 @@ class gradecategory {
 
     private function extract_rule($iteminfo) {
         global $DB;
-        if (isset($iteminfo->rule)) {
 
+        if (isset($iteminfo->rule)) {
             $rule = $DB->get_record('gradereport_calcsetup_rules', ['name' => $iteminfo->rule]);
             $rule->actions = json_decode($rule->actions);
             $rule->cols = json_decode($rule->cols);
@@ -118,11 +118,11 @@ class gradecategory {
             $rule->name = '';
             $rule->calc = '';
         }
-        return $rule;
 
+        return $rule;
     }
 
-    private function extract_iteminfo($item) {
+    public static function extract_iteminfo($item) {
         $data = new \stdClass();
         if (isset($item->iteminfo)) {
             $info = $item->iteminfo;
@@ -193,7 +193,7 @@ class gradecategory {
                     $rawdata = str_replace('{{gradereportcalcsetup}}', '', $datas[0]);
                     $rawdata = str_replace('{{/gradereportcalcsetup}}', '', $rawdata);
                     $data = json_decode($rawdata);
-                    $item->$attr = $data->$attr;
+                    $item->$attr = isset($data->$attr) ? $data->$attr : '';
                 } else {
                     $item->$attr = null;
                 }

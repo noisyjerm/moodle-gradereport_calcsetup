@@ -100,7 +100,7 @@ class summarytable extends \flexible_table implements \renderable {
             );
 
             foreach ($fields as $field) {
-                $data[] = $result->$field;
+                $data[] = isset($result->$field) ? $result->$field : '';
             };
 
             $class = $result->itemtype . ' level-' . max($result->depth, $result->itemdepth);

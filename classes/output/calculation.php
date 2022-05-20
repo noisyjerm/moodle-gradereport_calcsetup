@@ -25,54 +25,64 @@
 
 namespace gradereport_calcsetup\output;
 defined('MOODLE_INTERNAL') || die();
-use renderer_base;
-use renderable;
-use templatable;
-use stdClass;
+
+use gradereport_calcsetup\gradecategory;
 
 require_once($CFG->dirroot. "/grade/report/calcsetup/constants.php");
 
+/**
+ * Class calculation
+ * @package gradereport_calcsetup\output
+ */
 class calculation {
+    /** @var array */
+    private $items;
+
+    /** @var \stdClass */
+    private $item;
+
+    /** @var \stdClass */
+    private $rule;
+
+    /**
+     * calculation constructor.
+     * @param \gradereport_calcsetup\gradecategory $gradecategory
+     */
     public function __construct($gradecategory) {
-        $this->data = $gradecategory->get_data();
+        $this->items = $gradecategory->get_data();
         $this->rule = $gradecategory->get_rule();
         $this->item = $gradecategory->get_item();
     }
 
-    // Todo: maybe refactor this to avoid confuse with the real export for template.
-    public function export_for_template(renderer_base $output) {
-
+    /**
+     * Outputs the calculation string.
+     */
+    public function display() {
+        // Prepare the data.
         $data = (array) $this->item;
-        // Todo: implement the grouping.
-        $groupmod = [];
-        $groupcat = [];
-
-        foreach ($this->data as $item) {
-            if ($item->itemtype === 'category') {
-                $groupcat[] = $item;
-            }
-            if ($item->itemtype === 'mod') {
-                $groupmod[] = $item;
-            }
-        }
-
-        if ($last = end($groupcat)) {
+        $data['items'] = $this->items;
+        if ($last = end($this->items)) {
             $last->last = true;
         }
 
-        $data['group_mod'] = $groupmod;
-        $data['group_cat'] = $groupcat;
-
-        $data['items'] = $this->data;
-        if ($last = end($this->data)) {
-            $last->last = true;
+        // Group the items.
+        $itemgroups = [];
+        foreach ($this->items as $item) {
+            $iteminfo = \gradereport_calcsetup\gradecategory::extract_iteminfo($item);
+            if (isset($iteminfo->itemgroup)) {
+                $itemgroups[$iteminfo->itemgroup][] = $item;
+            }
+        }
+        foreach ($itemgroups as $group) {
+            if ($last = end($group)) {
+                $last->last = true;
+            }
         }
 
+        $data = array_merge($data, $itemgroups);
         $template = $this->rule->calc;
-
         $mustache = new \core\output\mustache_engine(array());
 
-        // Todo: return not echo.
         echo $mustache->render($template, $data);
     }
 
