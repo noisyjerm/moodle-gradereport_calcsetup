@@ -29,4 +29,6 @@ $string['pluginname'] = 'Grade calculation tool';
 $string['nodata']     = 'No data';
 $string['pageheader'] = 'Grade calculation setup tool';
 $string['rule']       = 'Rule';
+$string['norule']       = 'No rule applied';
 $string['missingtotal'] = 'Missing total name';
+

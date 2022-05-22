@@ -29,6 +29,7 @@ require_once($CFG->dirroot.'/grade/lib.php');
 
 $courseid = required_param('id', PARAM_INT);
 $categoryid = optional_param('catid', null, PARAM_INT);
+$rule = optional_param('rule', '', PARAM_ALPHANUM);
 
 $pageurl = new moodle_url('/grade/report/calcsetup/index.php', array('id' => $courseid));
 $PAGE->set_url($pageurl);
@@ -61,8 +62,14 @@ print_grade_page_head($courseid, 'report', 'calcsetup', $reportname);
 
 $context = context_course::instance($course->id);
 require_capability('gradereport/calcsetup:view', $context);
+
 // Get the data.
-$gradecategory = new \gradereport_calcsetup\gradecategory($courseid, $categoryid);
+$gradecategory = new \gradereport_calcsetup\gradecategory($courseid, $categoryid, $rule);
+
+// Save the info.
+if ($rule !== '') {
+    $gradecategory->get_rule()->apply();
+}
 // Show category info.
 $catinfo = new \gradereport_calcsetup\output\catinfo($gradecategory);
 echo $OUTPUT->render($catinfo);

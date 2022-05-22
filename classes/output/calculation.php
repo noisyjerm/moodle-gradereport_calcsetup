@@ -80,7 +80,7 @@ class calculation {
         }
 
         $data = array_merge($data, $itemgroups);
-        $template = $this->rule->calc;
+        $template = $this->rule->get_calc();
         $mustache = new \core\output\mustache_engine(array());
 
         echo $mustache->render($template, $data);

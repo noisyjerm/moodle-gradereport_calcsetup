@@ -26,39 +26,53 @@
 namespace gradereport_calcsetup\output;
 
 
-use mod_h5pactivity\local\attempt as activity_attempt;
 use renderable;
 use templatable;
 use renderer_base;
-use moodle_url;
-use user_picture;
-use stdClass;
 
 /**
- * Class to help display report link in mod_h5pactivity.
- *
- * @copyright 2020 Ferran Recio
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Class catinfo
+ * @package gradereport_calcsetup\output
  */
 class catinfo implements renderable, templatable {
 
+    /** * @var  */
     private $data;
+
+    /** @var */
     private $courseid;
 
+    /**
+     * catinfo constructor.
+     * @param \gradereport_calcsetup\gradecategory $gradecategory
+     */
     public function __construct($gradecategory) {
         $this->data = $gradecategory->get_item();
-        $this->data->rulename = $gradecategory->get_rule()->name;
+        $this->data->rulename = $gradecategory->get_rule()->get_idnumber();
         $this->courseid = $gradecategory->get_courseid();
-        $this->item = $gradecategory->get_item();
     }
 
+    /**
+     * @param renderer_base $output
+     * @return array|mixed|\stdClass
+     */
     public function export_for_template(renderer_base $output) {
+        global $CFG;
         $this->data->categories = $this->get_catselector();
-
         $this->data->display = $this->get_displaytypename($this->data->display);
+        $this->data->rules = $this->get_rules();
+
+        $url = new \moodle_url('/grade/report/calcsetup/index.php', ['id' => $this->courseid, 'catid' => $this->data->thiscatid]);
+        $this->data->actionurl = $url->out(false);
+        $this->data->sesskey = sesskey();
+
         return $this->data;
     }
 
+    /**
+     * @return array
+     * @throws \dml_exception
+     */
     private function get_catselector() {
         global $DB;
         $sql = 'SELECT gi.*, gc.fullname, gc.depth, c.fullname coursename FROM {grade_items} gi
@@ -82,6 +96,28 @@ class catinfo implements renderable, templatable {
         return array_values($categories);
     }
 
+    /**
+     * @return array
+     * @throws \dml_exception
+     */
+    private function get_rules() {
+        global $DB;
+        $rules = $DB->get_records('gradereport_calcsetup_rules');
+
+        foreach ($rules as $rule) {
+            if ($rule->idnumber === $this->data->rulename) {
+                $rule->selected = true;
+            }
+        }
+
+        return array_values($rules);
+    }
+
+    /**
+     * @param $display
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
     private function get_displaytypename($display) {
         switch($display) {
             case GRADE_DISPLAY_TYPE_REAL:

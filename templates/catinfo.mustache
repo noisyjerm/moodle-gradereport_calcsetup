@@ -4,10 +4,19 @@
     <select class="custom-select" id="catselector">
         {{#categories}}<option value="{{iteminstance}}" {{#selected}}selected="selected"{{/selected}}>{{{indent}}}{{fullname}}</option>{{/categories}}
     </select>
-    <dl>
-        <dt>{{#str}}rule, gradereport_calcsetup {{/str}}</dt><dd>{{rulename}}</dd>
-        <dt>{{#str}}idnumber, core {{/str}}</dt><dd>{{idnumber}}</dd>
-        <dt>{{#str}}categorytotalname, core_grades {{/str}}</dt><dd>{{itemname}}</dd>
-        <dt>{{#str}}gradedisplaytype, core_grades {{/str}}</dt><dd>{{display}}</dd>
-    </dl>
+    <form id="categoryitemform" method="post" action="{{actionurl}}">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+        <dl>
+            <dt>{{#str}}rule, gradereport_calcsetup {{/str}}</dt><dd>
+            <select class="custom-select" id="ruleselector" name="rule">
+                <option>{{#str}}norule, gradereport_calcsetup{{/str}}</option>
+                {{#rules}}<option value="{{idnumber}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>{{/rules}}
+            </select>
+            </dd>
+            <dt>{{#str}}idnumber, core {{/str}}</dt><dd>{{idnumber}}</dd>
+            <dt>{{#str}}categorytotalname, core_grades {{/str}}</dt><dd>{{itemname}}</dd>
+            <dt>{{#str}}gradedisplaytype, core_grades {{/str}}</dt><dd>{{display}}</dd>
+        </dl>
+        <input class="advanced btn btn-primary" type="submit" value={{#quote}}{{#str}}savechanges{{/str}}{{/quote}}>
+    </form>
 </div>

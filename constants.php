@@ -26,5 +26,5 @@
 const VALTYPE_FREE = 1;
 const VALTYPE_COL  = 2;
 const VALTYPE_LIST = 3;
-const PATTERN = '/{{gradereportcalcsetup}}.+{{\/gradereportcalcsetup}}/';
+const PATTERN = ['open' => '{{gradereportcalcsetup}}', 'close' => '{{/gradereportcalcsetup}}'];
 const RESERVED = ['group', 'last'];

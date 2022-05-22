@@ -67,7 +67,7 @@ class summarytable extends \flexible_table implements \renderable {
         $this->set_attribute('class', 'generaltable generalbox');
         $this->baseurl = new \moodle_url("$CFG->wwwroot/grade/report/index.php");
 
-        $columndata = $this->gradecategory->get_columns();
+        $columndata = $this->gradecategory->get_rule()->get_columns();
 
         $this->define_columns($this->get_column_ids($columndata));
         $this->define_headers($this->get_headers($columndata));
@@ -91,7 +91,7 @@ class summarytable extends \flexible_table implements \renderable {
 
         $this->setup();
 
-        $fields = $this->gradecategory->get_fields();
+        $fields = $this->gradecategory->get_rule()->get_fields();
 
         foreach ($this->items as $result) {
 
