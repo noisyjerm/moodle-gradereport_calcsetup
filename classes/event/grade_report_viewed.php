@@ -15,25 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for Grade Calculation Setup Grade Report
+ * Event for viewing the page.
  *
- * @package   gradereport_calcsetup
- * @copyright 2022 Te Wānanga o Aotearoa
+ * @package    gradereport_calcsetup
+ * @copyright  2022 Te Wānanga o Aotearoa
  * @author     Jeremy FitzPatrick
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// General Strings.
+namespace gradereport_calcsetup\event;
 
-$string['pluginname']   = 'Grade calculation tool';
-$string['eventgradereportviewed'] = 'Calc setup viewed.';
-$string['eventgradeitemupdated']  = 'Grade item updated.';
-$string['missingtotal'] = 'Missing total name';
-$string['nodata']       = 'No data';
-$string['norule']       = 'No rule applied';
-$string['pageheader']   = 'Grade calculation setup tool';
-$string['rule']         = 'Rule';
+/**
+ * Graded calculation helper tool viewed event class.
+ *
+ * @package    gradereport_calcsetup
+ * @copyright  2022 Te Wānanga o Aotearoa
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class grade_report_viewed extends \core\event\grade_report_viewed {
 
-
-
-
+    /**
+     * Returns localised general event name.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return get_string('eventgradereportviewed', 'gradereport_calcsetup');
+    }
+}

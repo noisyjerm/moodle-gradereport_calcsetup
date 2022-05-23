@@ -105,13 +105,19 @@ class rule {
     }
 
     /**
+     * @return string
+     */
+    public function get_name() {
+        return $this->rule->name;
+    }
+
+    /**
      * Save the rule to the category and apply any actions.
      * @throws \dml_exception
      * @throws \dml_transaction_exception
      */
     public function apply() {
         global $DB;
-
         // Save the rulename to the cateory.
         $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($this->item, 'rule', $this->get_idnumber());
         $this->item->iteminfo = $iteminfo;
@@ -129,6 +135,7 @@ class rule {
 
             $filtereditems = $this->filter_items($this->items, $action->cond);
             $trans = $DB->start_delegated_transaction();
+            // Todo: See what grade functions exist to make this more robust.
             foreach ($filtereditems as $item) {
                 if (!isset($item->$set) || $set === 'itemgroup') {
                     $item->$set = $action->val;

@@ -63,12 +63,34 @@ print_grade_page_head($courseid, 'report', 'calcsetup', $reportname);
 $context = context_course::instance($course->id);
 require_capability('gradereport/calcsetup:view', $context);
 
+$event = \gradereport_calcsetup\event\grade_report_viewed::create(
+    array(
+        'context' => $context,
+        'courseid' => $courseid,
+    )
+);
+$event->trigger();
+
 // Get the data.
 $gradecategory = new \gradereport_calcsetup\gradecategory($courseid, $categoryid, $rule);
 
 // Save the info.
 if ($rule !== '') {
     $gradecategory->get_rule()->apply();
+    $event = \gradereport_calcsetup\event\grade_item_updated::create(
+        array(
+            'context' => $context,
+            'courseid' => $courseid,
+            'objectid' => $gradecategory->get_item()->id, // Todo. Make item classy.
+            'other' => [
+                'itemname' => $gradecategory->get_item()->fullname,
+                'itemtype' => $gradecategory->get_item()->itemtype,
+                'itemmodule' => null,
+                'itemrule' => $gradecategory->get_rule()->get_name(),
+            ],
+        )
+    );
+    $event->trigger();
 }
 // Show category info.
 $catinfo = new \gradereport_calcsetup\output\catinfo($gradecategory);
