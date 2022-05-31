@@ -9,10 +9,11 @@
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="name" TYPE="char" LENGTH="31" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="idnumber" TYPE="char" LENGTH="15" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="desc" TYPE="char" LENGTH="127" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="desc" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="calc" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="actions" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="cols" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="actions" TYPE="char" LENGTH="511" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="fields" TYPE="char" LENGTH="511" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="cols" TYPE="char" LENGTH="511" NOTNULL="true" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="id" TYPE="primary" FIELDS="id" COMMENT="primary key"/>

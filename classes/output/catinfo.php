@@ -45,6 +45,9 @@ class catinfo implements renderable, templatable {
     /** @var */
     private $catid;
 
+    /** @var array */
+    private $fields;
+
     /**
      * catinfo constructor.
      * @param \gradereport_calcsetup\gradecategory $gradecategory
@@ -52,8 +55,10 @@ class catinfo implements renderable, templatable {
     public function __construct($gradecategory) {
         $this->data = $gradecategory->get_item();
         $this->data->rulename = $gradecategory->get_rule()->get_idnumber();
+        $this->data->ruledescription = $gradecategory->get_rule()->get_description();
         $this->courseid = $gradecategory->get_courseid();
         $this->catid = $gradecategory->get_catid();
+        $this->fields = $gradecategory->get_rule()->get_displayoptions();
     }
 
     /**
@@ -69,6 +74,22 @@ class catinfo implements renderable, templatable {
         $url = new \moodle_url('/grade/report/calcsetup/index.php', ['id' => $this->courseid, 'catid' => $this->catid]);
         $this->data->actionurl = $url->out(false);
         $this->data->sesskey = sesskey();
+
+        $fields = [];
+        foreach ($this->fields as $field) {
+            $title = $field->title;
+            $property = $field->property;
+            if (is_object($title)) {
+                $component = isset($title->component) ? $title->component : 'core';
+                $field->title = get_string($title->identifier, $component);
+            }
+
+            $field->property = $this->data->$property;
+            $field->name = !empty($field->editable) ? $property . '_' . $this->data->id : '';
+            $fields[] = $field;
+        }
+
+        $this->data->fields = $fields;
 
         return $this->data;
     }

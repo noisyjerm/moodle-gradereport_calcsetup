@@ -112,12 +112,28 @@ class rule {
     }
 
     /**
+     * @return string
+     */
+    public function get_description() {
+        return $this->rule->desc;
+    }
+
+    /**
+     * @return array
+     */
+    public function get_displayoptions() {
+        $fields = json_decode($this->rule->fields);
+        return empty($fields) ? [] : $fields;
+    }
+
+    /**
      * Save the rule to the category and apply any actions.
      * @throws \dml_exception
      * @throws \dml_transaction_exception
      */
     public function apply() {
         global $DB;
+        // Todo. Return false if no change.
         // Save the rulename to the cateory.
         $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($this->item, 'rule', $this->get_idnumber());
         $this->item->iteminfo = $iteminfo;
@@ -147,6 +163,8 @@ class rule {
                 }
             }
         }
+
+        return true;
     }
 
     /**
@@ -175,9 +193,11 @@ class rule {
             $rule->cols = json_decode($rule->cols);
         } else {
             $rule = new \stdClass();
-            $rule->cols = [];
             $rule->idnumber = '';
             $rule->name = '';
+            $rule->desc = get_string('norule', 'gradereport_calcsetup');
+            $rule->cols = [];
+            $rule->fields = get_string('standardfields', 'gradereport_calcsetup');
             $rule->calc = '';
         }
 

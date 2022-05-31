@@ -32,16 +32,16 @@ class gradecategory {
     /** @var int */
     private $courseid;
 
-    /** @var \stdClass */
+    /** @var \grade_item */
     private $item;
 
     /** @var \stdClass */
     private $iteminfo;
 
-    /** @var \stdClass */
+    /** @var \gradereport_calcsetup\rule */
     private $rule;
 
-    /** @var \stdClass */
+    /** @var array */
     private $gradeitems;
 
     /**
@@ -52,9 +52,9 @@ class gradecategory {
      */
     public function __construct($courseid = 0, $categoryid = 0, $rulename = '') {
         $this->courseid = $courseid;
+        $this->gradeitems = [];
         $gradeitems = $this->get_rawdata($courseid, $categoryid);
 
-        // Todo: make item a class.
         $this->item = $this->set_item(array_shift($gradeitems));
         $total = 0;
 
@@ -95,7 +95,7 @@ class gradecategory {
      * @return int
      */
     public function get_catid() {
-        return $this->item->thiscatid;
+        return $this->item->iteminstance;
     }
 
     /**
@@ -180,11 +180,9 @@ class gradecategory {
      * @return mixed
      */
     private function set_item($item) {
-        if ($item->itemtype === 'course') {
-               $item->fullname = $item->coursename;
-        }
-
-        return $item;
+        $gradeitem = grade_item::fetch(array('id' => $item->id, 'courseid' => $item->courseid));
+        $gradeitem->fullname = $item->itemtype === 'course' ? $item->coursename : $item->fullname;
+        return $gradeitem;
     }
 
     /**

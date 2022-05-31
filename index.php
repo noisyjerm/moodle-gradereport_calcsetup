@@ -73,35 +73,44 @@ $event->trigger();
 
 // Get the data.
 $gradecategory = new \gradereport_calcsetup\gradecategory($courseid, $categoryid, $rule);
-/*
-$params = ['courseid' => $courseid];
-if (isset($categoryid)) {
-    $params['id'] = $categoryid;
-} else {
-    $params['depth'] = 1;
-}
-*/
-// $gradecategory = new \gradereport_calcsetup\grade_category($params);
+
 
 // Save the info.
 $data = data_submitted() and confirm_sesskey();
 if (isset($data->rule)) {
 
-    $gradecategory->get_rule()->apply();
-    $event = \gradereport_calcsetup\event\grade_item_updated::create(
-        array(
-            'context' => $context,
-            'courseid' => $courseid,
-            'objectid' => $gradecategory->get_itemid(), // Todo. Make item classy.
-            'other' => [
-                'itemname' => $gradecategory->get_item()->fullname,
-                'itemtype' => $gradecategory->get_item()->itemtype,
-                'itemmodule' => null,
-                'itemrule' => $gradecategory->get_rule()->get_name(),
-            ],
-        )
-    );
-    $event->trigger();
+    if ($gradecategory->get_rule()->apply()) {
+        $event = \gradereport_calcsetup\event\grade_item_updated::create(
+            array(
+                'context' => $context,
+                'courseid' => $courseid,
+                'objectid' => $gradecategory->get_itemid(), // Todo. Make item classy.
+                'other' => [
+                    'itemname' => $gradecategory->get_item()->fullname,
+                    'itemtype' => $gradecategory->get_item()->itemtype,
+                    'itemmodule' => null,
+                    'itemrule' => $gradecategory->get_rule()->get_name(),
+                ],
+            )
+        );
+        $event->trigger();
+    }
+
+    // Update the values.
+    $fields = $gradecategory->get_rule()->get_displayoptions();
+    foreach ($data as $key => $value) {
+        foreach ($fields as $field) {
+            $property = $field->property;
+            if (preg_match('/^' . $property . '_([0-9]+)$/', $key, $matches)) {
+                $aid = $matches[1];
+                // Todo: put in same loop conditions as below.
+                // Todo: refactor.
+                $gradeitem = $gradecategory->get_item();
+                $gradeitem->$property = $value;
+                $gradeitem->update();
+            }
+        }
+    }
 }
 
 if (isset($data->action) && $data->action === 'items') {

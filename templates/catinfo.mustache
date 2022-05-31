@@ -10,12 +10,16 @@
             <dt class="col-md-3">{{#str}}rule, gradereport_calcsetup {{/str}}</dt><dd class="col-md-9">
             <select class="custom-select" id="ruleselector" name="rule">
                 <option>{{#str}}norule, gradereport_calcsetup{{/str}}</option>
-                {{#rules}}<option value="{{idnumber}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>{{/rules}}
+      {{#rules}}<option value="{{idnumber}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>{{/rules}}
             </select>
             </dd>
-            <dt class="col-md-3">{{#str}}idnumber, core {{/str}}</dt><dd class="col-md-9">{{idnumber}}</dd>
-            <dt class="col-md-3">{{#str}}categorytotalname, core_grades {{/str}}</dt><dd class="col-md-9">{{itemname}}</dd>
-            <dt class="col-md-3">{{#str}}gradedisplaytype, core_grades {{/str}}</dt><dd class="col-md-9">{{display}}</dd>
+            <dt class="col-md-3">{{#str}}description{{/str}}</dt> <dd class="col-md-9">{{ruledescription}}</dd>
+        {{#fields}}
+            <dt class="col-md-3">{{title}}</dt><dd class="col-md-9">
+                <input value="{{property}}" {{#name}}name="{{name}}"{{/name}} {{^editable}}disabled="disabled"{{/editable}}>
+            </dd>
+        {{/fields}}
+
         </dl>
         <input class="advanced btn btn-primary" type="submit" value={{#quote}}{{#str}}savechanges{{/str}}{{/quote}}>
     </form>

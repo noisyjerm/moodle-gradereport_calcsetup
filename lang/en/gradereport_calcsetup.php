@@ -26,11 +26,13 @@
 // General Strings.
 
 $string['pluginname']   = 'Grade calculation tool';
+$string['current']      = 'Current';
 $string['eventgradereportviewed'] = 'Calc setup viewed.';
 $string['eventgradeitemupdated']  = 'Grade item updated.';
 $string['missingtotal'] = 'Missing total name';
 $string['nodata']       = 'No data';
 $string['norule']       = 'No rule applied';
+$string['standardfields'] = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
 $string['pageheader']   = 'Grade calculation setup tool';
 $string['rule']         = 'Rule';
 
