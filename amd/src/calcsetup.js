@@ -20,14 +20,29 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import * as ModalFactory from 'core/modal_factory';
 let pageurl = '';
 export const init = (url) => {
     pageurl = url;
     document.getElementById('catselector').addEventListener('change', changeCategory);
+    document.getElementById('newcalc').addEventListener('click', showFormattedCalc);
 };
 
 const changeCategory = (e) => {
     let sel = e.target.selectedOptions;
     let cat = sel[0].value;
     document.location = pageurl + "&catid=" + cat;
+};
+
+const showFormattedCalc = (e) => {
+    let contents = e.target.innerHTML;
+    return ModalFactory.create({
+        type: ModalFactory.types.ALERT,
+        body: "<pre>" + contents + "</pre>",
+        title: "cacl",
+        removeOnClose: false,
+    }).then(modal => {
+        modal.show();
+        return modal;
+    });
 };

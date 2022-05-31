@@ -134,20 +134,18 @@ class rule {
             $set = $action->set;
 
             $filtereditems = $this->filter_items($this->items, $action->cond);
-            $trans = $DB->start_delegated_transaction();
             // Todo: See what grade functions exist to make this more robust.
             foreach ($filtereditems as $item) {
                 if (!isset($item->$set) || $set === 'itemgroup') {
                     $item->$set = $action->val;
                     $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($item, $set, $action->val);
                     $item->iteminfo = $iteminfo;
-                    $DB->set_field('grade_items', 'iteminfo', $iteminfo, ['id' => $item->id]);
+                    $item->update();
                 } else {
                     $item->$set = $action->val;
-                    $DB->set_field('grade_items', $set, $action->val, ['id' => $item->id]);
+                    $item->update();
                 }
             }
-            $trans->allow_commit();
         }
     }
 

@@ -73,15 +73,26 @@ $event->trigger();
 
 // Get the data.
 $gradecategory = new \gradereport_calcsetup\gradecategory($courseid, $categoryid, $rule);
+/*
+$params = ['courseid' => $courseid];
+if (isset($categoryid)) {
+    $params['id'] = $categoryid;
+} else {
+    $params['depth'] = 1;
+}
+*/
+// $gradecategory = new \gradereport_calcsetup\grade_category($params);
 
 // Save the info.
-if ($rule !== '') {
+$data = data_submitted() and confirm_sesskey();
+if (isset($data->rule)) {
+
     $gradecategory->get_rule()->apply();
     $event = \gradereport_calcsetup\event\grade_item_updated::create(
         array(
             'context' => $context,
             'courseid' => $courseid,
-            'objectid' => $gradecategory->get_item()->id, // Todo. Make item classy.
+            'objectid' => $gradecategory->get_itemid(), // Todo. Make item classy.
             'other' => [
                 'itemname' => $gradecategory->get_item()->fullname,
                 'itemtype' => $gradecategory->get_item()->itemtype,
@@ -92,13 +103,58 @@ if ($rule !== '') {
     );
     $event->trigger();
 }
+
+if (isset($data->action) && $data->action === 'items') {
+    // Update the items.
+    $cols = $gradecategory->get_rule()->get_columns();
+    $last = 'nomatch';
+    $gradeitem = null;
+    foreach ($data as $key => $value) {
+        foreach ($cols as $col) {
+            if (preg_match('/^' . $col->id . '_([0-9]+)$/', $key, $matches)) {
+                $aid = $matches[1];
+
+                // Todo: put in some validation or logic for each property.
+                if ($last !== $aid) {
+                    $last = $aid;
+                    $gradeitem = $gradecategory->get_gradeitems($aid);
+                }
+                $prop = $col->val;
+                $gradeitem->$prop = $value;
+            }
+        }
+        if (isset($gradeitem)) {
+            $gradeitem->update();
+        }
+
+    }
+}
+
 // Show category info.
 $catinfo = new \gradereport_calcsetup\output\catinfo($gradecategory);
 echo $OUTPUT->render($catinfo);
+
 // Show the table.
+echo html_writer::tag('h4', get_string('gradeitems', 'core_grades'));
 $reporttable = new \gradereport_calcsetup\output\summarytable("gradebook", $gradecategory, $courseid);
+$params = [
+    'id' => "gradeitemsform",
+    'method' => "post",
+    'action' => new \moodle_url('/grade/report/calcsetup/index.php', ['id' => $courseid, 'catid' => $categoryid]),
+];
+echo html_writer::start_tag('form', $params);
+echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'items']);
 $reporttable->display();
+echo html_writer::empty_tag('input', [
+    'type' => 'submit',
+    'value' => get_string('save'),
+    'class' => 'btn btn-primary'
+]);
+echo html_writer::end_tag('form');
+
 // Show the caclulation.
+echo html_writer::tag('h4', get_string('calculation', 'core_grades'));
 $calculation = new \gradereport_calcsetup\output\calculation($gradecategory);
 $calculation->display();
 

@@ -24,6 +24,7 @@
  */
 
 namespace gradereport_calcsetup;
+use grade_item;
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot. "/grade/report/calcsetup/constants.php");
 
@@ -41,7 +42,7 @@ class gradecategory {
     private $rule;
 
     /** @var \stdClass */
-    private $data;
+    private $gradeitems;
 
     /**
      * gradecategory constructor.
@@ -51,16 +52,29 @@ class gradecategory {
      */
     public function __construct($courseid = 0, $categoryid = 0, $rulename = '') {
         $this->courseid = $courseid;
-        $this->data = $this->get_rawdata($courseid, $categoryid);
+        $gradeitems = $this->get_rawdata($courseid, $categoryid);
+
         // Todo: make item a class.
-        $this->item = $this->set_item(array_shift($this->data));
+        $this->item = $this->set_item(array_shift($gradeitems));
+        $total = 0;
+
+        foreach ($gradeitems as $item) {
+            $total += $item->grademax;
+            $gradeitem = grade_item::fetch(array('id' => $item->id, 'courseid' => $courseid));
+            $gradeitem->thiscatid = $item->thiscatid;
+            $gradeitem->fullname = $item->fullname;
+            $gradeitem->coursename = $item->coursename;
+            $this->gradeitems[$item->id] = $gradeitem;
+        }
+        $this->item->total = $total;
 
         // Extract the rule.
         $this->iteminfo = self::extract_iteminfo($this->item);
-        $this->rule = new \gradereport_calcsetup\rule($rulename, $this->data, $this->item);
+        $this->rule = new \gradereport_calcsetup\rule($rulename, $this->gradeitems, $this->item);
 
         // Add the custom data.
-        $this->add_customdata($this->data);
+        $this->add_customdata($this->gradeitems);
+
     }
 
     /**
@@ -71,10 +85,28 @@ class gradecategory {
     }
 
     /**
+     * @return int
+     */
+    public function get_itemid() {
+        return $this->item->id;
+    }
+
+    /**
+     * @return int
+     */
+    public function get_catid() {
+        return $this->item->thiscatid;
+    }
+
+    /**
      * @return array|\stdClass
      */
-    public function get_data() {
-        return $this->data;
+    public function get_gradeitems($id = 0) {
+        if ($id > 0) {
+            return $this->gradeitems[$id];
+        } else {
+            return $this->gradeitems;
+        }
     }
 
     /**
@@ -152,11 +184,6 @@ class gradecategory {
                $item->fullname = $item->coursename;
         }
 
-        $total = 0;
-        foreach ($this->data as $gi) {
-            $total += $gi->grademax;
-        }
-        $item->total = $total;
         return $item;
     }
 

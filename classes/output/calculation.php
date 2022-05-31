@@ -38,7 +38,7 @@ class calculation {
     /** @var array */
     private $items;
 
-    /** @var \stdClass */
+    /** @var \gradereport_calcsetup\gradecategory */
     private $item;
 
     /** @var \stdClass */
@@ -49,7 +49,7 @@ class calculation {
      * @param \gradereport_calcsetup\gradecategory $gradecategory
      */
     public function __construct($gradecategory) {
-        $this->items = $gradecategory->get_data();
+        $this->items = $gradecategory->get_gradeitems();
         $this->rule = $gradecategory->get_rule();
         $this->item = $gradecategory->get_item();
     }
@@ -57,10 +57,10 @@ class calculation {
     /**
      * Outputs the calculation string.
      */
-    public function display() {
+    public function format_calc_string() {
         // Prepare the data.
-        $data = (array) $this->item;
-        $data['items'] = $this->items;
+        $data = (array)$this->item;
+        $data['items'] = array_values($this->items);
         if ($last = end($this->items)) {
             $last->last = true;
         }
@@ -83,7 +83,21 @@ class calculation {
         $template = $this->rule->get_calc();
         $mustache = new \core\output\mustache_engine(array());
 
-        echo $mustache->render($template, $data);
+        return $mustache->render($template, $data);
+    }
+
+    /**
+     * Outputs the calculation string.
+     */
+    public function display() {
+        $oldcalc = $this->item->calculation;
+        $newcalc = $this->format_calc_string();
+        echo \html_writer::start_div('calcs');
+            echo \html_writer::tag('h5', 'current');
+            echo "<span>$oldcalc</span>";
+            echo \html_writer::tag('h5', 'new');
+            echo "<span id='newcalc'>" . trim($newcalc) . '</span>';
+        echo \html_writer::end_div();
     }
 
 }

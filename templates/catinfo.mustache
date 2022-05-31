@@ -7,15 +7,15 @@
     <form id="categoryitemform" method="post" action="{{actionurl}}">
         <input type="hidden" name="sesskey" value="{{sesskey}}">
         <dl>
-            <dt>{{#str}}rule, gradereport_calcsetup {{/str}}</dt><dd>
+            <dt class="col-md-3">{{#str}}rule, gradereport_calcsetup {{/str}}</dt><dd class="col-md-9">
             <select class="custom-select" id="ruleselector" name="rule">
                 <option>{{#str}}norule, gradereport_calcsetup{{/str}}</option>
                 {{#rules}}<option value="{{idnumber}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>{{/rules}}
             </select>
             </dd>
-            <dt>{{#str}}idnumber, core {{/str}}</dt><dd>{{idnumber}}</dd>
-            <dt>{{#str}}categorytotalname, core_grades {{/str}}</dt><dd>{{itemname}}</dd>
-            <dt>{{#str}}gradedisplaytype, core_grades {{/str}}</dt><dd>{{display}}</dd>
+            <dt class="col-md-3">{{#str}}idnumber, core {{/str}}</dt><dd class="col-md-9">{{idnumber}}</dd>
+            <dt class="col-md-3">{{#str}}categorytotalname, core_grades {{/str}}</dt><dd class="col-md-9">{{itemname}}</dd>
+            <dt class="col-md-3">{{#str}}gradedisplaytype, core_grades {{/str}}</dt><dd class="col-md-9">{{display}}</dd>
         </dl>
         <input class="advanced btn btn-primary" type="submit" value={{#quote}}{{#str}}savechanges{{/str}}{{/quote}}>
     </form>

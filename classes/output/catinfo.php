@@ -42,6 +42,9 @@ class catinfo implements renderable, templatable {
     /** @var */
     private $courseid;
 
+    /** @var */
+    private $catid;
+
     /**
      * catinfo constructor.
      * @param \gradereport_calcsetup\gradecategory $gradecategory
@@ -50,6 +53,7 @@ class catinfo implements renderable, templatable {
         $this->data = $gradecategory->get_item();
         $this->data->rulename = $gradecategory->get_rule()->get_idnumber();
         $this->courseid = $gradecategory->get_courseid();
+        $this->catid = $gradecategory->get_catid();
     }
 
     /**
@@ -62,7 +66,7 @@ class catinfo implements renderable, templatable {
         $this->data->display = $this->get_displaytypename($this->data->display);
         $this->data->rules = $this->get_rules();
 
-        $url = new \moodle_url('/grade/report/calcsetup/index.php', ['id' => $this->courseid, 'catid' => $this->data->thiscatid]);
+        $url = new \moodle_url('/grade/report/calcsetup/index.php', ['id' => $this->courseid, 'catid' => $this->catid]);
         $this->data->actionurl = $url->out(false);
         $this->data->sesskey = sesskey();
 

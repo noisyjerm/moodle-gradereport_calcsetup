@@ -3,6 +3,7 @@
     font-weight: bold;
 }
 
+/*
 tr.mod.level-2 td:first-of-type,
 tr.item.level-2 td:first-of-type,
 tr.category.level-3 td:first-of-type {
@@ -18,4 +19,19 @@ tr.category.level-4 td:first-of-type {
 tr.mod.level-4 td:first-of-type,
 tr.item.level-4 td:first-of-type {
     padding-left:6em;
+}
+*/
+
+#categoryitemform dt,
+#categoryitemform dd {
+   display: inline-flex;
+    margin: .5em 0;
+}
+
+table.itemsettings td input {
+    width:100%;
+}
+
+.calcs {
+    font-size: .9em;
 }

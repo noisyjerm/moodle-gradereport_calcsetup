@@ -62,9 +62,9 @@ class summarytable extends \flexible_table implements \renderable {
 
         $this->courseid = $courseid;
         $this->gradecategory = $gradecategory;
-        $this->items = $this->gradecategory->get_data();
+        $this->items = $this->gradecategory->get_gradeitems();
 
-        $this->set_attribute('class', 'generaltable generalbox');
+        $this->set_attribute('class', 'generaltable itemsettings');
         $this->baseurl = new \moodle_url("$CFG->wwwroot/grade/report/index.php");
 
         $columndata = $this->gradecategory->get_rule()->get_columns();
@@ -91,7 +91,7 @@ class summarytable extends \flexible_table implements \renderable {
 
         $this->setup();
 
-        $fields = $this->gradecategory->get_rule()->get_fields();
+        $fields = $this->gradecategory->get_rule()->get_columns();
 
         foreach ($this->items as $result) {
 
@@ -100,10 +100,14 @@ class summarytable extends \flexible_table implements \renderable {
             );
 
             foreach ($fields as $field) {
-                $data[] = isset($result->$field) ? $result->$field : '';
+                $fieldname = $field->id;
+                $val = isset($result->$fieldname) ? $result->$fieldname : '';
+                $name = $field->editable ? $fieldname . '_' . $result->id : '';
+                $disabled = $field->editable ? '' : 'disabled="disabled"';
+                $data[] = "<input value='$val' name='$name' $disabled>";
             };
 
-            $class = $result->itemtype . ' level-' . max($result->depth, $result->itemdepth);
+            $class = $result->itemtype;
 
             $this->add_data($data, $class);
         }
