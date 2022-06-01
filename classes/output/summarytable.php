@@ -94,6 +94,7 @@ class summarytable extends \flexible_table implements \renderable {
         $fields = $this->gradecategory->get_rule()->get_columns();
 
         foreach ($this->items as $result) {
+            $decimals = $result->get_decimals();
             $data = array(
                 $this->get_name($result),
             );
@@ -101,6 +102,10 @@ class summarytable extends \flexible_table implements \renderable {
             foreach ($fields as $field) {
                 $fieldname = $field->property;
                 $val = isset($result->$fieldname) ? $result->$fieldname : '';
+                if (in_array($fieldname, NUMERIC)) {
+                    // Todo: check how to handle 'display'.
+                    $val = number_format($val, $decimals);
+                }
                 $name = $field->editable ? $fieldname . '_' . $result->id : '';
                 $disabled = $field->editable ? '' : 'disabled="disabled"';
                 $data[] = "<input value='$val' name='$name' $disabled>";

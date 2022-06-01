@@ -75,6 +75,13 @@ class catinfo implements renderable, templatable {
         $this->data->actionurl = $url->out(false);
         $this->data->sesskey = sesskey();
 
+        // Format the numbers.
+        $decimals = $this->data->get_decimals();
+        foreach (NUMERIC as $field) {
+            // Todo: check how to handle 'display'.
+            $this->data->$field = number_format($this->data->$field, $decimals);
+        }
+
         $fields = [];
         foreach ($this->fields as $field) {
             $title = $field->title;

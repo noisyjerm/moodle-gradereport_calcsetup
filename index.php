@@ -79,7 +79,7 @@ $gradecategory = new \gradereport_calcsetup\gradecategory($courseid, $categoryid
 $data = data_submitted() and confirm_sesskey();
 if (isset($data->rule)) {
     // Updating the category.
-    if ($gradecategory->get_rule()->apply()) {
+    if ($gradecategory->get_rule()->apply($data->rule)) {
         $event = \gradereport_calcsetup\event\grade_item_updated::create(
             array(
                 'context' => $context,

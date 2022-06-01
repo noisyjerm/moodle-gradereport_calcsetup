@@ -28,3 +28,9 @@ const VALTYPE_COL  = 2;
 const VALTYPE_LIST = 3;
 const PATTERN = ['open' => '{{gradereportcalcsetup}}', 'close' => '{{/gradereportcalcsetup}}'];
 const RESERVED = ['group', 'last'];
+const LOCKEDFIELDS = ['id', 'courseid', 'categoryid', 'itemtype', 'itemmodule', 'iteminstance', 'itemnumber',
+                      'gradetype', 'timecreated', 'timemodified', 'sortorder', 'locked', 'locktime', 'needsupdate'];
+const NUMERIC      = ['grademax', 'grademin', 'scaleid', 'outcomeid', 'gradepass', 'multfactor', 'plusfactor',
+                      'aggregationcoef', 'aggregationcoef2', 'decimals', 'hidden', 'weightoverride'];
+
+

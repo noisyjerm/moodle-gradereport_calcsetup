@@ -50,7 +50,7 @@ class gradecategory {
      * @param int $categoryid
      * @param string $rulename
      */
-    public function __construct($courseid = 0, $categoryid = 0, $rulename = '') {
+    public function __construct($courseid = 0, $categoryid = 0) {
         $this->courseid = $courseid;
         $this->gradeitems = [];
         $gradeitems = $this->get_rawdata($courseid, $categoryid);
@@ -70,6 +70,7 @@ class gradecategory {
 
         // Extract the rule.
         $this->iteminfo = self::extract_iteminfo($this->item);
+        $rulename = isset($this->iteminfo->rule) ? $this->iteminfo->rule : '';
         $this->rule = new \gradereport_calcsetup\rule($rulename, $this->gradeitems, $this->item);
 
         // Add the custom data.
@@ -156,7 +157,7 @@ class gradecategory {
     }
 
     /**
-     * @param \stdClass $item
+     * @param \grade_item $item
      * @param string $prop
      * @param string $val
      * @return string|string[]|null
@@ -251,10 +252,20 @@ class gradecategory {
             $changed = false;
             foreach ($fields as $field) {
                 $property = $field->property;
+
                 if (preg_match('/^' . $property . '_([0-9]+)$/', $key, $matches)) {
                     $aid = $matches[1];
 
-                    // Todo: put in some validation or logic for each property.
+                    if (in_array($property, LOCKEDFIELDS)) {
+                        \core\notification::warning(get_string('cantupdate', 'gradereport_calcsetup', $property));
+                        break;
+                    }
+
+                    if (in_array($property, NUMERIC) && !is_numeric($value)) {
+                        \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $value));
+                        break;
+                    }
+
                     if ($last !== $aid) {
                         $last = $aid;
                         $gradeitem = $this->get_gradeitems($aid);

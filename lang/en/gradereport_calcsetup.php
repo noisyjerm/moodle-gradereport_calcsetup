@@ -26,16 +26,17 @@
 // General Strings.
 
 $string['pluginname']   = 'Grade calculation tool';
+$string['calculation']  = 'Calculation';
+$string['cantupdate']   = 'The property \'{$a}\' cannot be updated.';
 $string['current']      = 'Current';
 $string['eventgradereportviewed'] = 'Calc setup viewed.';
 $string['eventgradeitemupdated']  = 'Grade item updated.';
 $string['missingtotal'] = 'Missing total name';
+$string['nochanges']    = 'No rule changes made.';
 $string['nodata']       = 'No data';
 $string['norule']       = 'No rule applied';
 $string['standardfields'] = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
 $string['pageheader']   = 'Grade calculation setup tool';
 $string['rule']         = 'Rule';
-
-
-
+$string['wrongtype']    = 'The value \'{$a}\' is not of the expected type';
 

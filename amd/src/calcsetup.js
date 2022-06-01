@@ -21,6 +21,7 @@
  */
 
 import * as ModalFactory from 'core/modal_factory';
+import * as Str from 'core/str';
 let pageurl = '';
 export const init = (url) => {
     pageurl = url;
@@ -39,7 +40,7 @@ const showFormattedCalc = (e) => {
     return ModalFactory.create({
         type: ModalFactory.types.ALERT,
         body: "<pre>" + contents + "</pre>",
-        title: "cacl",
+        title: Str.get_string('calculation', 'gradereport_calcsetup'),
         removeOnClose: false,
     }).then(modal => {
         modal.show();

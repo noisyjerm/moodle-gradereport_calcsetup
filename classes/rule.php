@@ -134,13 +134,17 @@ class rule {
      * @throws \dml_exception
      * @throws \dml_transaction_exception
      */
-    public function apply() {
+    public function apply($rule) {
         global $DB;
-        // Todo. Return false if no change.
+        $updated = false;
         // Save the rulename to the cateory.
-        $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($this->item, 'rule', $this->get_idnumber());
-        $this->item->iteminfo = $iteminfo;
-        $this->item->update();
+        if ($this->get_idnumber() != $rule) {
+            $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($this->item, 'rule', $rule);
+            $this->rule = $this->extract_rule($iteminfo, $rule);
+            $this->item->iteminfo = $iteminfo;
+            $this->item->update();
+            $updated = true;
+        }
 
         // Perform the actions.
         $actions = [];
@@ -162,6 +166,16 @@ class rule {
 
                 $update = !isset($item->$set) || $item->$set != $action->val;
 
+                if (in_array($set, LOCKEDFIELDS)) {
+                    \core\notification::warning(get_string('cantupdate', 'gradereport_calcsetup', $set));
+                    break;
+                }
+
+                if (in_array($set, NUMERIC) && !is_numeric($action->val)) {
+                    \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $action->val));
+                    break;
+                }
+
                 if ($update && $custom) {
                     $item->$set = $action->val;
                     $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($item, $set, $action->val);
@@ -174,7 +188,11 @@ class rule {
             }
         }
 
-        return true;
+        if (!$updated || $update) {
+            \core\notification::warning(get_string('nochanges', 'gradereport_calcsetup'));
+        }
+
+        return  $updated || $update;
     }
 
     /**
