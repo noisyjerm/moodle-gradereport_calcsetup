@@ -44,6 +44,9 @@ class calculation {
     /** @var \stdClass */
     private $rule;
 
+    /** @var int */
+    private $catid;
+
     /**
      * calculation constructor.
      * @param \gradereport_calcsetup\gradecategory $gradecategory
@@ -52,6 +55,7 @@ class calculation {
         $this->items = $gradecategory->get_gradeitems();
         $this->rule = $gradecategory->get_rule();
         $this->item = $gradecategory->get_item();
+        $this->catid = $gradecategory->get_catid();
     }
 
     /**
@@ -92,11 +96,30 @@ class calculation {
     public function display() {
         $oldcalc = $this->item->get_calculation();
         $newcalc = $this->format_calc_string();
-        echo \html_writer::start_div('calcs');
-            echo \html_writer::tag('h5', get_string('current', 'gradereport_calcsetup'));
-            echo "<span>$oldcalc</span>";
-            echo \html_writer::tag('h5', get_string('new'));
-            echo "<span id='newcalc'>" . trim($newcalc) . '</span>';
-        echo \html_writer::end_div();
+        $newcalclean = preg_replace('/\s+/', '', $newcalc);
+
+        $params = [
+            'id' => "gradeitemsform",
+            'method' => "post",
+            'action' => new \moodle_url(
+                '/grade/report/calcsetup/index.php', ['id' => $this->item->courseid, 'catid' => $this->catid]
+            ),
+        ];
+        echo \html_writer::start_tag('form', $params);
+            echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+            echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'calc']);
+            echo \html_writer::empty_tag('input', ['value' => $newcalclean, 'type' => 'hidden', 'name' => 'newcalc']);
+            echo \html_writer::start_div();
+                echo \html_writer::tag('h5', get_string('current', 'gradereport_calcsetup'));
+                echo \html_writer::span($oldcalc);
+                echo \html_writer::tag('h5', get_string('new'));
+                echo \html_writer::tag('span', $newcalc, ['id' => 'newcalc']);
+            echo \html_writer::end_div();
+            echo \html_writer::empty_tag('input', [
+                'type' => 'submit',
+                'value' => get_string('save'),
+                'class' => 'btn btn-primary'
+            ]);
+        echo \html_writer::end_tag('form');
     }
 }

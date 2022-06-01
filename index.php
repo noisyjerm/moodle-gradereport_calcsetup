@@ -107,6 +107,13 @@ if (isset($data->action) && $data->action === 'items') {
     $gradecategory->update_items($data, $fields);
 }
 
+if (isset($data->action) && $data->action === 'calc') {
+    // Update the calculation.
+    $item = $gradecategory->get_item();
+    $item->set_calculation($data->newcalc);
+}
+
+
 // Show category info.
 $catinfo = new \gradereport_calcsetup\output\catinfo($gradecategory);
 echo $OUTPUT->render($catinfo);
@@ -114,21 +121,7 @@ echo $OUTPUT->render($catinfo);
 // Show the table.
 echo html_writer::tag('h4', get_string('gradeitems', 'core_grades'));
 $reporttable = new \gradereport_calcsetup\output\summarytable("gradebook", $gradecategory, $courseid);
-$params = [
-    'id' => "gradeitemsform",
-    'method' => "post",
-    'action' => new \moodle_url('/grade/report/calcsetup/index.php', ['id' => $courseid, 'catid' => $categoryid]),
-];
-echo html_writer::start_tag('form', $params);
-echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
-echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'items']);
-$reporttable->display();
-echo html_writer::empty_tag('input', [
-    'type' => 'submit',
-    'value' => get_string('save'),
-    'class' => 'btn btn-primary'
-]);
-echo html_writer::end_tag('form');
+$reporttable->display_in_form();
 
 // Show the caclulation.
 echo html_writer::tag('h4', get_string('calculation', 'core_grades'));

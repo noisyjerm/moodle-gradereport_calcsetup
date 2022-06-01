@@ -41,13 +41,16 @@ class summarytable extends \flexible_table implements \renderable {
     /** @var stdClass filters parameters */
     protected $filterparams;
 
+    /** @var \moodle_url  */
     public $baseurl;
 
+    /** @var int  */
     protected $courseid;
+
+    /** @var array|\grade_item  */
     protected $items = [];
-    /**
-     * @var \gradereport_calcsetup\gradecategory
-     */
+
+    /**  @var \gradereport_calcsetup\gradecategory*/
     protected $gradecategory;
 
     /**
@@ -116,6 +119,33 @@ class summarytable extends \flexible_table implements \renderable {
             $this->add_data($data, $class);
         }
         $this->finish_output();
+    }
+
+    /**
+     * Wraps the table in a form.
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public function display_in_form() {
+        $params = [
+            'id' => "gradeitemsform",
+            'method' => "post",
+            'action' => new \moodle_url(
+                '/grade/report/calcsetup/index.php', ['id' => $this->courseid, 'catid' => $this->gradecategory->get_catid()]
+            ),
+        ];
+        echo \html_writer::start_tag('form', $params);
+        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'items']);
+
+        $this->display();
+
+        echo \html_writer::empty_tag('input', [
+            'type' => 'submit',
+            'value' => get_string('save'),
+            'class' => 'btn btn-primary'
+        ]);
+        echo \html_writer::end_tag('form');
     }
 
     private function get_name($result) {
