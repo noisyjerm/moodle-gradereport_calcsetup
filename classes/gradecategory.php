@@ -99,11 +99,15 @@ class gradecategory {
     }
 
     /**
-     * @return array|\stdClass
+     * @return array|\grade_item
      */
     public function get_gradeitems($id = 0) {
         if ($id > 0) {
-            return $this->gradeitems[$id];
+            if (isset($this->gradeitems[$id])) {
+                return $this->gradeitems[$id];
+            } else if ($this->item->id === $id) {
+                return $this->get_item();
+            }
         } else {
             return $this->gradeitems;
         }
@@ -223,25 +227,51 @@ class gradecategory {
      */
     private function add_customdata($items) {
         // Now add the custom columns.
-        $cols = $this->get_rule()->get_customcolumns();
-        foreach ($cols as $col) {
-            $attr = $col->id;
-            foreach ($items as $item) {
-                $datas = [];
+        foreach ($items as $item) {
+            $datas = [];
 
-                $pattern = '/' . PATTERN['open'] . '.+'. addcslashes(PATTERN['close'], '/') . '/';
-                $match = preg_match($pattern, $item->iteminfo, $datas);
-                if ($match) {
-                    $rawdata = str_replace(PATTERN['open'], '', $datas[0]);
-                    $rawdata = str_replace(PATTERN['close'], '', $rawdata);
-                    $data = json_decode($rawdata);
-                    $item->$attr = isset($data->$attr) ? $data->$attr : '';
-                } else {
-                    $item->$attr = null;
+            $pattern = '/' . PATTERN['open'] . '.+'. addcslashes(PATTERN['close'], '/') . '/';
+            $match = preg_match($pattern, $item->iteminfo, $datas);
+            if ($match) {
+                $rawdata = str_replace(PATTERN['open'], '', $datas[0]);
+                $rawdata = str_replace(PATTERN['close'], '', $rawdata);
+                $data = json_decode($rawdata);
+                foreach ($data as $key => $val) {
+                    $item->$key = $val;
                 }
+
             }
         }
+    }
 
+    public function update_items($data, $fields) {
+        $last = 'nomatch';
+        $gradeitem = null;
+        foreach ($data as $key => $value) {
+            $changed = false;
+            foreach ($fields as $field) {
+                $property = $field->property;
+                if (preg_match('/^' . $property . '_([0-9]+)$/', $key, $matches)) {
+                    $aid = $matches[1];
+
+                    // Todo: put in some validation or logic for each property.
+                    if ($last !== $aid) {
+                        $last = $aid;
+                        $gradeitem = $this->get_gradeitems($aid);
+                    }
+
+                    if ($gradeitem->$property != $value) {
+                        $changed = true;
+                        $gradeitem->$property = $value;
+                    }
+                }
+            }
+
+            if (isset($gradeitem) && $changed) {
+                // Todo: check changed tracks right.
+                $gradeitem->update();
+            }
+        }
     }
 
 }

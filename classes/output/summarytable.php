@@ -94,13 +94,12 @@ class summarytable extends \flexible_table implements \renderable {
         $fields = $this->gradecategory->get_rule()->get_columns();
 
         foreach ($this->items as $result) {
-
             $data = array(
                 $this->get_name($result),
             );
 
             foreach ($fields as $field) {
-                $fieldname = $field->id;
+                $fieldname = $field->property;
                 $val = isset($result->$fieldname) ? $result->$fieldname : '';
                 $name = $field->editable ? $fieldname . '_' . $result->id : '';
                 $disabled = $field->editable ? '' : 'disabled="disabled"';
@@ -129,7 +128,7 @@ class summarytable extends \flexible_table implements \renderable {
     private function get_column_ids($columndata) {
         $cols = ['name'];
         foreach ($columndata as $col) {
-            $cols[] = $col->id;
+            $cols[] = $col->property;
         }
 
         return $cols;

@@ -78,13 +78,13 @@ $gradecategory = new \gradereport_calcsetup\gradecategory($courseid, $categoryid
 // Save the info.
 $data = data_submitted() and confirm_sesskey();
 if (isset($data->rule)) {
-
+    // Updating the category.
     if ($gradecategory->get_rule()->apply()) {
         $event = \gradereport_calcsetup\event\grade_item_updated::create(
             array(
                 'context' => $context,
                 'courseid' => $courseid,
-                'objectid' => $gradecategory->get_itemid(), // Todo. Make item classy.
+                'objectid' => $gradecategory->get_itemid(),
                 'other' => [
                     'itemname' => $gradecategory->get_item()->fullname,
                     'itemtype' => $gradecategory->get_item()->itemtype,
@@ -98,45 +98,13 @@ if (isset($data->rule)) {
 
     // Update the values.
     $fields = $gradecategory->get_rule()->get_displayoptions();
-    foreach ($data as $key => $value) {
-        foreach ($fields as $field) {
-            $property = $field->property;
-            if (preg_match('/^' . $property . '_([0-9]+)$/', $key, $matches)) {
-                $aid = $matches[1];
-                // Todo: put in same loop conditions as below.
-                // Todo: refactor.
-                $gradeitem = $gradecategory->get_item();
-                $gradeitem->$property = $value;
-                $gradeitem->update();
-            }
-        }
-    }
+    $gradecategory->update_items($data, $fields);
 }
 
 if (isset($data->action) && $data->action === 'items') {
     // Update the items.
-    $cols = $gradecategory->get_rule()->get_columns();
-    $last = 'nomatch';
-    $gradeitem = null;
-    foreach ($data as $key => $value) {
-        foreach ($cols as $col) {
-            if (preg_match('/^' . $col->id . '_([0-9]+)$/', $key, $matches)) {
-                $aid = $matches[1];
-
-                // Todo: put in some validation or logic for each property.
-                if ($last !== $aid) {
-                    $last = $aid;
-                    $gradeitem = $gradecategory->get_gradeitems($aid);
-                }
-                $prop = $col->val;
-                $gradeitem->$prop = $value;
-            }
-        }
-        if (isset($gradeitem)) {
-            $gradeitem->update();
-        }
-
-    }
+    $fields = $gradecategory->get_rule()->get_columns();
+    $gradecategory->update_items($data, $fields);
 }
 
 // Show category info.

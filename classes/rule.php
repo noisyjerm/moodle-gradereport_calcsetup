@@ -36,6 +36,9 @@ class rule {
     /** @var array */
     private $items;
 
+    /** @var \grade_item */
+    private $item;
+
     /**
      * actions constructor.
      * @param string $rulename
@@ -77,7 +80,7 @@ class rule {
         $cols = $this->get_columns();
         $customcols = [];
         foreach ($cols as $col) {
-            if ($col->valtype <> VALTYPE_COL) {
+            if (!in_array($col->property, $this->item->required_fields) ) {
                 $customcols[] = $col;
             }
         }
@@ -92,7 +95,7 @@ class rule {
         $cols = $this->get_columns();
         $fields = [];
         foreach ($cols as $field) {
-            $fields[] = $field->val;
+            $fields[] = $field->property;
         }
         return $fields;
     }
@@ -137,7 +140,7 @@ class rule {
         // Save the rulename to the cateory.
         $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($this->item, 'rule', $this->get_idnumber());
         $this->item->iteminfo = $iteminfo;
-        $DB->set_field('grade_items', 'iteminfo', $iteminfo, ['id' => $this->item->id]);
+        $this->item->update();
 
         // Perform the actions.
         $actions = [];
@@ -146,18 +149,25 @@ class rule {
         }
 
         foreach ($actions as $action) {
-            // Todo. This should exist but put in error checking.
+            // This should exist.
+            if (!isset($action->set)) {
+                break;
+            }
             $set = $action->set;
+            $custom = !in_array($set, $this->item->required_fields);
 
             $filtereditems = $this->filter_items($this->items, $action->cond);
             // Todo: See what grade functions exist to make this more robust.
             foreach ($filtereditems as $item) {
-                if (!isset($item->$set) || $set === 'itemgroup') {
+
+                $update = !isset($item->$set) || $item->$set != $action->val;
+
+                if ($update && $custom) {
                     $item->$set = $action->val;
                     $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($item, $set, $action->val);
                     $item->iteminfo = $iteminfo;
                     $item->update();
-                } else {
+                } else if ($update) {
                     $item->$set = $action->val;
                     $item->update();
                 }
