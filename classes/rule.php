@@ -138,6 +138,7 @@ class rule {
     public function apply($rule) {
         global $DB;
         $updated = false;
+        $propsset = 0;
         // Save the rulename to the cateory.
         if ($this->get_idnumber() != $rule) {
             $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($this->item, 'rule', $rule);
@@ -153,29 +154,34 @@ class rule {
             $actions = $this->rule->actions;
         }
 
+        $corefields = $this->get_core_fields();
+
         foreach ($actions as $action) {
             // This should exist.
             if (!isset($action->set)) {
                 break;
             }
             $set = $action->set;
-            $custom = !in_array($set, $this->item->required_fields);
+            $custom = !in_array($set, array_keys($corefields));
+
+            if (!empty($corefields[$set]->locked)) {
+                \core\notification::warning(get_string('cantupdate', 'gradereport_calcsetup', $set));
+                break;
+            }
+
+            if (!empty($corefields[$set]->validation) && $corefields[$set]->validation === 'number') {
+                if (!is_numeric($action->val)) {
+                    \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $action->val));
+                    break;
+                }
+            }
 
             $filtereditems = $this->filter_items($this->items, $action->cond);
             // Todo: See what grade functions exist to make this more robust.
             foreach ($filtereditems as $item) {
-
                 $update = !isset($item->$set) || $item->$set != $action->val;
-
-                if (in_array($set, LOCKEDFIELDS)) {
-                    \core\notification::warning(get_string('cantupdate', 'gradereport_calcsetup', $set));
-                    break;
-                }
-
-                if (in_array($set, NUMERIC) && !is_numeric($action->val)) {
-                    \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $action->val));
-                    break;
-                }
+                $updated = $update ? $update : $updated;
+                $propsset += intval($update);
 
                 if ($update && $custom) {
                     $item->$set = $action->val;
@@ -189,11 +195,13 @@ class rule {
             }
         }
 
-        if (!$updated || $update) {
+        if (!$updated) {
             \core\notification::warning(get_string('nochanges', 'gradereport_calcsetup'));
+        } else {
+            \core\notification::success(get_string('ruleupdated', 'gradereport_calcsetup', $propsset));
         }
 
-        return  $updated || $update;
+        return  $updated;
     }
 
     /**
@@ -261,14 +269,14 @@ class rule {
             'id'               => (object) ['locked' => true],
             'courseid'         => (object) ['locked' => true],
             'categoryid'       => (object) ['locked' => true],
-            'itemname',
+            'itemname'         => null,
             'itemtype'         => (object) ['locked' => true],
             'itemmodule'       => (object) ['locked' => true],
             'iteminstance'     => (object) ['locked' => true],
             'itemnumber'       => (object) ['locked' => true],
-            'iteminfo',
-            'idnumber',
-            'calculation',
+            'iteminfo'         => null,
+            'idnumber'         => null,
+            'calculation'      => null,
             'gradetype'        => (object) ['locked' => true],
             'grademax'         => (object) ['validation' => 'number'],
             'grademin'         => (object) ['validation' => 'number'],
@@ -298,7 +306,7 @@ class rule {
             'hidden'           => (object) ['validation' => 'number'],
             'locked'           => (object) ['locked' => true],
             'locktime'         => (object) ['locked' => true],
-            'needsupdate',
+            'needsupdate'      => null,
             'weightoverride'   => (object) ['validation' => 'number'],
             'timecreated'      => (object) ['locked' => true],
             'timemodified'     => (object) ['locked' => true]

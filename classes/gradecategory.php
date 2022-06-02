@@ -74,6 +74,7 @@ class gradecategory {
         $this->rule = new \gradereport_calcsetup\rule($rulename, $this->gradeitems, $this->item);
 
         // Add the custom data.
+        $this->add_customdata([$this->item]);
         $this->add_customdata($this->gradeitems);
 
     }
@@ -229,19 +230,22 @@ class gradecategory {
     private function add_customdata($items) {
         // Now add the custom columns.
         foreach ($items as $item) {
+
             $datas = [];
+            $corefields = array_keys($this->rule->get_core_fields());
 
             $pattern = '/' . PATTERN['open'] . '.+'. addcslashes(PATTERN['close'], '/') . '/';
             $match = preg_match($pattern, $item->iteminfo, $datas);
-            // Todo: don't overwrite core fields.
             if ($match) {
                 $rawdata = str_replace(PATTERN['open'], '', $datas[0]);
                 $rawdata = str_replace(PATTERN['close'], '', $rawdata);
                 $data = json_decode($rawdata);
                 foreach ($data as $key => $val) {
-                    $item->$key = $val;
+                    // Don't overwrite core fields.
+                    if (!in_array($key, $corefields)) {
+                        $item->$key = $val;
+                    }
                 }
-
             }
         }
     }
@@ -249,6 +253,8 @@ class gradecategory {
     public function update_items($data, $fields) {
         $last = 'nomatch';
         $gradeitem = null;
+        $corefields = $this->rule->get_core_fields();
+        $propsset = 0;
         foreach ($data as $key => $value) {
             $changed = false;
             foreach ($fields as $field) {
@@ -257,14 +263,17 @@ class gradecategory {
                 if (preg_match('/^' . $property . '_([0-9]+)$/', $key, $matches)) {
                     $aid = $matches[1];
 
-                    if (in_array($property, LOCKEDFIELDS)) {
+                    if (!empty($corefields[$property]->locked)) {
+                        // We shouldn't actually be able to get here.
                         \core\notification::warning(get_string('cantupdate', 'gradereport_calcsetup', $property));
                         break;
                     }
 
-                    if (in_array($property, NUMERIC) && !is_numeric($value)) {
-                        \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $value));
-                        break;
+                    if (!empty($corefields[$property]->validation) && $corefields[$property]->validation === 'number') {
+                        if (!is_numeric($value)) {
+                            \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $value));
+                            break;
+                        }
                     }
 
                     if ($last !== $aid) {
@@ -272,17 +281,25 @@ class gradecategory {
                         $gradeitem = $this->get_gradeitems($aid);
                     }
 
-                    if ($gradeitem->$property != $value) {
+                    $custom = !in_array($property, array_keys($corefields));
+
+                    if (!isset($gradeitem->$property) || $gradeitem->$property != $value) {
                         $changed = true;
-                        $gradeitem->$property = $value;
+                        $propsset += 1;
+                        if ($custom) {
+                            $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($gradeitem, $property, $value);
+                            $gradeitem->iteminfo = $iteminfo;
+                            $gradeitem->$property = $value;
+                        } else {
+                            $gradeitem->$property = $value;
+                        }
                     }
                 }
             }
-
-            if (isset($gradeitem) && $changed) {
-                // Todo: check changed tracks right.
-                $gradeitem->update();
-            }
+        }
+        if (isset($gradeitem) && $changed) {
+            $gradeitem->update();
+            \core\notification::success(get_string('categoryupdated', 'gradereport_calcsetup', $propsset));
         }
     }
 
