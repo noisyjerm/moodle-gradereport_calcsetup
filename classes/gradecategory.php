@@ -233,6 +233,7 @@ class gradecategory {
 
             $pattern = '/' . PATTERN['open'] . '.+'. addcslashes(PATTERN['close'], '/') . '/';
             $match = preg_match($pattern, $item->iteminfo, $datas);
+            // Todo: don't overwrite core fields.
             if ($match) {
                 $rawdata = str_replace(PATTERN['open'], '', $datas[0]);
                 $rawdata = str_replace(PATTERN['close'], '', $rawdata);

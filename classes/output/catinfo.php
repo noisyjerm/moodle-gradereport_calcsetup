@@ -48,6 +48,9 @@ class catinfo implements renderable, templatable {
     /** @var array */
     private $fields;
 
+    /** @var array */
+    private $corefields;
+
     /**
      * catinfo constructor.
      * @param \gradereport_calcsetup\gradecategory $gradecategory
@@ -83,6 +86,7 @@ class catinfo implements renderable, templatable {
         foreach ($this->fields as $field) {
             $title = $field->title;
             $property = $field->property;
+            $val = isset($this->item->$property) ? $this->item->$property : '';
             if (is_object($title)) {
                 $component = isset($title->component) ? $title->component : 'core';
                 $field->title = get_string($title->identifier, $component);
@@ -91,30 +95,30 @@ class catinfo implements renderable, templatable {
             // Overwrite and add with core definition.
             if (isset($this->corefields[$property])) {
                 $corefield = $this->corefields[$property];
-                foreach ($corefield as $prop => $val) {
-                    $field->$prop = $val;
+                foreach ($corefield as $prop => $value) {
+                    $field->$prop = $value;
                 }
             }
 
             // Format.
             if (isset($field->validation) && $field->validation === 'number') {
-                $this->item->$property = number_format($this->item->$property, $decimals);
+                $val = number_format($val, $decimals);
             }
 
             // Flag the selected option.
             if (isset($field->options)) {
                 $field->hasoptions = true;
-                $sel = $this->item->$property;
                 foreach ($field->options as $option) {
-                    if ($option->val == $sel) {
+                    if ($option->val == $val) {
                         $option->selected = true;
                         break;
                     }
                 }
             }
 
-            $field->property = isset($this->item->$property) ? $this->item->$property : '';
-            $field->name = !empty($field->editable) ? $property . '_' . $this->item->id : '';
+            $field->editable = !empty($field->editable) && !isset($field->locked);
+            $field->property = $val;
+            $field->name = $field->editable ? $property . '_' . $this->item->id : '';
             $fields[] = $field;
         }
 

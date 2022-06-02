@@ -53,6 +53,9 @@ class summarytable extends \flexible_table implements \renderable {
     /**  @var \gradereport_calcsetup\gradecategory*/
     protected $gradecategory;
 
+    /** @var array */
+    private $corefields;
+
     /**
      * table_report constructor.
      * @param $uniqueid
@@ -66,6 +69,7 @@ class summarytable extends \flexible_table implements \renderable {
         $this->courseid = $courseid;
         $this->gradecategory = $gradecategory;
         $this->items = $this->gradecategory->get_gradeitems();
+        $this->corefields = $this->gradecategory->get_rule()->get_core_fields();
 
         $this->set_attribute('class', 'generaltable itemsettings');
         $this->baseurl = new \moodle_url("$CFG->wwwroot/grade/report/index.php");
@@ -104,14 +108,43 @@ class summarytable extends \flexible_table implements \renderable {
 
             foreach ($fields as $field) {
                 $fieldname = $field->property;
+
                 $val = isset($result->$fieldname) ? $result->$fieldname : '';
-                if (in_array($fieldname, NUMERIC)) {
-                    // Todo: check how to handle 'display'.
+
+                // Overwrite and add with core definition.
+                if (isset($this->corefields[$fieldname])) {
+                    $corefield = $this->corefields[$fieldname];
+                    foreach ($corefield as $prop => $value) {
+                        $field->$prop = $value;
+                    }
+                }
+                // Format.
+                if (isset($field->validation) && $field->validation === 'number') {
                     $val = number_format($val, $decimals);
                 }
-                $name = $field->editable ? $fieldname . '_' . $result->id : '';
-                $disabled = $field->editable ? '' : 'disabled="disabled"';
-                $data[] = "<input value='$val' name='$name' $disabled>";
+
+                $attr = [];
+                if (empty($field->editable) || !empty($field->locked)) {
+                    $attr['disabled'] = 'disabled';
+                } else {
+                    $attr['name'] = $field->editable ? $fieldname . '_' . $result->id : '';;
+                }
+
+                if (isset($field->options)) {
+                    $attr['class'] = 'custom-select';
+                    $options = '';
+                    foreach ($field->options as $option) {
+                        $attrs = ['value' => $option->val];
+                        if ($option->val == $val) {
+                            $attrs['selected'] = 'selected';
+                        }
+                        $options .= \html_writer::tag('option', $option->name, $attrs);
+                    }
+                    $data[] = \html_writer::tag('select', $options, $attr);
+                } else {
+                    $attr['value'] = $val;
+                    $data[] = \html_writer::empty_tag('input', $attr);
+                }
             };
 
             $class = $result->itemtype;
@@ -175,7 +208,12 @@ class summarytable extends \flexible_table implements \renderable {
         ];
 
         foreach ($columndata as $col) {
-            $headers[] = $col->name;
+            $title = $col->title;
+            if (is_object($title)) {
+                $component = isset($title->component) ? $title->component : 'core';
+                $title = get_string($title->identifier, $component);
+            }
+            $headers[] = $title;
         }
 
         return $headers;
