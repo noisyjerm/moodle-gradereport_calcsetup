@@ -37,7 +37,7 @@ use renderer_base;
 class catinfo implements renderable, templatable {
 
     /** * @var  */
-    private $data;
+    private $item;
 
     /** @var */
     private $courseid;
@@ -53,12 +53,14 @@ class catinfo implements renderable, templatable {
      * @param \gradereport_calcsetup\gradecategory $gradecategory
      */
     public function __construct($gradecategory) {
-        $this->data = $gradecategory->get_item();
-        $this->data->rulename = $gradecategory->get_rule()->get_idnumber();
-        $this->data->ruledescription = $gradecategory->get_rule()->get_description();
+        $this->item = $gradecategory->get_item();
+        $this->item->rulename = $gradecategory->get_rule()->get_idnumber();
+        $this->item->ruledescription = $gradecategory->get_rule()->get_description();
+
         $this->courseid = $gradecategory->get_courseid();
         $this->catid = $gradecategory->get_catid();
         $this->fields = $gradecategory->get_rule()->get_displayoptions();
+        $this->corefields = $gradecategory->get_rule()->get_core_fields();
     }
 
     /**
@@ -67,20 +69,15 @@ class catinfo implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         global $CFG;
-        $this->data->categories = $this->get_catselector();
-        $this->data->display = $this->get_displaytypename($this->data->display);
-        $this->data->rules = $this->get_rules();
+        $this->item->categories = $this->get_catselector();
+        $this->item->rules = $this->get_rules();
 
         $url = new \moodle_url('/grade/report/calcsetup/index.php', ['id' => $this->courseid, 'catid' => $this->catid]);
-        $this->data->actionurl = $url->out(false);
-        $this->data->sesskey = sesskey();
+        $this->item->actionurl = $url->out(false);
+        $this->item->sesskey = sesskey();
 
         // Format the numbers.
-        $decimals = $this->data->get_decimals();
-        foreach (NUMERIC as $field) {
-            // Todo: check how to handle 'display'.
-            $this->data->$field = number_format($this->data->$field, $decimals);
-        }
+        $decimals = $this->item->get_decimals();
 
         $fields = [];
         foreach ($this->fields as $field) {
@@ -91,14 +88,39 @@ class catinfo implements renderable, templatable {
                 $field->title = get_string($title->identifier, $component);
             }
 
-            $field->property = $this->data->$property;
-            $field->name = !empty($field->editable) ? $property . '_' . $this->data->id : '';
+            // Overwrite and add with core definition.
+            if (isset($this->corefields[$property])) {
+                $corefield = $this->corefields[$property];
+                foreach ($corefield as $prop => $val) {
+                    $field->$prop = $val;
+                }
+            }
+
+            // Format.
+            if (isset($field->validation) && $field->validation === 'number') {
+                $this->item->$property = number_format($this->item->$property, $decimals);
+            }
+
+            // Flag the selected option.
+            if (isset($field->options)) {
+                $field->hasoptions = true;
+                $sel = $this->item->$property;
+                foreach ($field->options as $option) {
+                    if ($option->val == $sel) {
+                        $option->selected = true;
+                        break;
+                    }
+                }
+            }
+
+            $field->property = isset($this->item->$property) ? $this->item->$property : '';
+            $field->name = !empty($field->editable) ? $property . '_' . $this->item->id : '';
             $fields[] = $field;
         }
 
-        $this->data->fields = $fields;
+        $this->item->fields = $fields;
 
-        return $this->data;
+        return $this->item;
     }
 
     /**
@@ -120,7 +142,7 @@ class catinfo implements renderable, templatable {
             if ($category->itemtype === 'course') {
                 $category->fullname = $category->coursename;
             }
-            if ($category->id === $this->data->id) {
+            if ($category->id === $this->item->id) {
                 $category->selected = true;
             }
             $category->indent = str_repeat('&nbsp;&nbsp;', $category->depth);
@@ -137,7 +159,7 @@ class catinfo implements renderable, templatable {
         $rules = $DB->get_records('gradereport_calcsetup_rules');
 
         foreach ($rules as $rule) {
-            if ($rule->idnumber === $this->data->rulename) {
+            if ($rule->idnumber === $this->item->rulename) {
                 $rule->selected = true;
             }
         }
@@ -145,34 +167,4 @@ class catinfo implements renderable, templatable {
         return array_values($rules);
     }
 
-    /**
-     * @param $display
-     * @return \lang_string|string
-     * @throws \coding_exception
-     */
-    private function get_displaytypename($display) {
-        switch($display) {
-            case GRADE_DISPLAY_TYPE_REAL:
-                return get_string('real', 'grades');
-            case GRADE_DISPLAY_TYPE_REAL_PERCENTAGE:
-                return get_string('realpercentage', 'grades');
-            case GRADE_DISPLAY_TYPE_REAL_LETTER:
-                return get_string('realletter', 'grades');
-            case GRADE_DISPLAY_TYPE_PERCENTAGE:
-                return get_string('percentage', 'grades');
-            case GRADE_DISPLAY_TYPE_PERCENTAGE_REAL:
-                return get_string('percentagereal', 'grades');
-            case GRADE_DISPLAY_TYPE_PERCENTAGE_LETTER:
-                return get_string('percentageletter', 'grades');
-            case GRADE_DISPLAY_TYPE_LETTER    :
-                return get_string('letter', 'grades');
-            case GRADE_DISPLAY_TYPE_LETTER_REAL:
-                return get_string('letterreal', 'grades');
-            case GRADE_DISPLAY_TYPE_LETTER_PERCENTAGE:
-                return get_string('letterpercentage', 'grades');
-            default:
-                // Todo: look up what the default is.
-                return get_string('default', 'grades');
-        }
-    }
 }

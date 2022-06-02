@@ -74,6 +74,7 @@ class rule {
     }
 
     /**
+     * @deprecated
      * @return array
      */
     public function get_customcolumns() {
@@ -250,5 +251,89 @@ class rule {
             }
         }
         return $filtereditems;
+    }
+
+    public function get_core_fields() {
+        global $CFG;
+        $defaultgradedisplaytype = grade_get_setting($this->item->courseid, 'displaytype', $CFG->grade_displaytype);
+        $defaultgradedisplay = $this->get_displaytypename($defaultgradedisplaytype);
+        return [
+            'id'               => (object) ['locked' => true],
+            'courseid'         => (object) ['locked' => true],
+            'categoryid'       => (object) ['locked' => true],
+            'itemname',
+            'itemtype'         => (object) ['locked' => true],
+            'itemmodule'       => (object) ['locked' => true],
+            'iteminstance'     => (object) ['locked' => true],
+            'itemnumber'       => (object) ['locked' => true],
+            'iteminfo',
+            'idnumber',
+            'calculation',
+            'gradetype'        => (object) ['locked' => true],
+            'grademax'         => (object) ['validation' => 'number'],
+            'grademin'         => (object) ['validation' => 'number'],
+            'scaleid'          => (object) ['validation' => 'number'],
+            'outcomeid'        => (object) ['validation' => 'number'],
+            'gradepass'        => (object) ['validation' => 'number'],
+            'multfactor'       => (object) ['validation' => 'number'],
+            'plusfactor'       => (object) ['validation' => 'number'],
+            'aggregationcoef'  => (object) ['validation' => 'number'],
+            'aggregationcoef2' => (object) ['validation' => 'number'],
+            'sortorder'        => (object) ['locked' => true],
+            'display'          => (object) [
+                'options'          => [
+                    (object) ['val' => GRADE_DISPLAY_TYPE_DEFAULT, 'name' => get_string('defaultprev', 'grades', $defaultgradedisplay)],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_REAL, 'name' => get_string('real', 'grades')],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_REAL_PERCENTAGE, 'name' => get_string('realpercentage', 'grades')],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_REAL_LETTER, 'name' => get_string('realletter', 'grades')],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_PERCENTAGE, 'name' => get_string('percentage', 'grades')],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_PERCENTAGE_REAL, 'name' => get_string('percentagereal', 'grades')],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_PERCENTAGE_LETTER, 'name' => get_string('percentageletter', 'grades')],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_LETTER, 'name' => get_string('letter', 'grades')],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_LETTER_REAL, 'name' => get_string('letterreal', 'grades')],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_LETTER_PERCENTAGE, 'name' => get_string('letterpercentage', 'grades')],
+                ],
+            ],
+            'decimals'         => (object) ['validation' => 'number'],
+            'hidden'           => (object) ['validation' => 'number'],
+            'locked'           => (object) ['locked' => true],
+            'locktime'         => (object) ['locked' => true],
+            'needsupdate',
+            'weightoverride'   => (object) ['validation' => 'number'],
+            'timecreated'      => (object) ['locked' => true],
+            'timemodified'     => (object) ['locked' => true]
+        ];
+    }
+
+    /**
+     * @param $display
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
+    private function get_displaytypename($display) {
+
+        switch($display) {
+            case GRADE_DISPLAY_TYPE_REAL:
+                return get_string('real', 'grades');
+            case GRADE_DISPLAY_TYPE_REAL_PERCENTAGE:
+                return get_string('realpercentage', 'grades');
+            case GRADE_DISPLAY_TYPE_REAL_LETTER:
+                return get_string('realletter', 'grades');
+            case GRADE_DISPLAY_TYPE_PERCENTAGE:
+                return get_string('percentage', 'grades');
+            case GRADE_DISPLAY_TYPE_PERCENTAGE_REAL:
+                return get_string('percentagereal', 'grades');
+            case GRADE_DISPLAY_TYPE_PERCENTAGE_LETTER:
+                return get_string('percentageletter', 'grades');
+            case GRADE_DISPLAY_TYPE_LETTER    :
+                return get_string('letter', 'grades');
+            case GRADE_DISPLAY_TYPE_LETTER_REAL:
+                return get_string('letterreal', 'grades');
+            case GRADE_DISPLAY_TYPE_LETTER_PERCENTAGE:
+                return get_string('letterpercentage', 'grades');
+            default:
+                return get_string('default', 'grades');
+        }
+
     }
 }

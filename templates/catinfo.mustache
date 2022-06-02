@@ -16,7 +16,19 @@
             <dt class="col-md-3">{{#str}}description{{/str}}</dt> <dd class="col-md-9">{{ruledescription}}</dd>
         {{#fields}}
             <dt class="col-md-3">{{title}}</dt><dd class="col-md-9">
-                <input value="{{property}}" {{#name}}name="{{name}}"{{/name}} {{^editable}}disabled="disabled"{{/editable}}>
+            {{#editable}}
+            {{^options}}
+            <input value="{{property}}" {{#name}}name="{{name}}"{{/name}} >
+            {{/options}}
+            {{#hasoptions}}
+            <select class="custom-select" name="{{name}}">
+                {{#options}}<option value="{{val}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>{{/options}}
+            </select>
+            {{/hasoptions}}
+            {{/editable}}
+            {{^editable}}
+            <span>{{property}}</span>
+            {{/editable}}
             </dd>
         {{/fields}}
 
