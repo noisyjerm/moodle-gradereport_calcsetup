@@ -287,7 +287,7 @@ class gradecategory {
                         $changed = true;
                         $propsset += 1;
                         if ($custom) {
-                            $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($gradeitem, $property, $value);
+                            $iteminfo = self::insert_iteminfo($gradeitem, $property, $value);
                             $gradeitem->iteminfo = $iteminfo;
                             $gradeitem->$property = $value;
                         } else {

@@ -72,9 +72,10 @@ class calculation {
         // Group the items.
         $itemgroups = [];
         foreach ($this->items as $item) {
-            $iteminfo = \gradereport_calcsetup\gradecategory::extract_iteminfo($item);
-            if (isset($iteminfo->itemgroup)) {
-                $itemgroups[$iteminfo->itemgroup][] = $item;
+            $newitem = clone $item;
+            $iteminfo = \gradereport_calcsetup\gradecategory::extract_iteminfo($newitem);
+            if (!empty($iteminfo->itemgroup)) {
+                $itemgroups[$iteminfo->itemgroup][] = $newitem;
             }
         }
         foreach ($itemgroups as $group) {
@@ -108,18 +109,24 @@ class calculation {
         echo \html_writer::start_tag('form', $params);
             echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
             echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'calc']);
-            echo \html_writer::empty_tag('input', ['value' => $newcalclean, 'type' => 'hidden', 'name' => 'newcalc']);
+            echo \html_writer::empty_tag(
+                'input',
+                ['value' => $newcalclean, 'type' => 'hidden', 'id' => 'newcalc', 'name' => 'newcalc']
+            );
             echo \html_writer::start_div();
-                echo \html_writer::tag('h5', get_string('current', 'gradereport_calcsetup'));
-                echo \html_writer::span($oldcalc);
-                echo \html_writer::tag('h5', get_string('new'));
-                echo \html_writer::tag('span', $newcalc, ['id' => 'newcalc']);
+                echo \html_writer::tag('h5', get_string('current', 'gradereport_calcsetup'), ['class' => 'col-md-1 d-inline-flex']);
+                echo \html_writer::span($oldcalc, 'col-md-11 d-inline-flex mb-2 pseudo-input dimmed');
+                echo \html_writer::tag('h5', get_string('new'), ['class' => 'col-md-1 d-inline-flex']);
+                echo \html_writer::span(
+                    $newcalc,
+                    'col-md-11 d-inline-flex pseudo-input',
+                    ['id' => 'newcalcview', 'data-id' => $this->item->id, 'data-courseid' => $this->item->courseid]
+                );
             echo \html_writer::end_div();
-            echo \html_writer::empty_tag('input', [
-                'type' => 'submit',
-                'value' => get_string('save'),
-                'class' => 'btn btn-primary'
-            ]);
+            echo \html_writer::empty_tag(
+                'input',
+                ['type' => 'submit', 'value' => get_string('save'), 'class' => 'btn btn-primary']
+            );
         echo \html_writer::end_tag('form');
     }
 }

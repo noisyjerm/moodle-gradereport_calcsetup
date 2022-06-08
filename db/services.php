@@ -15,17 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version
+ * External services to update grade item properties.
  *
- * @package   gradereport_calcsetup
- * @copyright 2022 Te Wānanga o Aotearoa
+ * @package    gradereport_calcsetup
+ * @copyright  2022 Te Wānanga o Aotearoa
  * @author     Jeremy FitzPatrick
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'gradereport_calcsetup'; // Full name of the plugin (used for diagnostics).
-$plugin->version  = 2022042202;
-$plugin->requires = 2020061500;  // 3.9.0
-$plugin->release  = 'v0.9alpha';
+$functions = array(
+    'gradereport_calcsetup_updatecalc' => array(
+        'classname' => 'gradereport_calcsetup\external\gradereport_calcsetup_updatecalc',
+        'methodname' => 'get_calculation_valid',
+        'classpath' => 'grade/report/calcsetup/classes/external/gradereport_calcsetup_updatecalc.php',
+        'description' => 'Check if the formula is valid',
+        'type' => 'read',
+        'capabilities' => 'gradereport/user:view',
+        'ajax' => true,
+    )
+);

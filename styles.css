@@ -35,3 +35,33 @@ table.itemsettings td input {
 .calcs {
     font-size: .9em;
 }
+
+.calc-input {
+    width: 100%;
+    height: 200px;
+    padding: 0.5em;
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
+
+.pseudo-input {
+    border: 1px solid #999;
+    padding: .5em 15px;
+}
+#newcalcview:hover {
+    background-color: #eee;
+}
+
+@keyframes highlightnotice {
+    0% {
+        color: #000;
+    }
+    50% {
+        color: #F00;
+    }
+    100% {
+        color: #000;
+    }
+}
+.bad-calc {
+    animation: highlightnotice 3s;
+}
