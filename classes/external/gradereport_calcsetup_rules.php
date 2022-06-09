@@ -35,17 +35,15 @@ require_once("$CFG->libdir/mathslib.php");
  * Class gradereport_calcsetup_updatecalc
  * @package gradereport_calcsetup\external
  */
-class gradereport_calcsetup_updatecalc extends \external_api {
+class gradereport_calcsetup_rules extends \external_api {
 
     /**
      * @return \external_function_parameters
      */
-    public static function get_calculation_valid_parameters() {
+    public static function get_rules_parameters() {
         return new \external_function_parameters (
             array(
-                'courseid' => new \external_value(PARAM_INT, 'Course Id', VALUE_REQUIRED),
-                'id'       => new \external_value(PARAM_INT, 'Grade item Id', VALUE_REQUIRED),
-                'formula'  => new \external_value(PARAM_RAW, 'A grade calculation formula.', VALUE_REQUIRED),
+                'id'       => new \external_value(PARAM_INT, 'Rule Id', VALUE_REQUIRED),
             )
         );
     }
@@ -56,27 +54,40 @@ class gradereport_calcsetup_updatecalc extends \external_api {
      * @param $formula
      * @return false[]
      */
-    public static function get_calculation_valid($courseid, $gradeitemid, $formula) {
-        $gradeitem = \grade_item::fetch(array('id' => $gradeitemid, 'courseid' => $courseid));
-        $formula = preg_replace('/\s+/', '', $formula);
-        $calculation = \calc_formula::unlocalize(stripslashes($formula));
-        $result = $gradeitem->validate_formula($calculation);
-        if (is_string($result)) {
-            $result = false;
+    public static function get_rules($ruleid) {
+        global $DB;
+        // get rules
+        $rules = $DB->get_records('gradereport_calcsetup_rules', [], '', 'id,idnumber,name,descr' );
+
+        foreach ($rules as $rule) {
+           $rule->selected = $rule->id == $ruleid ? true : false;
         }
 
-        return ['valid' => $result];
+        $norule = (object) [
+            'id' => 0,
+            'idnumber' => 'norule',
+            'name' => get_string('norule', 'gradereport_calcsetup'),
+            'descr' => '',
+            'selected' => is_null($ruleid)
+        ];
+
+        array_unshift($rules, $norule);
+        return ['rules' => $rules];
     }
 
     /**
      * @return \external_single_structure
      */
-    public static function get_calculation_valid_returns() {
-        return new \external_single_structure(
-            array(
-                'valid' => new \external_value(PARAM_BOOL, 'Calculation is possible'),
-            )
-        );
+    public static function get_rules_returns() {
+        $rules = new \external_single_structure(array(
+                'id' => new \external_value(PARAM_INT, 'DB Id of the rule', true, 0),
+                'idnumber' => new \external_value(PARAM_RAW, 'Identifier of the rule', true, 0),
+                'name' => new \external_value(PARAM_RAW, 'Name'),
+                'descr' => new \external_value(PARAM_RAW, 'Description'),
+                'selected' => new \external_value(PARAM_BOOL, 'Is this the rule applied to this category'),
+        ));
+        return new \external_single_structure(['rules' => new \external_multiple_structure($rules), 'list of rules']);
+
     }
 
 }

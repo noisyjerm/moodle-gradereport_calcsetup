@@ -24,11 +24,16 @@ import * as Ajax from 'core/ajax';
 import * as ModalFactory from 'core/modal_factory';
 import * as ModalEvents from 'core/modal_events';
 import * as Str from 'core/str';
+import * as Templates from 'core/templates';
+import Notification from 'core/notification';
+
 let pageurl = '';
 export const init = (url) => {
     pageurl = url;
     document.getElementById('catselector').addEventListener('change', changeCategory);
     document.getElementById('newcalcview').addEventListener('click', showFormattedCalc);
+    document.getElementById('changertherules').addEventListener('click', changerule);
+
 };
 
 const changeCategory = (e) => {
@@ -53,7 +58,7 @@ const showFormattedCalc = (e) => {
             evt.isDefaultPrevented = function() { return true; };
             // Validate the formula.
             Ajax.call([{
-                methodname: 'gradereport_calcsetup_updatecalc',
+                methodname: 'gradereport_calcsetup_validatecalc',
                 args: {'id': itemid,
                     'courseid': courseid,
                     'formula': textarea.value
@@ -93,4 +98,45 @@ const showFormattedCalc = (e) => {
         modal.show();
         return modal;
     });
+};
+
+const changerule = (evt) => {
+    evt.preventDefault();
+    let ruleid = evt.target.dataset.ruleid || 0;
+    let actionurl = evt.target.getAttribute("href");
+
+    return ModalFactory.create({
+        type: ModalFactory.types.SAVE_CANCEL,
+        body: "",
+        title: Str.get_string('rule', 'gradereport_calcsetup'),
+        removeOnClose: true
+    }).then(function(modal) {
+        modal.modal[0].addEventListener('change', showrule);
+        modal.getRoot().on(ModalEvents.save, function() {
+            document.getElementById('categoryruleform').submit();
+        });
+
+        Ajax.call([{
+            methodname: 'gradereport_calcsetup_getrules',
+            args: {
+                'id': ruleid
+            },
+            done: function(data) {
+                data.actionurl = actionurl;
+                Templates.renderForPromise('gradereport_calcsetup/ruleselector', data)
+                .then(({html, js}) => {
+                    Templates.appendNodeContents('.modal-body', html, js);
+                    return true;
+                })
+                .catch(Notification.exception);
+            }
+        }]);
+        modal.show();
+        return true;
+    });
+};
+
+const showrule = (e) => {
+    let d = e.target.dataset.description;
+    document.getElementById("ruledescription").innerHTML = d;
 };

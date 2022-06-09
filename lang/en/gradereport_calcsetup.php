@@ -32,6 +32,7 @@ $string['categoryupdated']   = '{$a} category properties set / changed.';
 $string['current']      = 'Current';
 $string['eventgradereportviewed'] = 'Calc setup viewed.';
 $string['eventgradeitemupdated']  = 'Grade item updated.';
+$string['formulaerror']  = "There is an error in the calculation. Check the idnumbers and syntax.";
 $string['missingtotal'] = 'Missing total name';
 $string['nochanges']    = 'No rule changes made.';
 $string['nodata']       = 'No data';

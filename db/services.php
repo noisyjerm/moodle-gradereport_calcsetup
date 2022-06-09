@@ -26,11 +26,20 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
-    'gradereport_calcsetup_updatecalc' => array(
-        'classname' => 'gradereport_calcsetup\external\gradereport_calcsetup_updatecalc',
+    'gradereport_calcsetup_validatecalc' => array(
+        'classname' => 'gradereport_calcsetup\external\gradereport_calcsetup_validatecalc',
         'methodname' => 'get_calculation_valid',
-        'classpath' => 'grade/report/calcsetup/classes/external/gradereport_calcsetup_updatecalc.php',
+        'classpath' => 'grade/report/calcsetup/classes/external/gradereport_calcsetup_calc.php',
         'description' => 'Check if the formula is valid',
+        'type' => 'read',
+        'capabilities' => 'gradereport/user:view',
+        'ajax' => true,
+    ),
+    'gradereport_calcsetup_getrules' => array(
+        'classname' => 'gradereport_calcsetup\external\gradereport_calcsetup_rules',
+        'methodname' => 'get_rules',
+        'classpath' => 'grade/report/calcsetup/classes/external/gradereport_calcsetup_rules.php',
+        'description' => 'Get a list of the available rules',
         'type' => 'read',
         'capabilities' => 'gradereport/user:view',
         'ajax' => true,

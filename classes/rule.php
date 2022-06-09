@@ -119,7 +119,7 @@ class rule {
      * @return string
      */
     public function get_description() {
-        return $this->rule->desc;
+        return $this->rule->descr;
     }
 
     /**
@@ -232,7 +232,7 @@ class rule {
             $rule = new \stdClass();
             $rule->idnumber = '';
             $rule->name = '';
-            $rule->desc = get_string('norule', 'gradereport_calcsetup');
+            $rule->descr = get_string('norule', 'gradereport_calcsetup');
             $rule->cols = [];
             $rule->fields = get_string('standardfields', 'gradereport_calcsetup');
             $rule->calc = '';
