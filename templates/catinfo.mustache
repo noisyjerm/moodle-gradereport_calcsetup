@@ -46,8 +46,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
     <select class="custom-select" id="catselector">
         {{#categories}}<option value="{{iteminstance}}" {{#selected}}selected="selected"{{/selected}}>{{{indent}}}{{fullname}}</option>{{/categories}}
     </select>
-    <form id="categoryitemform" method="post" action="{{actionurl}}">
-        <input type="hidden" name="sesskey" value="{{sesskey}}">
+
         <dl>
             <dt class="col-md-3">{{#str}}rule, gradereport_calcsetup {{/str}}</dt><dd class="col-md-9">
                 {{#rules}}{{#selected}}{{name}}{{/selected}}{{/rules}}
@@ -56,10 +55,10 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
         {{#fields}}
             <dt class="col-md-3">{{title}}</dt><dd class="col-md-9">
             {{^options}}
-                <input value="{{property}}" {{#editable}}{{#name}}name="{{name}}"{{/name}}{{/editable}} {{^editable}}disabled="disabled"{{/editable}}>
+                <input value="{{property}}" {{#editable}}{{#name}}name="cat[{{name}}]"{{/name}}{{/editable}} {{^editable}}disabled="disabled"{{/editable}}>
             {{/options}}
             {{#hasoptions}}
-                <select class="custom-select" {{#editable}}name="{{name}}"{{/editable}} {{^editable}}disabled="disabled"{{/editable}}>
+                <select class="custom-select" {{#editable}}name="cat[{{name}}]"{{/editable}} {{^editable}}disabled="disabled"{{/editable}}>
                     {{#options}}<option value="{{val}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>{{/options}}
                 </select>
             {{/hasoptions}}
@@ -67,6 +66,5 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
         {{/fields}}
 
         </dl>
-        <input class="advanced btn btn-primary" type="submit" value={{#quote}}{{#str}}savechanges{{/str}}{{/quote}}>
-    </form>
+
 </div>

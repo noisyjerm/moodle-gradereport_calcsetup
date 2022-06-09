@@ -127,7 +127,7 @@ class summarytable extends \flexible_table implements \renderable {
                 if (empty($field->editable) || !empty($field->locked)) {
                     $attr['disabled'] = 'disabled';
                 } else {
-                    $attr['name'] = $field->editable ? $fieldname . '_' . $result->id : '';;
+                    $attr['name'] = $field->editable ? 'items[' . $fieldname . '_' . $result->id . ']' : '';;
                 }
 
                 if (isset($field->options)) {
@@ -155,32 +155,11 @@ class summarytable extends \flexible_table implements \renderable {
     }
 
     /**
-     * Wraps the table in a form.
+     * @param $result
+     * @return string
      * @throws \coding_exception
      * @throws \moodle_exception
      */
-    public function display_in_form() {
-        $params = [
-            'id' => "gradeitemsform",
-            'method' => "post",
-            'action' => new \moodle_url(
-                '/grade/report/calcsetup/index.php', ['id' => $this->courseid, 'catid' => $this->gradecategory->get_catid()]
-            ),
-        ];
-        echo \html_writer::start_tag('form', $params);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
-        echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'items']);
-
-        $this->display();
-
-        echo \html_writer::empty_tag('input', [
-            'type' => 'submit',
-            'value' => get_string('save'),
-            'class' => 'btn btn-primary'
-        ]);
-        echo \html_writer::end_tag('form');
-    }
-
     private function get_name($result) {
         $name = "<span>$result->itemname</span>";
         $missing = get_string('missingtotal', 'gradereport_calcsetup');
@@ -192,7 +171,10 @@ class summarytable extends \flexible_table implements \renderable {
         return $name;
     }
 
-
+    /**
+     * @param $columndata
+     * @return string[]
+     */
     private function get_column_ids($columndata) {
         $cols = ['name'];
         foreach ($columndata as $col) {
@@ -202,6 +184,11 @@ class summarytable extends \flexible_table implements \renderable {
         return $cols;
     }
 
+    /**
+     * @param $columndata
+     * @return array
+     * @throws \coding_exception
+     */
     private function get_headers($columndata) {
         $headers = [
             get_string('gradeitem', 'core_grades')

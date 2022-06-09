@@ -56,13 +56,14 @@ class gradereport_calcsetup_rules extends \external_api {
      */
     public static function get_rules($ruleid) {
         global $DB;
-        // get rules
+        // Get rules.
         $rules = $DB->get_records('gradereport_calcsetup_rules', [], '', 'id,idnumber,name,descr' );
 
         foreach ($rules as $rule) {
-           $rule->selected = $rule->id == $ruleid ? true : false;
+            $rule->selected = $rule->id == $ruleid ? true : false;
         }
 
+        // Prepend 'No rule'.
         $norule = (object) [
             'id' => 0,
             'idnumber' => 'norule',
@@ -70,8 +71,8 @@ class gradereport_calcsetup_rules extends \external_api {
             'descr' => '',
             'selected' => is_null($ruleid)
         ];
-
         array_unshift($rules, $norule);
+
         return ['rules' => $rules];
     }
 

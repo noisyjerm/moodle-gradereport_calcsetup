@@ -95,16 +95,16 @@ if (isset($data->rule)) {
         );
         $event->trigger();
     }
-
-    // Update the values.
-    $fields = $gradecategory->get_rule()->get_displayoptions();
-    $gradecategory->update_items($data, $fields);
 }
 
 if (isset($data->action) && $data->action === 'items') {
+    // Update the values.
+    $fields = $gradecategory->get_rule()->get_displayoptions();
+    $gradecategory->update_items($data->cat, $fields);
+
     // Update the items.
     $fields = $gradecategory->get_rule()->get_columns();
-    $gradecategory->update_items($data, $fields);
+    $gradecategory->update_items($data->items, $fields);
 }
 
 if (isset($data->action) && $data->action === 'calc') {
@@ -113,15 +113,22 @@ if (isset($data->action) && $data->action === 'calc') {
     $item->set_calculation($data->newcalc);
 }
 
+$url = new \moodle_url('/grade/report/calcsetup/index.php', ['id' => $courseid, 'catid' => $categoryid]);
 
-// Show category info.
-$catinfo = new \gradereport_calcsetup\output\catinfo($gradecategory);
-echo $OUTPUT->render($catinfo);
+echo html_writer::start_tag('form', [ 'id' => "categoryitemform", 'method' => "post", 'action' => $url->out(false)]);
+    echo \html_writer::empty_tag('input', ['type' => "hidden", 'name' => "sesskey", 'value' => sesskey()]);
+    echo \html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'items']);
 
-// Show the table.
-echo html_writer::tag('h4', get_string('gradeitems', 'core_grades'));
-$reporttable = new \gradereport_calcsetup\output\summarytable("gradebook", $gradecategory, $courseid);
-$reporttable->display_in_form();
+    // Show category info.
+    $catinfo = new \gradereport_calcsetup\output\catinfo($gradecategory);
+    echo $OUTPUT->render($catinfo);
+
+    // Show the table.
+    echo html_writer::tag('h4', get_string('gradeitems', 'core_grades'));
+    $reporttable = new \gradereport_calcsetup\output\summarytable("gradebook", $gradecategory, $courseid);
+    $reporttable->display();
+    echo \html_writer::empty_tag('input', ['type' => 'submit', 'value' => get_string('save'), 'class' => 'btn btn-primary']);
+echo html_writer::end_tag('form');
 
 // Show the caclulation.
 echo html_writer::tag('h4', get_string('calculation', 'core_grades'));
