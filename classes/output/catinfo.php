@@ -105,6 +105,13 @@ class catinfo implements renderable, templatable {
                 $val = number_format($val, $decimals);
             }
 
+            // Calculation.
+            if ($property === 'calculation') {
+                $field->property = $this->item->get_calculation();
+            } else {
+                $field->property = $val;
+            }
+
             // Flag the selected option.
             if (isset($field->options)) {
                 $field->hasoptions = true;
@@ -117,7 +124,7 @@ class catinfo implements renderable, templatable {
             }
 
             $field->editable = !empty($field->editable) && !isset($field->locked);
-            $field->property = $val;
+
             $field->name = $field->editable ? $property . '_' . $this->item->id : '';
             $fields[] = $field;
         }

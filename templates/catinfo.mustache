@@ -42,10 +42,12 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 <div>
     <h3>{{fullname}}</h3>
-    <label for="catselector">{{#str}}choosecategory, core_grades{{/str}}</label>
+    <label for="catselector" class="col-md-3">{{#str}}choosecategory, core_grades{{/str}}</label>
     <select class="custom-select" id="catselector">
         {{#categories}}<option value="{{iteminstance}}" {{#selected}}selected="selected"{{/selected}}>{{{indent}}}{{fullname}}</option>{{/categories}}
     </select>
+
+    <h4>{{#str}}category, core_grades {{/str}}</h4>
 
         <dl>
             <dt class="col-md-3">{{#str}}rule, gradereport_calcsetup {{/str}}</dt><dd class="col-md-9">

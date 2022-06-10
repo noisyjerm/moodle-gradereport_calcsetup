@@ -30,10 +30,17 @@ import Notification from 'core/notification';
 let pageurl = '';
 export const init = (url) => {
     pageurl = url;
-    document.getElementById('catselector').addEventListener('change', changeCategory);
     document.getElementById('newcalcview').addEventListener('click', showFormattedCalc);
-    document.getElementById('changertherules').addEventListener('click', changerule);
+    document.getElementById('changertherules').addEventListener('click', changeRule);
+    document.getElementById('categoryitemform').addEventListener('change', itemChanged);
+};
 
+const itemChanged = (e) => {
+    if (e.target.getAttribute('id') === 'catselector') {
+        changeCategory(e);
+    } else {
+        document.getElementById('newcalcview').innerHTML = "The data may have changed. Save the items or refresh the page.";
+    }
 };
 
 const changeCategory = (e) => {
@@ -100,7 +107,7 @@ const showFormattedCalc = (e) => {
     });
 };
 
-const changerule = (evt) => {
+const changeRule = (evt) => {
     evt.preventDefault();
     let ruleid = evt.target.dataset.ruleid || 0;
     let actionurl = evt.target.getAttribute("href");

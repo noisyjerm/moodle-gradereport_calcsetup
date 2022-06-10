@@ -56,17 +56,20 @@ class gradecategory {
         $gradeitems = $this->get_rawdata($courseid, $categoryid);
 
         $this->item = $this->set_item(array_shift($gradeitems));
-        $total = 0;
+        $grademaxtotal = 0;
+        $aggregationcoeftotal = 0;
 
         foreach ($gradeitems as $item) {
-            $total += $item->grademax;
+            $grademaxtotal += $item->grademax;
+            $aggregationcoeftotal += $item->aggregationcoef;
             $gradeitem = grade_item::fetch(array('id' => $item->id, 'courseid' => $courseid));
             $gradeitem->thiscatid = $item->thiscatid;
             $gradeitem->fullname = $item->fullname;
             $gradeitem->coursename = $item->coursename;
             $this->gradeitems[$item->id] = $gradeitem;
         }
-        $this->item->total = $total;
+        $this->item->grademax_total = $grademaxtotal;
+        $this->item->aggregationcoef_total = $aggregationcoeftotal;
 
         // Extract the rule.
         $this->iteminfo = self::extract_iteminfo($this->item);
@@ -252,11 +255,10 @@ class gradecategory {
 
     public function update_items($data, $fields) {
         $last = 'nomatch';
-        $gradeitem = null;
         $corefields = $this->rule->get_core_fields();
         $propsset = 0;
+        $changed = [];
         foreach ($data as $key => $value) {
-            $changed = false;
             foreach ($fields as $field) {
                 $property = $field->property;
 
@@ -278,14 +280,22 @@ class gradecategory {
 
                     if ($last !== $aid) {
                         $last = $aid;
+                        $propsset = 0;
                         $gradeitem = $this->get_gradeitems($aid);
                     }
 
                     $custom = !in_array($property, array_keys($corefields));
 
-                    if (!isset($gradeitem->$property) || $gradeitem->$property != $value) {
-                        $changed = true;
+                    if ($property === 'calculation') {
+                        $p = $gradeitem->denormalize_formula($gradeitem->calculation, $gradeitem->courseid);
+                    } else {
+                        $p = $gradeitem->$property;
+                    }
+
+                    if ($p != $value) {
                         $propsset += 1;
+                        $changed[$gradeitem->id] = $gradeitem;
+                        $gradeitem->propsset = $propsset;
                         if ($custom) {
                             $iteminfo = self::insert_iteminfo($gradeitem, $property, $value);
                             $gradeitem->iteminfo = $iteminfo;
@@ -297,9 +307,23 @@ class gradecategory {
                 }
             }
         }
-        if (isset($gradeitem) && $changed) {
+
+        foreach ($changed as $gradeitem) {
             $gradeitem->update();
-            \core\notification::success(get_string('categoryupdated', 'gradereport_calcsetup', $propsset));
+            \core\notification::success(get_string(
+                'categoryupdated',
+                'gradereport_calcsetup',
+                ['changed' => $gradeitem->propsset, 'itemname' => $gradeitem->get_name()])
+            );
+        }
+
+        if (empty($changed)) {
+            \core\notification::success(get_string(
+                    'categoryupdated',
+                    'gradereport_calcsetup',
+                    ['changed' => 0, 'itemname' => '']
+                )
+            );
         }
     }
 

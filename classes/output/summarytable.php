@@ -123,6 +123,12 @@ class summarytable extends \flexible_table implements \renderable {
                     $val = number_format($val, $decimals);
                 }
 
+                // Calculation.
+                if ($fieldname === 'calculation') {
+                    $val = $result->get_calculation();
+                }
+
+                // Set properties for editing or disabling.
                 $attr = [];
                 if (empty($field->editable) || !empty($field->locked)) {
                     $attr['disabled'] = 'disabled';
@@ -130,6 +136,7 @@ class summarytable extends \flexible_table implements \renderable {
                     $attr['name'] = $field->editable ? 'items[' . $fieldname . '_' . $result->id . ']' : '';;
                 }
 
+                // Output textbox (input) or menu (select).
                 if (isset($field->options)) {
                     $attr['class'] = 'custom-select';
                     $options = '';

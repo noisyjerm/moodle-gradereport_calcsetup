@@ -27,8 +27,9 @@
 
 $string['pluginname']   = 'Grade calculation tool';
 $string['calculation']  = 'Calculation';
+$string['calculationupdated']  = 'Calculation updated.';
 $string['cantupdate']   = 'The property \'{$a}\' cannot be updated.';
-$string['categoryupdated']   = '{$a} category properties set / changed.';
+$string['categoryupdated']   = '{$a->changed} properties set / changed on item {$a->itemname}.';
 $string['current']      = 'Current';
 $string['eventgradereportviewed'] = 'Calc setup viewed.';
 $string['eventgradeitemupdated']  = 'Grade item updated.';
@@ -40,6 +41,6 @@ $string['norule']       = 'No rule applied';
 $string['standardfields'] = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
 $string['pageheader']   = 'Grade calculation setup tool';
 $string['rule']         = 'Rule';
-$string['ruleupdated']  = 'Rule updated and {$a} item properties set / changed.';
+$string['ruleupdated']  = 'Rule updated';
 $string['wrongtype']    = 'The value \'{$a}\' is not of the expected type';
 

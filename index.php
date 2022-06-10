@@ -99,18 +99,25 @@ if (isset($data->rule)) {
 
 if (isset($data->action) && $data->action === 'items') {
     // Update the values.
-    $fields = $gradecategory->get_rule()->get_displayoptions();
-    $gradecategory->update_items($data->cat, $fields);
+    if (isset($data->cat)) {
+        $fields = $gradecategory->get_rule()->get_displayoptions();
+        $gradecategory->update_items($data->cat, $fields);
+    }
 
     // Update the items.
-    $fields = $gradecategory->get_rule()->get_columns();
-    $gradecategory->update_items($data->items, $fields);
+    if (isset($data->items)) {
+        $fields = $gradecategory->get_rule()->get_columns();
+        $gradecategory->update_items($data->items, $fields);
+    }
 }
 
 if (isset($data->action) && $data->action === 'calc') {
     // Update the calculation.
     $item = $gradecategory->get_item();
-    $item->set_calculation($data->newcalc);
+    if ($item->set_calculation($data->newcalc)) {
+        \core\notification::success(get_string('calculationupdated', 'gradereport_calcsetup'));
+    }
+
 }
 
 $url = new \moodle_url('/grade/report/calcsetup/index.php', ['id' => $courseid, 'catid' => $categoryid]);
