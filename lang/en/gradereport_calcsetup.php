@@ -26,6 +26,7 @@
 // General Strings.
 
 $string['pluginname']   = 'Grade calculation tool';
+$string['about']        = 'About';
 $string['calculation']  = 'Calculation';
 $string['calculationupdated']  = 'Calculation updated.';
 $string['cantupdate']   = 'The property \'{$a}\' cannot be updated.';
@@ -33,11 +34,16 @@ $string['categoryupdated']   = '{$a->changed} properties set / changed on item {
 $string['current']      = 'Current';
 $string['eventgradereportviewed'] = 'Calc setup viewed.';
 $string['eventgradeitemupdated']  = 'Grade item updated.';
-$string['formulaerror']  = "There is an error in the calculation. Check the idnumbers and syntax.";
+$string['formulaerror'] = "There is an error in the calculation. Check the idnumbers and syntax.";
 $string['missingtotal'] = 'Missing total name';
 $string['nochanges']    = 'No rule changes made.';
 $string['nodata']       = 'No data';
 $string['norule']       = 'No rule applied';
+$string['plugindescription']  = 'The aim of this tool is to help organisations apply grading methodologies consistently.<br><br>
+                           Administrators create calculation \'rules\' which course developers apply to grade categories
+                           within their courses. The rules can make changes to grade items when applied, describe a table
+                           of grade item properties for convenient editing and provide a template to assist in writing
+                           the calculation formulas. <a href=\'{$a}\'>Manage the rules</a>';
 $string['standardfields'] = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
 $string['pageheader']   = 'Grade calculation setup tool';
 $string['rule']         = 'Rule';

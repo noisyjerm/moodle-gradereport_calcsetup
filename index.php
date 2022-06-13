@@ -60,9 +60,6 @@ $USER->grade_last_report[$course->id] = 'calcsetup';
 $reportname = get_string('pluginname', 'gradereport_calcsetup');
 print_grade_page_head($courseid, 'report', 'calcsetup', $reportname);
 
-$context = context_course::instance($course->id);
-require_capability('gradereport/calcsetup:view', $context);
-
 $event = \gradereport_calcsetup\event\grade_report_viewed::create(
     array(
         'context' => $context,
