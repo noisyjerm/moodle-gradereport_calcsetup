@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Page for displaying calculation setup rules
+ * Create or change a calculation setup rules
  *
  * @package    gradereport_calcsetup
  * @copyright  2022 Te Wānanga o Aotearoa
@@ -25,12 +25,16 @@
 
 require_once('../../../config.php');
 
-$pageurl = new \moodle_url('/grade/report/calcsetup/managerules.php');
-$PAGE->set_url($pageurl);
+global $DB;
 
 require_login();
 
+$ruleid = optional_param('id', 0, PARAM_INT);
+
+$pageurl = new \moodle_url('/grade/report/calcsetup/editrule.php');
 $context = context_system::instance();
+
+$PAGE->set_url($pageurl);
 $PAGE->set_context($context);
 
 // This is the normal requirements.
@@ -38,24 +42,35 @@ require_capability('gradereport/calcsetup:view', $context);
 require_capability('moodle/grade:viewall', $context);
 require_capability('moodle/grade:edit', $context);
 
-$title = get_string('managerules', 'gradereport_calcsetup');
+$title = $ruleid
+    ? get_string('editrule', 'gradereport_calcsetup')
+    : get_string('newrule', 'gradereport_calcsetup');
 $PAGE->set_title(get_string('pageheader', 'gradereport_calcsetup') . ' - ' . $title);
-$PAGE->requires->js_call_amd('gradereport_calcsetup/managerules', 'init', [$pageurl->out()]);
-
 $PAGE->set_pagelayout('report');
 $PAGE->set_heading($title);
 
 navigation_node::require_admin_tree();
 
-$table = new gradereport_calcsetup\output\rulestable('rulestable');
-$newrulebutton = new single_button(
-    new \moodle_url('editrule.php', ['id' => 0]),
-    get_string('newrule', 'gradereport_calcsetup'),
-    'get'
-);
+$editform = new \gradereport_calcsetup\output\editrule_form(null, ['ruleid' => $ruleid]);
+$returnurl = new moodle_url($CFG->wwwroot . '/grade/report/calcsetup/managerules.php');
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading($title);
-$table->display();
-echo $OUTPUT->render($newrulebutton);
-echo $OUTPUT->footer();
+if ($editform->is_cancelled()) {
+    // Return to manage rules page.
+    redirect($returnurl);
+} else if ($updatedrule = $editform->get_data()) {
+    if ($updatedrule->id) {
+        // Update.
+        $DB->update_record('gradereport_calcsetup_rules', $updatedrule);
+    } else {
+        // Create.
+        $DB->insert_record('gradereport_calcsetup_rules', $updatedrule);
+    }
+
+    redirect($returnurl);
+} else {
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading($title);
+
+    $editform->display();
+    echo $OUTPUT->footer();
+}

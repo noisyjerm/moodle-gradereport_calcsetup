@@ -27,15 +27,24 @@
 
 $string['pluginname']   = 'Grade calculation tool';
 $string['about']        = 'About';
+$string['actions']      = 'Actions';
 $string['calculation']  = 'Calculation';
 $string['calculationupdated']  = 'Calculation updated.';
 $string['cantupdate']   = 'The property \'{$a}\' cannot be updated.';
 $string['categoryupdated']   = '{$a->changed} properties set / changed on item {$a->itemname}.';
+$string['columns']      = 'Columns';
 $string['current']      = 'Current';
+$string['deleterule']   = 'Delete rule';
+$string['deleterulereally']  = 'Are you sure you want to permanently delete this rule?';
+
+$string['editrule']     = 'Edit rule';
 $string['eventgradereportviewed'] = 'Calc setup viewed.';
 $string['eventgradeitemupdated']  = 'Grade item updated.';
+$string['fields']       = 'Fields';
 $string['formulaerror'] = "There is an error in the calculation. Check the idnumbers and syntax.";
+$string['managerules']  = 'Manage rules';
 $string['missingtotal'] = 'Missing total name';
+$string['newrule']      = 'New rule';
 $string['nochanges']    = 'No rule changes made.';
 $string['nodata']       = 'No data';
 $string['norule']       = 'No rule applied';
@@ -44,9 +53,15 @@ $string['plugindescription']  = 'The aim of this tool is to help organisations a
                            within their courses. The rules can make changes to grade items when applied, describe a table
                            of grade item properties for convenient editing and provide a template to assist in writing
                            the calculation formulas. <a href=\'{$a}\'>Manage the rules</a>';
-$string['standardfields'] = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
-$string['pageheader']   = 'Grade calculation setup tool';
+$string['pageheader']   = 'Grade calculation tool';
+$string['placeholdercalc'] = 'Moodle calculation formula using mustache template markup. e.g. <br>
+                              =min({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
+$string['placeholderdescription'] = 'What is the rule for and what actions happen when it is applied?';
+$string['placeholderidnum'] = 'uniqueidentifier';
+$string['placeholdername'] = 'Give your rule a name';
+$string['placeholderjson'] = '[{}]';
 $string['rule']         = 'Rule';
 $string['ruleupdated']  = 'Rule updated';
+$string['standardfields'] = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
 $string['wrongtype']    = 'The value \'{$a}\' is not of the expected type';
 

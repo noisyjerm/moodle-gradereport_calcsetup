@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * External services to update grade item properties.
+ * External services to update calculation setup rules
  *
  * @package    gradereport_calcsetup
  * @copyright  2022 Te Wānanga o Aotearoa
@@ -91,4 +91,76 @@ class gradereport_calcsetup_rules extends \external_api {
 
     }
 
+
+
+    /**
+     * @return \external_function_parameters
+     */
+    public static function hide_rule_parameters() {
+        return new \external_function_parameters (
+            array(
+                'id'       => new \external_value(PARAM_INT, 'Rule Id', VALUE_REQUIRED),
+                'action'   => new \external_value(PARAM_INT, 'What action to perform', VALUE_REQUIRED)
+            )
+        );
+    }
+
+    /**
+     * @param int $id The database table id of the rule
+     * @param int $action Are we hiding (0) or showing (1) this rule
+     * @return bool[]
+     * @throws \dml_exception
+     */
+    public static function hide_rule($id, $action) {
+        global $DB;
+        $rule = $DB->get_record('gradereport_calcsetup_rules', ['id' => $id]);
+        $rule->visible = $action;
+        $DB->set_field('gradereport_calcsetup_rules', 'visible', $action, ['id' => $id] );
+        $wasset = $DB->get_field('gradereport_calcsetup_rules', 'visible', ['id' => $id]);
+        $success = $wasset !== $action;
+        return ['success' => $success];
+    }
+
+    /**
+     * @return \external_single_structure
+     */
+    public static function hide_rule_returns() {
+        return new \external_single_structure(array(
+            'success' => new \external_value(PARAM_BOOL, 'Was the edit successful')
+        ));
+    }
+
+
+
+    /**
+     * @return \external_function_parameters
+     */
+    public static function delete_rule_parameters() {
+        return new \external_function_parameters (
+            array(
+                'id'       => new \external_value(PARAM_INT, 'Rule Id', VALUE_REQUIRED)
+            )
+        );
+    }
+
+    /**
+     * @param int $id The database table id of the rule
+     * @return bool[]
+     * @throws \dml_exception
+     */
+    public static function delete_rule($id) {
+        global $DB;
+        $DB->delete_records('gradereport_calcsetup_rules', ['id' => $id]);
+        $success = !$DB->record_exists('gradereport_calcsetup_rules', ['id' => $id]);
+        return ['success' => $success];
+    }
+
+    /**
+     * @return \external_single_structure
+     */
+    public static function delete_rule_returns() {
+        return new \external_single_structure(array(
+            'success' => new \external_value(PARAM_BOOL, 'Was the deletion successful')
+        ));
+    }
 }

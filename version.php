@@ -26,6 +26,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'gradereport_calcsetup'; // Full name of the plugin (used for diagnostics).
-$plugin->version  = 2022042203;
+$plugin->version  = 2022042204;
 $plugin->requires = 2020061500;  // 3.9.0
 $plugin->release  = 'v0.9alpha';

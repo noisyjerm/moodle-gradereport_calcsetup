@@ -25,20 +25,48 @@
 
 defined('MOODLE_INTERNAL') || die;
 if ($hassiteconfig) {
-    $ADMIN->add(
-        'gradereports',
-        new admin_externalpage(
-            'managecalcrules',
-            'Grade calculation tool - Manage rules',
-            "$CFG->wwwroot/grade/report/calcsetup/managerules.php",
-            'moodle/site:config'
-        )
-    );
-
+    // Add things to our settings page.
     $manageurl = new \moodle_url('/grade/report/calcsetup/managerules.php');
     $settings->add(new admin_setting_heading(
         'about',
         get_string('about', 'gradereport_calcsetup'),
         get_string('plugindescription', 'gradereport_calcsetup', $manageurl->out())
     ));
+
+    // Create the tree.
+    $ADMIN->add(
+        'gradereports',
+        new admin_category(
+            'calcsetup',
+            'Grade calculation tool'
+        )
+    );
+
+    $ADMIN->add(
+        'calcsetup',
+        $settings
+    );
+
+    $ADMIN->add(
+        'calcsetup',
+        new admin_externalpage(
+            'managecalcrules',
+            get_string('managerules', 'gradereport_calcsetup'),
+            "$CFG->wwwroot/grade/report/calcsetup/managerules.php",
+            'moodle/site:config'
+        )
+    );
+
+    $ADMIN->add(
+        'calcsetup',
+        new admin_externalpage(
+            'editcalcrules',
+            get_string('newrule', 'gradereport_calcsetup'),
+            "$CFG->wwwroot/grade/report/calcsetup/editrule.php",
+            'moodle/site:config'
+        )
+    );
+
+    // Don't put this page in the default location as we want it under the category.
+    $settings = null;
 }

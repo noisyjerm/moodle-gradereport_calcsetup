@@ -43,5 +43,23 @@ $functions = array(
         'type' => 'read',
         'capabilities' => 'gradereport/user:view',
         'ajax' => true,
+    ),
+    'gradereport_calcsetup_deleterule' => array(
+        'classname' => 'gradereport_calcsetup\external\gradereport_calcsetup_rules',
+        'methodname' => 'delete_rule',
+        'classpath' => 'grade/report/calcsetup/classes/external/gradereport_calcsetup_rules.php',
+        'description' => 'Delete this rule',
+        'type' => 'read',
+        'capabilities' => 'gradereport/user:view',
+        'ajax' => true,
+    ),
+    'gradereport_calcsetup_hiderule' => array(
+        'classname' => 'gradereport_calcsetup\external\gradereport_calcsetup_rules',
+        'methodname' => 'hide_rule',
+        'classpath' => 'grade/report/calcsetup/classes/external/gradereport_calcsetup_rules.php',
+        'description' => 'Toggle the visibility of the rule',
+        'type' => 'read',
+        'capabilities' => 'gradereport/user:view',
+        'ajax' => true,
     )
 );

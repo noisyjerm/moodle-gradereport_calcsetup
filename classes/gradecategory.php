@@ -25,8 +25,8 @@
 
 namespace gradereport_calcsetup;
 use grade_item;
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot. "/grade/report/calcsetup/constants.php");
+
+const PATTERN = ['open' => '{{gradereportcalcsetup}}', 'close' => '{{/gradereportcalcsetup}}'];
 
 class gradecategory {
     /** @var int */

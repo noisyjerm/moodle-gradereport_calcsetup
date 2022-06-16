@@ -52,6 +52,7 @@ class rulestable extends \flexible_table implements \renderable {
 
         $this->baseurl = new \moodle_url("$CFG->wwwroot/admin/settings.php");
         $this->set_attribute('class', 'generaltable itemsettings');
+        $this->set_attribute('id', 'rulestable');
 
         $this->define_columns([
                 'name' => 'name',
@@ -79,30 +80,33 @@ class rulestable extends \flexible_table implements \renderable {
     public function display() {
         global $DB, $OUTPUT;
 
-        $rules = $DB->get_records('gradereport_calcsetup_rules', null, '', 'name, idnumber, descr');
+        $rules = $DB->get_records('gradereport_calcsetup_rules', null, '', 'id, name, idnumber, descr, visible');
 
         $this->setup();
 
-        foreach ($rules as $result) {
-            $result->actions = $this->get_actions_col($result);
-            $this->add_data_keyed($result);
+        foreach ($rules as $rule) {
+            $rule->actions = $this->get_actions_col($rule);
+            $this->add_data_keyed($rule);
         }
 
         $this->finish_output();
     }
 
     /**
-     * @param $record
+     * @param $rule
      * @return string
      * @throws \coding_exception
      * @throws \moodle_exception
      */
-    private function get_actions_col($record) {
+    private function get_actions_col($rule) {
         global $OUTPUT;
-        $url = new \moodle_url('managerules.php', array('hide' => 1, 'sesskey' => sesskey()));
-        $buttons[] = \html_writer::link($url, $OUTPUT->pix_icon('t/delete', get_string('delete')));
-        $buttons[] = \html_writer::link($url, $OUTPUT->pix_icon('t/show', get_string('hide')));
-        $buttons[] = \html_writer::link($url, $OUTPUT->pix_icon('t/edit', get_string('edit')));
+        $url = new \moodle_url('editrule.php', array('id' => $rule->id));
+        $eye = $rule->visible ? $OUTPUT->pix_icon('t/hide', get_string('hide')) : $OUTPUT->pix_icon('t/show', get_string('show'));
+        $can = $OUTPUT->pix_icon('t/delete', get_string('delete'));
+
+        $buttons[] = \html_writer::link($url, $can, ['class' => 'delete', 'data-ruleid' => $rule->id]);
+        $buttons[] = \html_writer::link($url, $eye, ['class' => 'showhide', 'data-ruleid' => $rule->id, 'data-action' => !$rule->visible]);
+        $buttons[] = \html_writer::link($url, $OUTPUT->pix_icon('t/edit', get_string('edit')), ['class' => 'edit']);
 
         return implode(' ', $buttons);
     }
