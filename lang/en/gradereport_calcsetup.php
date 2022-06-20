@@ -36,32 +36,35 @@ $string['columns']      = 'Columns';
 $string['current']      = 'Current';
 $string['deleterule']   = 'Delete rule';
 $string['deleterulereally']  = 'Are you sure you want to permanently delete this rule?';
-
+$string['editable']     = 'Editable';
 $string['editrule']     = 'Edit rule';
 $string['eventgradereportviewed'] = 'Calc setup viewed.';
 $string['eventgradeitemupdated']  = 'Grade item updated.';
 $string['fields']       = 'Fields';
 $string['formulaerror'] = "There is an error in the calculation. Check the idnumbers and syntax.";
+$string['locked']       = 'Locked';
 $string['managerules']  = 'Manage rules';
 $string['missingtotal'] = 'Missing total name';
 $string['newrule']      = 'New rule';
 $string['nochanges']    = 'No rule changes made.';
 $string['nodata']       = 'No data';
 $string['norule']       = 'No rule applied';
-$string['plugindescription']  = 'The aim of this tool is to help organisations apply grading methodologies consistently.<br><br>
-                           Administrators create calculation \'rules\' which course developers apply to grade categories
-                           within their courses. The rules can make changes to grade items when applied, describe a table
-                           of grade item properties for convenient editing and provide a template to assist in writing
-                           the calculation formulas. <a href=\'{$a}\'>Manage the rules</a>';
-$string['pageheader']   = 'Grade calculation tool';
-$string['placeholdercalc'] = 'Moodle calculation formula using mustache template markup. e.g. <br>
-                              =min({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
+$string['plugindescription'] = 'The aim of this tool is to help organisations apply grading methodologies consistently.<br><br>
+                                Administrators create calculation \'rules\' which course developers apply to grade categories
+                                within their courses. The rules can make changes to grade items when applied, describe a table
+                                of grade item properties for convenient editing and provide a template to assist in writing
+                                the calculation formulas. <a href=\'{$a}\'>Manage the rules</a>';
+$string['pageheader']        = 'Grade calculation tool';
+$string['placeholdercalc']   = 'Moodle calculation formula using mustache template markup. e.g. <br>
+                                =min({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
 $string['placeholderdescription'] = 'What is the rule for and what actions happen when it is applied?';
-$string['placeholderidnum'] = 'uniqueidentifier';
-$string['placeholdername'] = 'Give your rule a name';
-$string['placeholderjson'] = '[{}]';
-$string['rule']         = 'Rule';
-$string['ruleupdated']  = 'Rule updated';
-$string['standardfields'] = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
-$string['wrongtype']    = 'The value \'{$a}\' is not of the expected type';
+$string['placeholderidnum']  = 'uniqueidentifier';
+$string['placeholdername']   = 'Give your rule a name';
+$string['placeholderjson']   = '[{}]';
+$string['property']          = 'Property';
+$string['rule']              = 'Rule';
+$string['ruleupdated']       = 'Rule updated';
+$string['standardfields']    = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
+$string['title']             = 'Title';
+$string['wrongtype']         = 'The value \'{$a}\' is not of the expected type';
 

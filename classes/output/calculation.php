@@ -24,11 +24,9 @@
  */
 
 namespace gradereport_calcsetup\output;
-defined('MOODLE_INTERNAL') || die();
 
 use gradereport_calcsetup\gradecategory;
 
-require_once($CFG->dirroot. "/grade/report/calcsetup/constants.php");
 
 /**
  * Class calculation

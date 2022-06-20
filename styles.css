@@ -65,3 +65,15 @@ table.itemsettings td input {
 .bad-calc {
     animation: highlightnotice 3s;
 }
+
+.form-control-static {
+    width: 100%;
+}
+.row.rule-field span {
+    display: inherit;
+}
+
+#fitem_id_description .row.rule-field:first-of-type i[data-action=up],
+#fitem_id_description .row.rule-field:last-of-type i[data-action=down] {
+    visibility: hidden;
+}

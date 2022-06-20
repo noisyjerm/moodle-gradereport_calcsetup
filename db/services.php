@@ -61,5 +61,14 @@ $functions = array(
         'type' => 'read',
         'capabilities' => 'gradereport/user:view',
         'ajax' => true,
+    ),
+    'gradereport_calcsetup_get_corefields' => array(
+        'classname' => 'gradereport_calcsetup\external\gradereport_calcsetup_rules',
+        'methodname' => 'get_coreitemfields',
+        'classpath' => 'grade/report/calcsetup/classes/external/gradereport_calcsetup_rules.php',
+        'description' => 'Returns a list of the core fields',
+        'type' => 'read',
+        'capabilities' => 'gradereport/user:view',
+        'ajax' => true,
     )
 );

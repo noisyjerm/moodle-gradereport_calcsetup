@@ -36,6 +36,7 @@ $context = context_system::instance();
 
 $PAGE->set_url($pageurl);
 $PAGE->set_context($context);
+$PAGE->requires->js_call_amd('gradereport_calcsetup/editrule', 'init');
 
 // This is the normal requirements.
 require_capability('gradereport/calcsetup:view', $context);

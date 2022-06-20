@@ -57,7 +57,7 @@ class gradereport_calcsetup_rules extends \external_api {
     public static function get_rules($ruleid) {
         global $DB;
         // Get rules.
-        $rules = $DB->get_records('gradereport_calcsetup_rules', [], '', 'id,idnumber,name,descr' );
+        $rules = $DB->get_records('gradereport_calcsetup_rules', ['visible' => 1], '', 'id,idnumber,name,descr' );
 
         foreach ($rules as $rule) {
             $rule->selected = $rule->id == $ruleid ? true : false;
@@ -163,4 +163,67 @@ class gradereport_calcsetup_rules extends \external_api {
             'success' => new \external_value(PARAM_BOOL, 'Was the deletion successful')
         ));
     }
+
+
+    /**
+     * @return \external_function_parameters
+     */
+    public static function get_coreitemfields_parameters() {
+        return new \external_function_parameters([], 'No params');
+    }
+
+    /**
+     * @return array
+     */
+    public static function get_coreitemfields() {
+        $fields = [
+             ['property' => 'id', 'locked' => true],
+             ['property' => 'courseid', 'locked' => true],
+             ['property' => 'categoryid', 'locked' => true],
+             ['property' => 'itemname', 'locked' => true],
+             ['property' => 'itemtype', 'locked' => true],
+             ['property' => 'itemmodule', 'locked' => true],
+             ['property' => 'iteminstance', 'locked' => true],
+             ['property' => 'itemnumber', 'locked' => true],
+             ['property' => 'iteminfo'],
+             ['property' => 'idnumber'],
+             ['property' => 'calculation'],
+             ['property' => 'gradetype', 'locked' => true],
+             ['property' => 'grademax', 'validation' => 'number'],
+             ['property' => 'grademin', 'validation' => 'number'],
+             ['property' => 'scaleid', 'validation' => 'number'],
+             ['property' => 'outcomeid', 'validation' => 'number'],
+             ['property' => 'gradepass', 'validation' => 'number'],
+             ['property' => 'multfactor', 'validation' => 'number'],
+             ['property' => 'plusfactor', 'validation' => 'number'],
+             ['property' => 'aggregationcoef', 'validation' => 'number'],
+             ['property' => 'aggregationcoef2', 'validation' => 'number'],
+             ['property' => 'sortorder', 'locked' => true],
+             ['property' => 'display'],
+             ['property' => 'decimals', 'validation' => 'number'],
+             ['property' => 'hidden', 'validation' => 'number'],
+             ['property' => 'locked', 'locked' => true],
+             ['property' => 'locktime', 'locked' => true],
+             ['property' => 'needsupdate'],
+             ['property' => 'weightoverride', 'validation' => 'number'],
+             ['property' => 'timecreated', 'locked' => true],
+             ['property' => 'timemodified', 'locked' => true]
+        ];
+
+        return ['fields' => $fields];
+    }
+
+
+    /**
+     * @return \external_single_structure
+     */
+    public static function get_coreitemfields_returns() {
+        $fields = new \external_single_structure([
+            'locked' => new \external_value(PARAM_BOOL, 'Can this field be edited', VALUE_OPTIONAL),
+            'property' => new \external_value(PARAM_ALPHANUMEXT, 'The name of this property')
+        ]);
+
+        return new \external_single_structure(['fields' => new \external_multiple_structure($fields), 'list of fields']);
+    }
+
 }
