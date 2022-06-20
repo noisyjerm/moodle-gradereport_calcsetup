@@ -47,9 +47,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
         </select>
     </div>
     <div class="col-md-6">
-        {{#col}}
-        <label for="coleditable">{{#str}}editable, gradereport_calcsetup{{/str}}</label> <input id="coleditable" type="checkbox" {{#editable}}checked="true"{{/editable}}>
-        {{/col}}
+        <label for="coleditable">{{#str}}editable, gradereport_calcsetup{{/str}}</label> <input id="coleditable" type="checkbox" {{#col}}{{#editable}}checked="true"{{/editable}}{{/col}}>
     </div>
 
 </div>

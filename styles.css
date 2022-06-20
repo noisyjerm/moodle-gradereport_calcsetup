@@ -74,6 +74,10 @@ table.itemsettings td input {
 }
 
 #fitem_id_description .row.rule-field:first-of-type i[data-action=up],
-#fitem_id_description .row.rule-field:last-of-type i[data-action=down] {
+#fitem_id_description .row.rule-field:nth-last-child(2) i[data-action=down] {
     visibility: hidden;
+}
+
+#fitem_id_description .row.rule-field:last-of-type i[data-action=edit] {
+    margin-right: 0;
 }

@@ -104,12 +104,15 @@ class editrule_form extends \moodleform {
 
         $cols = '';
         $i = 0;
+        $stradd = get_string('add');
+
         if (!empty($rule->cols)) {
             $columns = json_decode($rule->cols);
             $stredit = get_string('edit');
             $strup = get_string('moveup');
             $strdn = get_string('movedown');
             $strdel = get_string('delete');
+
             foreach ($columns as $col) {
                 $cols .= "<div class='row rule-field' data-index='$i'><span class='col'>";
                 $title = $col->title;
@@ -140,6 +143,13 @@ class editrule_form extends \moodleform {
                 $i ++;
             }
         }
+
+        $cols .= "<div class='row rule-field' data-index='$i'>
+                         <span class='col'></span><span class='col'></span class='col'><span class='col'></span>
+                         <span class='col-md-2'><a class='add' href='#'>
+                         <i data-action='edit'>$stradd</i>
+                         <i class='icon fa fa-plus fa-fw' title='$stradd' aria-label='$stradd' data-action='edit'></i>
+                      </a></span></div>";
         $mform->addElement('static', 'description', get_string('columns', $this->pluginname),
             $cols);
 

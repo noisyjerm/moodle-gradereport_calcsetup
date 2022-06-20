@@ -97,6 +97,20 @@ const editrule = (evt) => {
             }
         }).then(function(modal) {
             modal.getRoot().on(ModalEvents.save, function() {
+                if (typeof columns[index] === 'undefined') {
+                    columns[index] = {};
+                    let addrow = row.parentElement.appendChild(row.cloneNode(true));
+                    addrow.dataset.index = index + 1;
+                    row.querySelector("span:last-of-type").innerHTML =
+                        "<a class='up' href='#'>" +
+                        "<i class='icon fa fa-arrow-up fa-fw ' title='$strup' aria-label='$strup' data-action='up'></i>" +
+                        "</a><a class='down' href='#'>" +
+                        "<i class='icon fa fa-arrow-down fa-fw ' title='$strdn' aria-label='$strdn' data-action='down'></i>" +
+                        "</a><a class='delete' href='#'>" +
+                        "<i class='icon fa fa-trash fa-fw ' title='$strdel' aria-label='$strdel' data-action='delete'></i>" +
+                        "</a><a class='edit' href='#'>" +
+                        "<i class='icon fa fa-cog fa-fw ' title='$stredit' aria-label='$stredit' data-action='edit'></i></a>";
+                }
                 var reqStrings = [
                     {"key": "editable", "component": "gradereport_calcsetup"},
                     {"key": "locked", "component": "gradereport_calcsetup"},
@@ -132,15 +146,17 @@ const editrule = (evt) => {
                 args: {},
                 done: function(data) {
                     data.col = columns[index];
-                    for (var i = 0; i < data.fields.length; i++) {
-                        if (data.fields[i].property == data.col.property) {
-                            data.fields[i].selected = true;
+                    if (typeof data.col !== 'undefined') {
+                        for (var i = 0; i < data.fields.length; i++) {
+                            if (data.fields[i].property == data.col.property) {
+                                data.fields[i].selected = true;
+                            }
                         }
-                    }
 
-                    data.title = typeof columns[index].title === "object"
-                        ? JSON.stringify(columns[index].title)
-                        : columns[index].title;
+                        data.title = typeof columns[index].title === "object"
+                            ? JSON.stringify(columns[index].title)
+                            : columns[index].title;
+                    }
                     Templates.renderForPromise("gradereport_calcsetup/editfield", data)
                         .then(({html, js}) => {
                             Templates.appendNodeContents(".modal-body", html, js);
