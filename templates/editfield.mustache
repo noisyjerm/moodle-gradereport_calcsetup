@@ -35,19 +35,19 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 <div>
     <input type="hidden" name="sesskey" value="{{globals.config.sesskey}}">
-    <div class="col-md-6">
-        <label for="coltitle">{{#str}}title, gradereport_calcsetup{{/str}}</label> <input id="coltitle" value="{{title}}">
+    <div class="row py-2">
+        <label class="col-md-3" for="coltitle">{{#str}}title, gradereport_calcsetup{{/str}}</label> <input id="coltitle" value="{{title}}">
     </div>
-    <div class="col-md-6">
-        <label for="colproperty">{{#str}}property, gradereport_calcsetup{{/str}}</label>
-        <select id="colproperty">
+    <div class="row py-2">
+        <label class="col-md-3" for="colproperty">{{#str}}property, gradereport_calcsetup{{/str}}</label>
+        <select id="colproperty" {{#exists}}disabled="disabled"{{/exists}} class="custom-select py-1">
             {{#fields}}
-            <option {{#selected}}selected="selected"{{/selected}}>{{property}}</option>
+            <option {{#selected}}selected="selected"{{/selected}} {{#value}}value="{{value}}"{{/value}}>{{property}}</option>
             {{/fields}}
         </select>
     </div>
-    <div class="col-md-6">
-        <label for="coleditable">{{#str}}editable, gradereport_calcsetup{{/str}}</label> <input id="coleditable" type="checkbox" {{#col}}{{#editable}}checked="true"{{/editable}}{{/col}}>
+    <div class="row py-2">
+        <label class="col-md-3" for="coleditable">{{#str}}editable, gradereport_calcsetup{{/str}}</label> <input id="coleditable" type="checkbox" {{#col}}{{#editable}}checked="true"{{/editable}}{{/col}}>
     </div>
 
 </div>

@@ -90,11 +90,15 @@ class editrule_form extends \moodleform {
             !empty($rule) ? $rule->actions : get_string('placeholderjson', $this->pluginname)
         );
 
-        $mform->addElement('textarea', 'fields', get_string('fields', $this->pluginname));
+        $mform->addElement('hidden', 'fields', get_string('fields', $this->pluginname));
         $mform->setType('fields', PARAM_RAW);
         $mform->setDefault('fields',
             !empty($rule) ? $rule->fields : get_string('placeholderjson', $this->pluginname)
         );
+
+        $fields = $this->displayfields($rule->fields, 'fields');
+        $mform->addElement('static', 'fieldcontrol', get_string('fields', $this->pluginname),
+            $fields);
 
         $mform->addElement('hidden', 'cols', get_string('columns', $this->pluginname));
         $mform->setType('cols', PARAM_RAW);
@@ -102,55 +106,8 @@ class editrule_form extends \moodleform {
             !empty($rule) ? $rule->cols : get_string('placeholderjson', $this->pluginname)
         );
 
-        $cols = '';
-        $i = 0;
-        $stradd = get_string('add');
-
-        if (!empty($rule->cols)) {
-            $columns = json_decode($rule->cols);
-            $stredit = get_string('edit');
-            $strup = get_string('moveup');
-            $strdn = get_string('movedown');
-            $strdel = get_string('delete');
-
-            foreach ($columns as $col) {
-                $cols .= "<div class='row rule-field' data-index='$i'><span class='col'>";
-                $title = $col->title;
-                if (is_object($title)) {
-                    $cols .= get_string($title->identifier, $title->component);
-                } else {
-                    $cols .= $title;
-                }
-                $cols .= "</span><span class='col'>$col->property</span>";
-                $edit = $col->editable
-                      ? get_string('editable', 'gradereport_calcsetup')
-                      : get_string('locked', 'gradereport_calcsetup');
-                $cols .= " <span class='col'>$edit</span>";
-                $cols .= " <span class='col-md-2'>" .
-                         "<a class='up' href='#'>
-                              <i class='icon fa fa-arrow-up fa-fw ' title='$strup' aria-label='$strup' data-action='up'></i>
-                          </a>" .
-                         "<a class='down' href='#'>
-                              <i class='icon fa fa-arrow-down fa-fw ' title='$strdn' aria-label='$strdn' data-action='down'></i>
-                          </a>" .
-                         "<a class='delete' href='#'>
-                              <i class='icon fa fa-trash fa-fw ' title='$strdel' aria-label='$strdel' data-action='delete'></i>
-                          </a>" .
-                         "<a class='edit' href='#'>
-                              <i class='icon fa fa-cog fa-fw ' title='$stredit' aria-label='$stredit' data-action='edit'></i>
-                          </a>" .
-                         "</span></div>";
-                $i ++;
-            }
-        }
-
-        $cols .= "<div class='row rule-field' data-index='$i'>
-                         <span class='col'></span><span class='col'></span class='col'><span class='col'></span>
-                         <span class='col-md-2'><a class='add' href='#'>
-                         <i data-action='edit'>$stradd</i>
-                         <i class='icon fa fa-plus fa-fw' title='$stradd' aria-label='$stradd' data-action='edit'></i>
-                      </a></span></div>";
-        $mform->addElement('static', 'description', get_string('columns', $this->pluginname),
+        $cols = $this->displayfields($rule->cols, 'cols');
+        $mform->addElement('static', 'colcontrol', get_string('columns', $this->pluginname),
             $cols);
 
         $this->add_action_buttons();
@@ -166,6 +123,58 @@ class editrule_form extends \moodleform {
         // Todo: validate idnumber format.
         // Todo: something better with the JSON fields.
         return $errors;
+    }
+
+    private function displayfields($data, $elename) {
+        $cols = '';
+        $i = 0;
+        $stradd = get_string('add');
+        if (!empty($data)) {
+            $columns = json_decode($data);
+            $stredit = get_string('edit');
+            $strup = get_string('moveup');
+            $strdn = get_string('movedown');
+            $strdel = get_string('delete');
+
+            foreach ($columns as $col) {
+                $cols .= "<div class='row rule-$elename' data-index='$i' data-targetele='$elename'><span class='col'>";
+                $title = $col->title;
+                if (is_object($title)) {
+                    $cols .= get_string($title->identifier, $title->component);
+                } else {
+                    $cols .= $title;
+                }
+                $cols .= "</span><span class='col'>$col->property</span>";
+                $edit = $col->editable
+                    ? get_string('editable', 'gradereport_calcsetup')
+                    : get_string('locked', 'gradereport_calcsetup');
+                $cols .= " <span class='col'>$edit</span>";
+                $cols .= " <span class='col'>" .
+                    "<a class='up' href='#'>
+                              <i class='icon fa fa-arrow-up fa-fw ' title='$strup' aria-label='$strup' data-action='up'></i>
+                          </a>" .
+                    "<a class='down' href='#'>
+                              <i class='icon fa fa-arrow-down fa-fw ' title='$strdn' aria-label='$strdn' data-action='down'></i>
+                          </a>" .
+                    "<a class='delete' href='#'>
+                              <i class='icon fa fa-trash fa-fw ' title='$strdel' aria-label='$strdel' data-action='delete'></i>
+                          </a>" .
+                    "<a class='edit' href='#'>
+                              <i class='icon fa fa-cog fa-fw ' title='$stredit' aria-label='$stredit' data-action='edit'></i>
+                          </a>" .
+                    "</span></div>";
+                $i ++;
+            }
+        }
+
+        $cols .= "<div class='row rule-$elename' data-index='$i' data-targetele='$elename'>
+                         <span class='col'></span><span class='col'></span class='col'><span class='col'></span>
+                         <span class='col'><a class='add' href='#'>
+                         <i data-action='edit'>$stradd</i>
+                         <i class='icon fa fa-plus fa-fw' title='$stradd' aria-label='$stradd' data-action='edit'></i>
+                      </a></span></div>";
+
+        return $cols;
     }
 
 }

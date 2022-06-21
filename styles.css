@@ -69,15 +69,23 @@ table.itemsettings td input {
 .form-control-static {
     width: 100%;
 }
-.row.rule-field span {
+.row.rule-cols span,
+.row.rule-fields span {
     display: inherit;
 }
 
-#fitem_id_description .row.rule-field:first-of-type i[data-action=up],
-#fitem_id_description .row.rule-field:nth-last-child(2) i[data-action=down] {
+#fitem_id_fieldcontrol .row.rule-fields:first-of-type i[data-action=up],
+#fitem_id_fieldcontrol .row.rule-fields:nth-last-child(2) i[data-action=down],
+#fitem_id_colcontrol .row.rule-cols:first-of-type i[data-action=up],
+#fitem_id_colcontrol .row.rule-cols:nth-last-child(2) i[data-action=down] {
     visibility: hidden;
 }
 
-#fitem_id_description .row.rule-field:last-of-type i[data-action=edit] {
+#page-grade-report-calcsetup-editrule .row.rule-cols a:last-of-type i[data-action=edit],
+#page-grade-report-calcsetup-editrule .row.rule-fields a:last-of-type i[data-action=edit]{
     margin-right: 0;
+}
+
+#page-grade-report-calcsetup-editrule .modal-body label {
+    width:30%;
 }

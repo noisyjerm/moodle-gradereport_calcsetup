@@ -35,21 +35,38 @@ function xmldb_gradereport_calcsetup_install() {
 
     // Pre-populate a couple of rules.
     $actions = [
-        (object)['action' => 'weight', 'val' => 1, 'cond' => 'group-category'],
-        (object)['action' => 'group', 'valtype' => VALTYPE_COL, 'val' => 'itemtype', 'cond' => 'all']
+        (object)['set' => 'itemgroup', 'val' => 'category', 'cond' => ["itemtype" => "category"]],
+        (object)['set' => 'itemgroup', 'val' => 'mod', 'cond' => ["itemtype" => "mod"]]
+    ];
+    $fields = [
+        (object)['title' => (object)['identifier' => 'idnumber'], 'property' => 'idnumber'],
+        (object)['title' => (object)['categorytotalname' => 'idnumber', 'component' => 'core_grades'], 'property' => 'itemname'],
+        (object)['title' => (object)['gradedisplaytype' => 'idnumber', 'component' => 'core_grades'], 'property' => 'display'],
     ];
     $cols = [
-        (object)['name' => 'Weighting', 'id' => 'weight', 'valtype' => VALTYPE_FREE],
-        (object)['name' => 'Required', 'id' => 'req', 'valtype' => VALTYPE_COL, 'val' => 'gradepass'],
+        (object)['name' => 'Weighting', 'id' => 'weight'],
+        (object)['name' => 'Required', 'id' => 'req', 'val' => 'gradepass'],
     ];
 
     $data = new \stdClass();
     $data->name = 'Complex Course';
     $data->idnumber = 'complexcourse';
-    $data->desc = 'Does things';
-    $data->calc = '=IF(AND({{#group-mod}}[[{{idnumber}}]]>={{weight}}{{^last}},{{/last}}{{/group-mod}}),
-                       sum({{#group-category}}{{req}}{{^last}},{{/last}}{{/group-category}},0)';
+    $data->descr = 'For courses where items outside the category contribute to the total.
+                   Applying this rule will set a virtual property itemgroup for all child items to the itemtype.';
+    $data->visible = true;
+    $data->calc = '=IF(
+ AND(
+  {{#mod}}[[{{idnumber}}]]>={{gradepass}}{{^last}},
+  {{/last}}{{/mod}}
+ ),
+ SUM(
+  {{#category}}[[{{idnumber}}]]{{^last}},
+  {{/last}}{{/category}}
+ ),
+ 0
+)';
     $data->actions = json_encode($actions);
+    $data->cols = json_encode($fields);
     $data->cols = json_encode($cols);
 
     // Add initial data.

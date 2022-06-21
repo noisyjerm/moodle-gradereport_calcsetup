@@ -61,7 +61,7 @@ if ($hassiteconfig) {
         'calcsetup',
         new admin_externalpage(
             'editcalcrules',
-            get_string('newrule', 'gradereport_calcsetup'),
+            get_string('editrule', 'gradereport_calcsetup'),
             "$CFG->wwwroot/grade/report/calcsetup/editrule.php",
             'moodle/site:config'
         )

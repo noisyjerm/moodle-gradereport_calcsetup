@@ -28,7 +28,8 @@ import Notification from "core/notification";
 import * as Ajax from "core/ajax";
 
 export const init = () => {
-    document.querySelector(".rule-field").parentElement.addEventListener("click", editrule);
+    document.querySelector(".rule-fields").parentElement.addEventListener("click", editrule);
+    document.querySelector(".rule-cols").parentElement.addEventListener("click", editrule);
 };
 
 /**
@@ -43,11 +44,12 @@ const editrule = (evt) => {
     }
     evt.preventDefault();
 
-    let columns = JSON.parse(document.querySelector("input[name=cols]").value);
-    let action = el.dataset.action;
     let row = el.closest("div");
     let container = row.parentNode;
     let index = parseInt(row.dataset.index);
+    var field = document.querySelector("input[name=" + row.dataset.targetele + "]");
+    let columns = JSON.parse(field.value);
+    let action = el.dataset.action;
 
     if (action === "up") {
         let oldfield = columns[index - 1];
@@ -58,7 +60,7 @@ const editrule = (evt) => {
         row.previousSibling.dataset.index = index;
         container.insertBefore(row, row.previousSibling);
 
-        document.querySelector("input[name=cols]").value = JSON.stringify(columns);
+        field.value = JSON.stringify(columns);
         return;
     }
 
@@ -71,7 +73,7 @@ const editrule = (evt) => {
         row.nextSibling.dataset.index = index;
         container.insertBefore(row.nextSibling, row);
 
-        document.querySelector("input[name=cols]").value = JSON.stringify(columns);
+        field.value = JSON.stringify(columns);
         return;
     }
 
@@ -81,7 +83,7 @@ const editrule = (evt) => {
             container.children[i].dataset.index = container.children[i].dataset.index - 1;
         }
         row.remove();
-        document.querySelector("input[name=cols]").value = JSON.stringify(columns);
+        field.value = JSON.stringify(columns);
         return;
     }
 
@@ -89,12 +91,8 @@ const editrule = (evt) => {
         return ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
             body: "",
-            title: Str.get_string("deleterule", "gradereport_calcsetup"),
-            removeOnClose: true,
-            buttons: {
-                save: Str.get_string("yes"),
-                cancel: Str.get_string("no"),
-            }
+            title: Str.get_string("editfield", "gradereport_calcsetup"),
+            removeOnClose: true
         }).then(function(modal) {
             modal.getRoot().on(ModalEvents.save, function() {
                 if (typeof columns[index] === 'undefined') {
@@ -113,7 +111,7 @@ const editrule = (evt) => {
                 }
                 var reqStrings = [
                     {"key": "editable", "component": "gradereport_calcsetup"},
-                    {"key": "locked", "component": "gradereport_calcsetup"},
+                    {"key": "locked", "component": "gradereport_calcsetup"}
                 ];
 
                 // Set the data.
@@ -138,31 +136,53 @@ const editrule = (evt) => {
                         ? strings[0]
                         : strings[1];
                 });
-                document.querySelector("input[name=cols]").value = JSON.stringify(columns);
-                //modal.destroy();
+                field.value = JSON.stringify(columns);
+            });
+            modal.getRoot().on(ModalEvents.hidden, function() {
+                modal.destroy();
             });
             Ajax.call([{
                 methodname: "gradereport_calcsetup_get_corefields",
                 args: {},
                 done: function(data) {
                     data.col = columns[index];
-                    if (typeof data.col !== 'undefined') {
-                        for (var i = 0; i < data.fields.length; i++) {
-                            if (data.fields[i].property == data.col.property) {
-                                data.fields[i].selected = true;
+                    let stringsPromise = Str.get_string("free", "gradereport_calcsetup");
+                    stringsPromise.done(function(string) {
+                        let l = data.fields.push({"property": "free"});
+                        if (typeof data.col !== 'undefined') {
+                            data.exists = true;
+                            for (var i = 0; i < l; i++) {
+                                if (data.fields[i].property == data.col.property) {
+                                    data.fields[i].selected = true;
+                                    break;
+                                }
                             }
-                        }
+                            if (i === l) {
+                                data.fields.push({"property": data.col.property, "selected": true});
+                            }
 
-                        data.title = typeof columns[index].title === "object"
-                            ? JSON.stringify(columns[index].title)
-                            : columns[index].title;
-                    }
-                    Templates.renderForPromise("gradereport_calcsetup/editfield", data)
-                        .then(({html, js}) => {
-                            Templates.appendNodeContents(".modal-body", html, js);
-                            return true;
-                        })
-                        .catch(Notification.exception);
+                            data.title = typeof columns[index].title === "object"
+                                ? JSON.stringify(columns[index].title)
+                                : columns[index].title;
+                        }
+                        // Replace the last item "free" with a readable name.
+                        data.fields[l-1].property = string;
+                        data.fields[l-1].value = "free";
+                        Templates.renderForPromise("gradereport_calcsetup/editfield", data)
+                            .then(({html, js}) => {
+                                Templates.appendNodeContents(".modal-body", html, js);
+                                document.getElementById("colproperty").addEventListener("change", function (e) {
+                                    if (e.target.value === "free") {
+                                        let input = document.createElement("input");
+                                        input.setAttribute("id", e.target.getAttribute("id"));
+                                        e.target.parentElement.insertBefore(input, e.target);
+                                        e.target.remove();
+                                    }
+                                });
+                                return true;
+                            })
+                            .catch(Notification.exception);
+                    });
                     modal.show();
                 }
             }]);
