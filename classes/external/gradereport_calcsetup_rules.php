@@ -138,7 +138,7 @@ class gradereport_calcsetup_rules extends \external_api {
     public static function delete_rule_parameters() {
         return new \external_function_parameters (
             array(
-                'id'       => new \external_value(PARAM_INT, 'Rule Id', VALUE_REQUIRED)
+                'id' => new \external_value(PARAM_INT, 'Rule Id', VALUE_REQUIRED)
             )
         );
     }
@@ -169,13 +169,17 @@ class gradereport_calcsetup_rules extends \external_api {
      * @return \external_function_parameters
      */
     public static function get_coreitemfields_parameters() {
-        return new \external_function_parameters([], 'No params');
+        return new \external_function_parameters (
+            array(
+                'editableonly' => new \external_value(PARAM_BOOL, 'Rule Id', VALUE_OPTIONAL),
+            )
+        );
     }
 
     /**
      * @return array
      */
-    public static function get_coreitemfields() {
+    public static function get_coreitemfields($editableonly) {
         $fields = [
              ['property' => 'id', 'locked' => true],
              ['property' => 'courseid', 'locked' => true],
@@ -207,8 +211,20 @@ class gradereport_calcsetup_rules extends \external_api {
              ['property' => 'needsupdate'],
              ['property' => 'weightoverride', 'validation' => 'number'],
              ['property' => 'timecreated', 'locked' => true],
-             ['property' => 'timemodified', 'locked' => true]
+             ['property' => 'timemodified', 'locked' => true],
+             ['property' => 'itemgroup']
         ];
+
+        if ($editableonly) {
+            $i = 0;
+            foreach ($fields as $key => $field) {
+                if ($field['locked']) {
+                    array_splice($fields, $i, 1);
+                } else {
+                    $i ++;
+                }
+            }
+        }
 
         return ['fields' => $fields];
     }

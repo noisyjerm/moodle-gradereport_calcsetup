@@ -30,6 +30,7 @@ import * as Ajax from "core/ajax";
 export const init = () => {
     document.querySelector(".rule-fields").parentElement.addEventListener("click", editrule);
     document.querySelector(".rule-cols").parentElement.addEventListener("click", editrule);
+    document.querySelector(".rule-actions").parentElement.addEventListener("click", editaction);
 };
 
 /**
@@ -79,7 +80,7 @@ const editrule = (evt) => {
 
     if (action === "delete") {
         columns.splice(index, 1);
-        for (var i = index; i < container.children.length; i++) {
+        for (let i = index; i < container.children.length; i++) {
             container.children[i].dataset.index = container.children[i].dataset.index - 1;
         }
         row.remove();
@@ -88,97 +89,37 @@ const editrule = (evt) => {
     }
 
     if (action === "edit") {
-        return ModalFactory.create({
+        ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
             body: "",
             title: Str.get_string("editfield", "gradereport_calcsetup"),
             removeOnClose: true
         }).then(function(modal) {
-            modal.getRoot().on(ModalEvents.save, function() {
-                if (typeof columns[index] === 'undefined') {
-                    columns[index] = {};
-                    let addrow = row.parentElement.appendChild(row.cloneNode(true));
-                    addrow.dataset.index = index + 1;
-                    row.querySelector("span:last-of-type").innerHTML =
-                        "<a class='up' href='#'>" +
-                        "<i class='icon fa fa-arrow-up fa-fw ' title='$strup' aria-label='$strup' data-action='up'></i>" +
-                        "</a><a class='down' href='#'>" +
-                        "<i class='icon fa fa-arrow-down fa-fw ' title='$strdn' aria-label='$strdn' data-action='down'></i>" +
-                        "</a><a class='delete' href='#'>" +
-                        "<i class='icon fa fa-trash fa-fw ' title='$strdel' aria-label='$strdel' data-action='delete'></i>" +
-                        "</a><a class='edit' href='#'>" +
-                        "<i class='icon fa fa-cog fa-fw ' title='$stredit' aria-label='$stredit' data-action='edit'></i></a>";
-                }
-                var reqStrings = [
-                    {"key": "editable", "component": "gradereport_calcsetup"},
-                    {"key": "locked", "component": "gradereport_calcsetup"}
-                ];
-
-                // Set the data.
-                columns[index].title = tryParseJSONObject(document.getElementById("coltitle").value);
-                columns[index].property = document.getElementById("colproperty").value;
-                columns[index].editable = document.getElementById("coleditable").checked;
-                // Set the dom.
-                if (typeof columns[index].title === "object") {
-                    reqStrings.push({
-                        "key": columns[index].title.identifier,
-                        "component": columns[index].title.component
-                    });
-                }
-
-                var stringsPromise = Str.get_strings(reqStrings);
-                stringsPromise.done(function(strings) {
-                    row.querySelector("span:first-of-type").innerHTML = typeof columns[index].title === "object"
-                        ? strings[2]
-                        : columns[index].title;
-                    row.querySelector("span:nth-of-type(2)").innerHTML = columns[index].property;
-                    row.querySelector("span:nth-of-type(3)").innerHTML = columns[index].editable
-                        ? strings[0]
-                        : strings[1];
-                });
-                field.value = JSON.stringify(columns);
-            });
+            modal.getRoot().on('change', swapSelect);
+            modal.getRoot().on(ModalEvents.save, {columns: columns, row: row, index: index, field: field}, saveFields);
             modal.getRoot().on(ModalEvents.hidden, function() {
                 modal.destroy();
             });
             Ajax.call([{
                 methodname: "gradereport_calcsetup_get_corefields",
-                args: {},
+                args: {
+                    'editableonly': false
+                },
                 done: function(data) {
                     data.col = columns[index];
                     let stringsPromise = Str.get_string("free", "gradereport_calcsetup");
                     stringsPromise.done(function(string) {
-                        let l = data.fields.push({"property": "free"});
+                        data.exists = index < columns.length;
+                        let prop = data.exists ? data.col.property : null;
+                        data.fields = getCorefields(data.fields, prop, string);
                         if (typeof data.col !== 'undefined') {
-                            data.exists = true;
-                            for (var i = 0; i < l; i++) {
-                                if (data.fields[i].property == data.col.property) {
-                                    data.fields[i].selected = true;
-                                    break;
-                                }
-                            }
-                            if (i === l) {
-                                data.fields.push({"property": data.col.property, "selected": true});
-                            }
-
                             data.title = typeof columns[index].title === "object"
                                 ? JSON.stringify(columns[index].title)
                                 : columns[index].title;
                         }
-                        // Replace the last item "free" with a readable name.
-                        data.fields[l-1].property = string;
-                        data.fields[l-1].value = "free";
                         Templates.renderForPromise("gradereport_calcsetup/editfield", data)
                             .then(({html, js}) => {
                                 Templates.appendNodeContents(".modal-body", html, js);
-                                document.getElementById("colproperty").addEventListener("change", function (e) {
-                                    if (e.target.value === "free") {
-                                        let input = document.createElement("input");
-                                        input.setAttribute("id", e.target.getAttribute("id"));
-                                        e.target.parentElement.insertBefore(input, e.target);
-                                        e.target.remove();
-                                    }
-                                });
                                 return true;
                             })
                             .catch(Notification.exception);
@@ -189,8 +130,155 @@ const editrule = (evt) => {
 
             return true;
         });
-        evt.preventDefault();
     }
+};
+
+const editaction = (evt) => {
+    let el = evt.target;
+
+    if (el.nodeName !== "I") {
+        return;
+    }
+    evt.preventDefault();
+
+    let row = el.closest("div");
+    let container = row.parentNode;
+    let index = parseInt(row.dataset.index);
+    var field = document.querySelector("input[name=actions]");
+    let actions = JSON.parse(field.value);
+    let action = el.dataset.action;
+
+    if (action === 'edit') {
+        ModalFactory.create({
+            type: ModalFactory.types.SAVE_CANCEL,
+            body: "",
+            title: Str.get_string("editaction", "gradereport_calcsetup"),
+            removeOnClose: true
+        }).then(function(modal) {
+            modal.getRoot().on('change', swapSelect);
+            modal.getRoot().on(ModalEvents.save, function() {
+                if (index === actions.length) {
+                    actions.push({'op': 'equals'});
+                    let addrow = row.parentElement.appendChild(row.cloneNode(true));
+                    addrow.dataset.index = index + 1;
+                    row.querySelector('span:last-of-type').innerHTML = '<a href="#">' +
+                        '<i class="icon fa fa-trash fa-fw" title="Delete" aria-label="Delete" data-action="delete"></i></a>' +
+                        '<a href="#" ><i class="icon fa fa-cog fa-fw" title="Edit" aria-label="Edit" data-action="edit"></i></a>';
+                }
+
+                actions[index].set = document.getElementById("actionset").value;
+                actions[index].to = document.getElementById("actionto").value;
+                actions[index].when = document.getElementById("actionwhen").value;
+                actions[index].val = document.getElementById("actionval").value;
+                field.value = JSON.stringify(actions);
+
+                // First get operator string
+                let operator = Str.get_string(actions[index].op, 'gradereport_calcsetup', actions[index]);
+                operator.done(function(string) {
+                    actions[index].op = string;
+                    let description = Str.get_string('action', 'gradereport_calcsetup', actions[index]);
+                    description.done(function(string) {
+                        row.querySelector('span:first-of-type').innerHTML = string;
+                    });
+                });
+
+            });
+            Ajax.call([{
+                methodname: "gradereport_calcsetup_get_corefields",
+                args: {
+                    'editableonly': true
+                },
+                done: function(data) {
+                    let stringsPromise = Str.get_string("free", "gradereport_calcsetup");
+                    stringsPromise.done(function(string) {
+                        let actionrow = {};
+                        actionrow.action = index < actions.length ? actions[index] : [];
+                        actionrow.exists = index < actions.length;
+                        actionrow.fields = getCorefields(data.fields, actionrow.exists ? actions[index].set : null, string);
+                        actionrow.fieldswhen = getCorefields(data.fields, actionrow.exists ? actions[index].when : null, string);
+                        Templates.renderForPromise("gradereport_calcsetup/editaction", actionrow)
+                            .then(({html, js}) => {
+                                Templates.appendNodeContents(".modal-body", html, js);
+                                return true;
+                            })
+                            .catch(Notification.exception);
+                    });
+
+                    modal.show();
+                }
+            }]);
+            return true;
+        });
+
+    }
+
+    if (action === 'delete') {
+        actions.splice(index, 1);
+        for (var i = index; i < container.children.length; i++) {
+            container.children[i].dataset.index = container.children[i].dataset.index - 1;
+        }
+        row.remove();
+        field.value = JSON.stringify(actions);
+    }
+};
+
+const swapSelect = (e) => {
+    if (e.target.value === "free") {
+        let input = document.createElement("input");
+        input.setAttribute("id", e.target.getAttribute("id"));
+        e.target.parentElement.insertBefore(input, e.target);
+        e.target.remove();
+    }
+};
+
+const saveFields = (e) => {
+    let columns = e.data.columns;
+    let row = e.data.row;
+    let index = e.data.index;
+    let field = e.data.field;
+
+    if (typeof columns[index] === 'undefined') {
+        columns[index] = {};
+        let addrow = row.parentElement.appendChild(row.cloneNode(true));
+        addrow.dataset.index = index + 1;
+        row.querySelector("span:last-of-type").innerHTML =
+            "<a class='up' href='#'>" +
+            "<i class='icon fa fa-arrow-up fa-fw ' title='$strup' aria-label='$strup' data-action='up'></i>" +
+            "</a><a class='down' href='#'>" +
+            "<i class='icon fa fa-arrow-down fa-fw ' title='$strdn' aria-label='$strdn' data-action='down'></i>" +
+            "</a><a class='delete' href='#'>" +
+            "<i class='icon fa fa-trash fa-fw ' title='$strdel' aria-label='$strdel' data-action='delete'></i>" +
+            "</a><a class='edit' href='#'>" +
+            "<i class='icon fa fa-cog fa-fw ' title='$stredit' aria-label='$stredit' data-action='edit'></i></a>";
+    }
+    let reqStrings = [
+        {"key": "editable", "component": "gradereport_calcsetup"},
+        {"key": "locked", "component": "gradereport_calcsetup"}
+    ];
+
+    // Set the data.
+    columns[index].title = tryParseJSONObject(document.getElementById("coltitle").value);
+    columns[index].property = document.getElementById("colproperty").value;
+    columns[index].editable = document.getElementById("coleditable").checked;
+    // Set the dom.
+    if (typeof columns[index].title === "object") {
+        reqStrings.push({
+            "key": columns[index].title.identifier,
+            "component": columns[index].title.component
+        });
+    }
+
+    let stringsPromise = Str.get_strings(reqStrings);
+    stringsPromise.done(function(strings) {
+        row.querySelector("span:first-of-type").innerHTML = typeof columns[index].title === "object"
+            ? strings[2]
+            : columns[index].title;
+        row.querySelector("span:nth-of-type(2)").innerHTML = columns[index].property;
+        row.querySelector("span:nth-of-type(3)").innerHTML = columns[index].editable
+            ? strings[0]
+            : strings[1];
+    });
+    field.value = JSON.stringify(columns);
 };
 
 const tryParseJSONObject = (jsonString) => {
@@ -199,8 +287,33 @@ const tryParseJSONObject = (jsonString) => {
         if (o && typeof o === "object") {
             return o;
         }
+    } catch (e) {
+        // Do nothing.
     }
-    catch (e) { }
 
     return jsonString;
+};
+
+const getCorefields = (data, property, string) => {
+    // We need a deep clone.
+    let dataString = JSON.stringify(data);
+    let giProperties = JSON.parse(dataString);
+    let l = giProperties.push({"property": "free"});
+    if (typeof property == 'string') {
+        var i;
+        for (i = 0; i < l; i++) {
+            if (giProperties[i].property === property) {
+                giProperties[i].selected = true;
+                break;
+            }
+        }
+        if (i === l) {
+            giProperties.push({"property": property, "selected": true});
+        }
+    }
+
+    // Replace the last item "free" with a readable name.
+    giProperties[l - 1].property = string;
+    giProperties[l - 1].value = "free";
+    return giProperties;
 };

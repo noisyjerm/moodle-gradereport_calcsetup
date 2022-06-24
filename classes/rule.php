@@ -170,26 +170,26 @@ class rule {
             }
 
             if (!empty($corefields[$set]->validation) && $corefields[$set]->validation === 'number') {
-                if (!is_numeric($action->val)) {
-                    \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $action->val));
+                if (!is_numeric($action->to)) {
+                    \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $action->to));
                     break;
                 }
             }
 
-            $filtereditems = $this->filter_items($this->items, $action->cond);
+            $filtereditems = $this->filter_items($this->items, $action);
             // Todo: See what grade functions exist to make this more robust.
             foreach ($filtereditems as $item) {
-                $update = !isset($item->$set) || $item->$set != $action->val;
+                $update = !isset($item->$set) || $item->$set != $action->to;
                 $updated = $update ? $update : $updated;
                 $propsset += intval($update);
 
                 if ($update && $custom) {
-                    $item->$set = $action->val;
-                    $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($item, $set, $action->val);
+                    $item->$set = $action->to;
+                    $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($item, $set, $action->to);
                     $item->iteminfo = $iteminfo;
                     $item->update();
                 } else if ($update) {
-                    $item->$set = $action->val;
+                    $item->$set = $action->to;
                     $item->update();
                 }
             }
@@ -246,15 +246,16 @@ class rule {
      * @param array|string $cond
      * @return array
      */
-    protected function filter_items($items, $cond) {
-        if ($cond === 'all') {
+    protected function filter_items($items, $action) {
+        if ($action->when === 'all') {
             return $items;
         }
 
         $filtereditems = [];
-        $prop = $cond[0];
+        $prop = $action->when;
         foreach ($items as $item) {
-            if ($item->$prop === $cond[1]) {
+            // Todo. Let user specify comparison maybe.
+            if ($item->$prop === $action->val) {
                 $filtereditems[] = $item;
             }
         }

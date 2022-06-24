@@ -1,0 +1,69 @@
+{{!
+This file is part of Moodle - http://moodle.org/
+
+Moodle is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Moodle is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template gradereport_calcsetup/catinfo
+
+    Category Info template.
+
+    Context variables required for this template:
+    * actionurl - String - The url the form should submit to.
+    * rules - Array - A list of rules configured
+
+    Example context (json): {
+        "exists": true,
+        "fields": [{
+            "property": "gradepass"
+        }],
+        "action": {
+            "set": "gradepass",
+            "to": 50,
+            "when":
+            "op":
+            "val"
+        },
+        "fieldswhen": [{
+            "property": "gradepass"
+        }],
+    }
+}}
+
+<div>
+    <div class="row py-2">
+        <label class="col-md-3" for="actionset">{{#str}}set, gradereport_calcsetup{{/str}}</label>
+        <select id="actionset" {{#exists}}disabled="disabled"{{/exists}} class="custom-select py-1">
+            {{#fields}}
+            <option {{#selected}}selected="selected"{{/selected}} {{#value}}value="{{value}}"{{/value}}>{{property}}</option>
+            {{/fields}}
+        </select>
+    </div>
+    <div class="row py-2">
+        <label class="col-md-3" for="actionto">{{#str}}to, gradereport_calcsetup{{/str}}</label>
+        <input id="actionto" value="{{#action}}{{to}}{{/action}}">
+    </div>
+    <div class="row py-2">
+        <label class="col-md-3" for="actionwhen">{{#str}}when, gradereport_calcsetup{{/str}}</label>
+        <select id="actionwhen" class="custom-select py-1">
+            {{#fieldswhen}}
+            <option {{#selected}}selected="selected"{{/selected}} {{#value}}value="{{value}}"{{/value}}>{{property}}</option>
+            {{/fieldswhen}}
+        </select>
+    </div>
+    <div class="row py-2">
+        <label class="col-md-3" for="actionval">{{#str}}equals, gradereport_calcsetup{{/str}}</label> <input id="actionval" value="{{#action}}{{val}}{{/action}}">
+    </div>
+
+</div>

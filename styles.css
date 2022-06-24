@@ -74,11 +74,18 @@ table.itemsettings td input {
     display: inherit;
 }
 
-#fitem_id_fieldcontrol .row.rule-fields:first-of-type i[data-action=up],
-#fitem_id_fieldcontrol .row.rule-fields:nth-last-child(2) i[data-action=down],
-#fitem_id_colcontrol .row.rule-cols:first-of-type i[data-action=up],
-#fitem_id_colcontrol .row.rule-cols:nth-last-child(2) i[data-action=down] {
+#fitem_id_fieldcontrol .row.rule-fields:first-of-type a.up,
+#fitem_id_fieldcontrol .row.rule-fields:nth-last-child(2) a.down,
+#fitem_id_colcontrol .row.rule-cols:first-of-type a.up,
+#fitem_id_colcontrol .row.rule-cols:nth-last-child(2) a.down {
     visibility: hidden;
+}
+
+#page-grade-report-calcsetup-editrule .row.rule-cols a i,
+#page-grade-report-calcsetup-editrule .row.rule-fields i,
+#page-grade-report-calcsetup-editrule .row.rule-actions i{
+    margin: 0;
+    padding: 0 3px;
 }
 
 #page-grade-report-calcsetup-editrule .row.rule-cols a:last-of-type i[data-action=edit],

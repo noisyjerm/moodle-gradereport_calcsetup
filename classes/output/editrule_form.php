@@ -84,11 +84,15 @@ class editrule_form extends \moodleform {
             !empty($rule) ? $rule->calc : get_string('placeholdercalc', $this->pluginname)
         );
 
-        $mform->addElement('textarea', 'actions', get_string('actions', $this->pluginname));
+        $mform->addElement('hidden', 'actions', get_string('actions', $this->pluginname));
         $mform->setType('actions', PARAM_RAW);
         $mform->setDefault('actions',
             !empty($rule) ? $rule->actions : get_string('placeholderjson', $this->pluginname)
         );
+
+        $actions = $this->displayactions($rule->actions, 'actions');
+        $mform->addElement('static', 'actioncontrol', get_string('actions', $this->pluginname),
+            $actions);
 
         $mform->addElement('hidden', 'fields', get_string('fields', $this->pluginname));
         $mform->setType('fields', PARAM_RAW);
@@ -177,4 +181,60 @@ class editrule_form extends \moodleform {
         return $cols;
     }
 
+    private function displayactions($data, $elename) {
+        $stradd  = get_string('add');
+        $stredit = get_string('edit');
+        $strdel  = get_string('delete');
+        $html = '';
+
+        if (!empty($data)) {
+            $actions = json_decode($data);
+            $i = 0;
+            foreach ($actions as $action) {
+                $action->op = get_string($action->op, 'gradereport_calcsetup');
+                $html .= \html_writer::start_div('row rule-actions', ['data-index' => $i]);
+                $html .= \html_writer::span(
+                    get_string('action', 'gradereport_calcsetup', $action),
+                   'col-md-9'
+                );
+                $html .= \html_writer::start_span('col-md-3');
+                $html .= \html_writer::link('#',
+                    \html_writer::tag('i', '', [
+                        'class' => 'icon fa fa-trash fa-fw',
+                        'title' => $strdel,
+                        'aria-label' => $strdel,
+                        'data-action' => 'delete'
+                    ])
+                );
+                $html .= \html_writer::link('#',
+                    \html_writer::tag('i', '', [
+                        'class' => 'icon fa fa-cog fa-fw',
+                        'title' => $stredit,
+                        'aria-label' => $stredit,
+                        'data-action' => 'edit'
+                    ])
+                );
+                $html .= \html_writer::end_span();
+                $i++;
+                $html .= \html_writer::end_div();
+            }
+
+            $html .= \html_writer::start_div('row rule-actions', ['data-index' => $i]);
+            $html .= \html_writer::span('', 'col-md-9');
+            $html .= \html_writer::start_span('col-md-3');
+            $html .= \html_writer::link('#',
+                \html_writer::tag('i', $stradd, ['data-action' => 'edit'])
+                . \html_writer::tag('i', '', [
+                    'class' => 'icon fa fa-plus fa-fw',
+                    'title' => $stradd,
+                    'aria-label' => $stradd,
+                    'data-action' => 'edit'
+            ]), ['title' => $stradd]);
+            $html .= \html_writer::end_tag('a');
+            $html .= \html_writer::end_span();
+            $html .= \html_writer::end_div();
+
+            return $html;
+        }
+    }
 }
