@@ -69,9 +69,18 @@ table.itemsettings td input {
 .form-control-static {
     width: 100%;
 }
-.row.rule-cols span,
-.row.rule-fields span {
-    display: inherit;
+
+.row.rule-fields:hover,
+.row.rule-cols:hover,
+.row.rule-actions:hover{
+    background-color: #eee;
+}
+
+.row.rule-fields .col-md-3,
+.row.rule-cols .col-md-3,
+.row.rule-actions .col-md-3,
+.row.rule-actions .col-md-9 {
+    margin-bottom: 0.5em;
 }
 
 #fitem_id_fieldcontrol .row.rule-fields:first-of-type a.up,
@@ -96,3 +105,9 @@ table.itemsettings td input {
 #page-grade-report-calcsetup-editrule .modal-body label {
     width:30%;
 }
+
+textarea#id_calc {
+    width: 75%;
+    height: 7em;
+}
+

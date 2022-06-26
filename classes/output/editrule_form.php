@@ -83,6 +83,8 @@ class editrule_form extends \moodleform {
         $mform->setDefault('calc',
             !empty($rule) ? $rule->calc : get_string('placeholdercalc', $this->pluginname)
         );
+        $mform->addHelpButton('calc', 'template', $this->pluginname);
+        $mform->addElement('static', 'calchelper', '', get_string('loophelper', $this->pluginname));
 
         $mform->addElement('hidden', 'actions', get_string('actions', $this->pluginname));
         $mform->setType('actions', PARAM_RAW);
@@ -90,9 +92,11 @@ class editrule_form extends \moodleform {
             !empty($rule) ? $rule->actions : get_string('placeholderjson', $this->pluginname)
         );
 
-        $actions = $this->displayactions($rule->actions, 'actions');
+        // Actions.
+        $actions = isset($rule->actions) ? $rule->actions : '';
         $mform->addElement('static', 'actioncontrol', get_string('actions', $this->pluginname),
-            $actions);
+            $this->displayactions($actions, 'actions'));
+        $mform->addHelpButton('actioncontrol', 'actions', $this->pluginname);
 
         $mform->addElement('hidden', 'fields', get_string('fields', $this->pluginname));
         $mform->setType('fields', PARAM_RAW);
@@ -100,9 +104,11 @@ class editrule_form extends \moodleform {
             !empty($rule) ? $rule->fields : get_string('placeholderjson', $this->pluginname)
         );
 
-        $fields = $this->displayfields($rule->fields, 'fields');
+        // Fields.
+        $fields = isset($rule->fields) ? $rule->fields : '';
         $mform->addElement('static', 'fieldcontrol', get_string('fields', $this->pluginname),
-            $fields);
+                           $this->displayfields($fields, 'fields'));
+        $mform->addHelpButton('fieldcontrol', 'fields', $this->pluginname);
 
         $mform->addElement('hidden', 'cols', get_string('columns', $this->pluginname));
         $mform->setType('cols', PARAM_RAW);
@@ -110,9 +116,11 @@ class editrule_form extends \moodleform {
             !empty($rule) ? $rule->cols : get_string('placeholderjson', $this->pluginname)
         );
 
-        $cols = $this->displayfields($rule->cols, 'cols');
+        // Columns.
+        $cols = isset($rule->cols) ? $rule->cols : '';
         $mform->addElement('static', 'colcontrol', get_string('columns', $this->pluginname),
-            $cols);
+                           $this->displayfields($cols, 'cols'));
+        $mform->addHelpButton('colcontrol', 'columns', $this->pluginname);
 
         $this->add_action_buttons();
     }
@@ -144,16 +152,16 @@ class editrule_form extends \moodleform {
                 $cols .= "<div class='row rule-$elename' data-index='$i' data-targetele='$elename'><span class='col'>";
                 $title = $col->title;
                 if (is_object($title)) {
-                    $cols .= get_string($title->identifier, $title->component);
+                    $cols .= get_string($title->identifier, isset($title->component) ? $title->component : 'core');
                 } else {
                     $cols .= $title;
                 }
                 $cols .= "</span><span class='col'>$col->property</span>";
-                $edit = $col->editable
+                $edit = !empty($col->editable)
                     ? get_string('editable', 'gradereport_calcsetup')
                     : get_string('locked', 'gradereport_calcsetup');
                 $cols .= " <span class='col'>$edit</span>";
-                $cols .= " <span class='col'>" .
+                $cols .= " <span class='col-md-3 text-right'>" .
                     "<a class='up' href='#'>
                               <i class='icon fa fa-arrow-up fa-fw ' title='$strup' aria-label='$strup' data-action='up'></i>
                           </a>" .
@@ -173,7 +181,7 @@ class editrule_form extends \moodleform {
 
         $cols .= "<div class='row rule-$elename' data-index='$i' data-targetele='$elename'>
                          <span class='col'></span><span class='col'></span class='col'><span class='col'></span>
-                         <span class='col'><a class='add' href='#'>
+                         <span class='col-md-3 text-right'><a class='add' href='#'>
                          <i data-action='edit'>$stradd</i>
                          <i class='icon fa fa-plus fa-fw' title='$stradd' aria-label='$stradd' data-action='edit'></i>
                       </a></span></div>";
@@ -186,10 +194,9 @@ class editrule_form extends \moodleform {
         $stredit = get_string('edit');
         $strdel  = get_string('delete');
         $html = '';
-
+        $i = 0;
         if (!empty($data)) {
             $actions = json_decode($data);
-            $i = 0;
             foreach ($actions as $action) {
                 $action->op = get_string($action->op, 'gradereport_calcsetup');
                 $html .= \html_writer::start_div('row rule-actions', ['data-index' => $i]);
@@ -197,7 +204,7 @@ class editrule_form extends \moodleform {
                     get_string('action', 'gradereport_calcsetup', $action),
                    'col-md-9'
                 );
-                $html .= \html_writer::start_span('col-md-3');
+                $html .= \html_writer::start_span('col-md-3 text-right');
                 $html .= \html_writer::link('#',
                     \html_writer::tag('i', '', [
                         'class' => 'icon fa fa-trash fa-fw',
@@ -218,23 +225,23 @@ class editrule_form extends \moodleform {
                 $i++;
                 $html .= \html_writer::end_div();
             }
-
-            $html .= \html_writer::start_div('row rule-actions', ['data-index' => $i]);
-            $html .= \html_writer::span('', 'col-md-9');
-            $html .= \html_writer::start_span('col-md-3');
-            $html .= \html_writer::link('#',
-                \html_writer::tag('i', $stradd, ['data-action' => 'edit'])
-                . \html_writer::tag('i', '', [
-                    'class' => 'icon fa fa-plus fa-fw',
-                    'title' => $stradd,
-                    'aria-label' => $stradd,
-                    'data-action' => 'edit'
-            ]), ['title' => $stradd]);
-            $html .= \html_writer::end_tag('a');
-            $html .= \html_writer::end_span();
-            $html .= \html_writer::end_div();
-
-            return $html;
         }
+
+        $html .= \html_writer::start_div('row rule-actions', ['data-index' => $i]);
+        $html .= \html_writer::span('', 'col-md-9');
+        $html .= \html_writer::start_span('col-md-3 text-right');
+        $html .= \html_writer::link('#',
+            \html_writer::tag('i', $stradd, ['data-action' => 'edit'])
+            . \html_writer::tag('i', '', [
+                'class' => 'icon fa fa-plus fa-fw',
+                'title' => $stradd,
+                'aria-label' => $stradd,
+                'data-action' => 'edit'
+            ]), ['title' => $stradd]);
+        $html .= \html_writer::end_tag('a');
+        $html .= \html_writer::end_span();
+        $html .= \html_writer::end_div();
+
+        return $html;
     }
 }

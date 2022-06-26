@@ -31,6 +31,7 @@ export const init = () => {
     document.querySelector(".rule-fields").parentElement.addEventListener("click", editrule);
     document.querySelector(".rule-cols").parentElement.addEventListener("click", editrule);
     document.querySelector(".rule-actions").parentElement.addEventListener("click", editaction);
+    document.querySelector('.loophelper').addEventListener('click', loopHelper);
 };
 
 /**
@@ -89,10 +90,14 @@ const editrule = (evt) => {
     }
 
     if (action === "edit") {
+        let title = row.dataset.targetele === 'fields'
+                   ? Str.get_string("editfield", "gradereport_calcsetup")
+                   : Str.get_string("editcols", "gradereport_calcsetup");
+
         ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
             body: "",
-            title: Str.get_string("editfield", "gradereport_calcsetup"),
+            title: title,
             removeOnClose: true
         }).then(function(modal) {
             modal.getRoot().on('change', swapSelect);
@@ -316,4 +321,62 @@ const getCorefields = (data, property, string) => {
     giProperties[l - 1].property = string;
     giProperties[l - 1].value = "free";
     return giProperties;
+};
+
+const loopHelper = (evt) => {
+    evt.preventDefault();
+    return ModalFactory.create({
+        type: ModalFactory.types.DEFAULT,
+        body: "",
+        title: Str.get_string('loophelper', 'gradereport_calcsetup'),
+        removeOnClose: false
+    }).then(function(modal) {
+        modal.getRoot().on('change', updateCalc);
+        Ajax.call([{
+            methodname: "gradereport_calcsetup_get_corefields",
+            args: {
+                'editableonly': false
+            },
+            done: function(data) {
+                Templates.renderForPromise("gradereport_calcsetup/looper", data)
+                    .then(({html, js}) => {
+                        Templates.appendNodeContents(".modal-body", html, js);
+                        let copyBtn = modal.getRoot()[0].querySelector('.copyme');
+                        if (navigator.clipboard) {
+                            copyBtn.addEventListener('click', function (e) {
+                                let copyText = e.target.previousElementSibling;
+                                copyText.select();
+                                copyText.setSelectionRange(0, 99999);
+                                navigator.clipboard.writeText(copyText.value);
+                            });
+                        } else {
+                            copyBtn.setAttribute("style", "display:none");
+                        }
+                        return true;
+                    })
+                    .catch(Notification.exception);
+            }}]);
+        modal.show();
+        return true;
+    });
+};
+
+const updateCalc = (evt) => {
+    let container = evt.target.closest('.modal-body');
+    let group = container.querySelector('#loopgroup').value;
+    let contentInput = container.querySelector('#loopcontent');
+    let separator = container.querySelector('#loopseparator').value;
+
+    if (evt.target.getAttribute('id') === 'loopproperty') {
+        contentInput.value = contentInput.value + "{{" + evt.target.value + "}}";
+    }
+
+    if (evt.target.getAttribute('id') === '') {
+        return true;
+    } else {
+        container.querySelector('.output').value =
+            "{{#" + group + "}}" + contentInput.value + "{{^last}}" + separator + "{{/last}}{{/" + group + "}}";
+    }
+
+    return true;
 };

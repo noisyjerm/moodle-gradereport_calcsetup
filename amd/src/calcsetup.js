@@ -143,7 +143,7 @@ const changeRule = (evt) => {
     });
 };
 
-const showrule = (e) => {
-    let d = e.target.dataset.description;
+const showrule = (evt) => {
+    let d = evt.target.dataset.description;
     document.getElementById("ruledescription").innerHTML = d;
 };

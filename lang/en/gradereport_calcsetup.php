@@ -28,23 +28,35 @@
 $string['pluginname']   = 'Grade calculation tool';
 $string['about']        = 'About';
 $string['actions']      = 'Actions';
+$string['actions_help'] = 'Actions are performed when the rule is changed. They are used to initially set properties for items. E.g.
+
+Set gradepass to 50 when grademax is 100
+
+Set itemgroup to \'activity\' when itemtype is \'mod\'
+
+The logic is very basic with "is" being the only comparison available. There is minimal validation here so use with caution.';
 $string['action']       = 'Set {$a->set} to \'{$a->to}\' when {$a->when} {$a->op} {$a->val}';
 $string['calculation']  = 'Calculation';
 $string['calculationupdated']  = 'Calculation updated.';
 $string['cantupdate']   = 'The property \'{$a}\' cannot be updated.';
 $string['categoryupdated']   = '{$a->changed} properties set / changed on item {$a->itemname}.';
 $string['columns']      = 'Columns';
+$string['columns_help'] = 'Set the grade item properties that are listed in the table columns.
+                           The table rows contain the grade items within the selected category.';
 $string['current']      = 'Current';
 $string['deleterule']   = 'Delete rule';
 $string['deleterulereally']  = 'Are you sure you want to permanently delete this rule?';
 $string['editable']     = 'Editable';
 $string['editaction']   = 'Edit action';
+$string['editcols']     = 'Edit column';
 $string['editfield']    = 'Edit field';
 $string['editrule']     = 'Edit rule';
 $string['equals']       = 'is';
 $string['eventgradereportviewed'] = 'Calc setup viewed.';
 $string['eventgradeitemupdated']  = 'Grade item updated.';
 $string['fields']       = 'Fields';
+$string['fields_help']  = 'Set the grade item properties that are listed for this category.
+                           Choose whether each property can be edited by the course creator.';
 $string['formulaerror'] = "There is an error in the calculation. Check the idnumbers and syntax.";
 $string['free']         = "Free form";
 $string['greaterorequal']    = 'is greater than or equal to';
@@ -52,6 +64,7 @@ $string['greaterthan']       = 'is greater than';
 $string['lessorequal']       = 'is less than or equal to';
 $string['lessthan']          = 'is less than';
 $string['locked']            = 'Locked';
+$string['loophelper']        = '<a href="#" class="loophelper">Calculation loop helper</a>';
 $string['managerules']       = 'Manage rules';
 $string['missingtotal']      = 'Missing total name';
 $string['newrule']           = 'New rule';
@@ -65,8 +78,8 @@ $string['plugindescription'] = 'The aim of this tool is to help organisations ap
                                 of grade item properties for convenient editing and provide a template to assist in writing
                                 the calculation formulas. <a href=\'{$a}\'>Manage the rules</a>';
 $string['pageheader']        = 'Grade calculation tool';
-$string['placeholdercalc']   = 'Moodle calculation formula using mustache template markup. e.g. <br>
-                                =min({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
+$string['placeholdercalc']   = 'Moodle calculation formula using mustache template markup. e.g.
+=min({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
 $string['placeholderdescription'] = 'What is the rule for and what actions happen when it is applied?';
 $string['placeholderidnum']  = 'uniqueidentifier';
 $string['placeholdername']   = 'Give your rule a name';
@@ -74,8 +87,31 @@ $string['placeholderjson']   = '[]';
 $string['property']          = 'Property';
 $string['rule']              = 'Rule';
 $string['ruleupdated']       = 'Rule updated';
+$string['separator']         = 'Separator';
 $string['set']               = 'Set';
 $string['standardfields']    = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
+$string['template']          = 'Calculation template';
+$string['template_help']     = 'The calculation template uses Mustache markup. mustache(5) - Logic-less templates. All grade item properties are available as variables, e.g. {{gradepass}}
+
+When grade items have been assigned a \'group\' through the columns definition, these can be looped with the following Mustache markup {{#group-name}}Repeated content in here{{/group-name}}. The last item in the group is tagged with a "last" property. Including an \'inverted section\' we can add a separator between the looped items, e.g. {{^last}},{{/last}}.
+
+Line breaks and spaces are preserved in the preview but removed from the calculation saved to the grade item. Use line breaks and spaces in your template to improve readability.
+
+Example 1
+
+Desired output                AND([[assignment1]] >= 50, [[assignment2]] >= 50, [[assignment3]] >= 50)
+
+My template could be    AND({{#group-mod}}[[{{idnumber}}]]>={{gradepass}}{{^last}},{{/last}}{{/group-mod}})
+
+
+Example 2
+
+Desired output                [[assignment1]] * [[assignment2]] * [[assignment3]]
+
+My template could be    {{#group-mod}}[[{{idnumber}}]]{{^last}}*{{/last}}{{/group-mod}}
+
+
+See https://docs.moodle.org/en/Grade_calculations for info on grade calculations.';
 $string['title']             = 'Title';
 $string['to']                = 'To';
 $string['when']              = 'When';
