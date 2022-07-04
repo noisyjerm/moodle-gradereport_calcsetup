@@ -61,6 +61,7 @@ $string['formulaerror'] = "There is an error in the calculation. Check the idnum
 $string['free']         = "Free form";
 $string['greaterorequal']    = 'is greater than or equal to';
 $string['greaterthan']       = 'is greater than';
+$string['idnumused']         = 'This ID number is already used. Try something else.';
 $string['lessorequal']       = 'is less than or equal to';
 $string['lessthan']          = 'is less than';
 $string['locked']            = 'Locked';

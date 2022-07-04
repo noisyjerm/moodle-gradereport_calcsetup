@@ -169,6 +169,7 @@ class rule {
                 break;
             }
 
+            // Todo: improve the validation.
             if (!empty($corefields[$set]->validation) && $corefields[$set]->validation === 'number') {
                 if (!is_numeric($action->to)) {
                     \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $action->to));
@@ -183,6 +184,8 @@ class rule {
                 $updated = $update ? $update : $updated;
                 $propsset += intval($update);
 
+                // Todo: can 'to' be an expression?
+                // E.g. set gradepass to grademax / 2.
                 if ($update && $custom) {
                     $item->$set = $action->to;
                     $iteminfo = \gradereport_calcsetup\gradecategory::insert_iteminfo($item, $set, $action->to);
@@ -262,7 +265,12 @@ class rule {
         return $filtereditems;
     }
 
+    /**
+     * @return array
+     * @throws \coding_exception
+     */
     public function get_core_fields() {
+        // Todo: somehow refactor this and get_coreitemfields into one.
         global $CFG;
         $defaultgradedisplaytype = grade_get_setting($this->item->courseid, 'displaytype', $CFG->grade_displaytype);
         $defaultgradedisplay = $this->get_displaytypename($defaultgradedisplaytype);
@@ -281,7 +289,7 @@ class rule {
             'gradetype'        => (object) ['locked' => true],
             'grademax'         => (object) ['validation' => 'number'],
             'grademin'         => (object) ['validation' => 'number'],
-            'scaleid'          => (object) ['validation' => 'number'],
+            'scaleid'          => null,
             'outcomeid'        => (object) ['validation' => 'number'],
             'gradepass'        => (object) ['validation' => 'number'],
             'multfactor'       => (object) ['validation' => 'number'],

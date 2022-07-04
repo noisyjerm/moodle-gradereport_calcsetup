@@ -38,6 +38,9 @@ class editrule_form extends \moodleform {
     /** @var string  */
     private $pluginname = 'gradereport_calcsetup';
 
+    /** @var array  */
+    private $rules = [];
+
     /**
      * @throws \coding_exception
      * @throws \dml_exception
@@ -48,7 +51,8 @@ class editrule_form extends \moodleform {
         $ruleid = $this->_customdata['ruleid'];
         $mform = $this->_form;
 
-        $rule = $DB->get_record('gradereport_calcsetup_rules', ['id' => $ruleid]);
+        $this->rules = $DB->get_records('gradereport_calcsetup_rules');
+        $rule = $ruleid !== 0 ? $this->rules[$ruleid] : null;
 
         $mform->addElement('hidden', 'id', !empty($rule) ? $rule->id : 0);
         $mform->setType('id', PARAM_INT);
@@ -59,25 +63,34 @@ class editrule_form extends \moodleform {
             !empty($rule) ? $rule->name : get_string('placeholdername', $this->pluginname)
         );
 
+        // ID number.
         $mform->addElement('text', 'idnumber', get_string('idnumber'));
         $mform->setType('idnumber', PARAM_ALPHANUMEXT);
         $mform->setDefault('idnumber',
             !empty($rule) ? $rule->idnumber : get_string('placeholderidnum', $this->pluginname)
         );
-        $mform->addRule('idnumber', get_string('required'), 'required');
+        if (!$ruleid) {
+            $mform->addRule('idnumber', get_string('required'), 'required');
+            $mform->registerRule('checkidnumber', 'callback', 'checkifidused', $this);
+            $mform->addRule('idnumber', get_string('idnumused', $this->pluginname), 'checkidnumber', true);
+        }
+        $mform->disabledIf('idnumber', 'id', 'neq', 0);
 
+        // Description.
         $mform->addElement('textarea', 'descr', get_string('description'));
         $mform->setType('descr', PARAM_RAW);
         $mform->setDefault('descr',
             !empty($rule) ? $rule->descr : get_string('placeholderdescription', $this->pluginname)
         );
 
+        // Visible.
         $mform->addElement('checkbox', 'visible', get_string('visible'));
         $mform->setType('visible', PARAM_ALPHANUMEXT);
         $mform->setDefault('visible',
             !empty($rule) ? $rule->visible : 1
         );
 
+        // Calculation template.
         $mform->addElement('textarea', 'calc', get_string('calculation', $this->pluginname));
         $mform->setType('calc', PARAM_RAW);
         $mform->setDefault('calc',
@@ -86,37 +99,37 @@ class editrule_form extends \moodleform {
         $mform->addHelpButton('calc', 'template', $this->pluginname);
         $mform->addElement('static', 'calchelper', '', get_string('loophelper', $this->pluginname));
 
+        // Actions.
         $mform->addElement('hidden', 'actions', get_string('actions', $this->pluginname));
         $mform->setType('actions', PARAM_RAW);
         $mform->setDefault('actions',
             !empty($rule) ? $rule->actions : get_string('placeholderjson', $this->pluginname)
         );
 
-        // Actions.
         $actions = isset($rule->actions) ? $rule->actions : '';
         $mform->addElement('static', 'actioncontrol', get_string('actions', $this->pluginname),
             $this->displayactions($actions, 'actions'));
         $mform->addHelpButton('actioncontrol', 'actions', $this->pluginname);
 
+        // Fields.
         $mform->addElement('hidden', 'fields', get_string('fields', $this->pluginname));
         $mform->setType('fields', PARAM_RAW);
         $mform->setDefault('fields',
             !empty($rule) ? $rule->fields : get_string('placeholderjson', $this->pluginname)
         );
 
-        // Fields.
         $fields = isset($rule->fields) ? $rule->fields : '';
         $mform->addElement('static', 'fieldcontrol', get_string('fields', $this->pluginname),
                            $this->displayfields($fields, 'fields'));
         $mform->addHelpButton('fieldcontrol', 'fields', $this->pluginname);
 
+        // Columns.
         $mform->addElement('hidden', 'cols', get_string('columns', $this->pluginname));
         $mform->setType('cols', PARAM_RAW);
         $mform->setDefault('cols',
             !empty($rule) ? $rule->cols : get_string('placeholderjson', $this->pluginname)
         );
 
-        // Columns.
         $cols = isset($rule->cols) ? $rule->cols : '';
         $mform->addElement('static', 'colcontrol', get_string('columns', $this->pluginname),
                            $this->displayfields($cols, 'cols'));
@@ -198,6 +211,9 @@ class editrule_form extends \moodleform {
         if (!empty($data)) {
             $actions = json_decode($data);
             foreach ($actions as $action) {
+                if (empty($action->op)) {
+                    $action->op = 'equals';
+                }
                 $action->op = get_string($action->op, 'gradereport_calcsetup');
                 $html .= \html_writer::start_div('row rule-actions', ['data-index' => $i]);
                 $html .= \html_writer::span(
@@ -244,4 +260,15 @@ class editrule_form extends \moodleform {
 
         return $html;
     }
+
+    public function checkifidused($val) {
+        foreach ($this->rules as $rule) {
+            if ($val === $rule->idnumber) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
