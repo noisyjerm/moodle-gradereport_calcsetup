@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template gradereport_calcsetup/catinfo
+    @template gradereport_calcsetup/ruleselector
 
-    Category Info template.
+    Rule selector template.
 
     Context variables required for this template:
     * actionurl - String - The url the form should submit to.
@@ -25,11 +25,19 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
     Example context (json): {
         "actionurl": "https://anyoldsitewilldo/grade/report/calcsetup/index.php?id=35&catid=80",
-        "rules": [{
-            "id": 79,
-            "rulename": "Complex course",
-            "ruledescription": "This rule"
-         }]
+        "rules": [
+            {
+                "id": 1,
+                "name": "Complex course",
+                "descr": "This rule is for things"
+             },
+            {
+                "id": 2,
+                "name": "Complex categroy",
+                "descr": "This rule is for other things",
+                "selected": true
+            }
+        ]
     }
 }}
 

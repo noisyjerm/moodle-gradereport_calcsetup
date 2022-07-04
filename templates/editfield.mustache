@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template gradereport_calcsetup/catinfo
+    @template gradereport_calcsetup/editfield
 
     Category Info template.
 
@@ -24,12 +24,21 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
     * rules - Array - A list of rules configured
 
     Example context (json): {
-        "actionurl": "https://anyoldsitewilldo/grade/report/calcsetup/index.php?id=35&catid=80",
-        "rules": [{
-            "id": 79,
-            "rulename": "Complex course",
-            "ruledescription": "This rule"
-         }]
+        "title": "{'identifier':'idnumber'}",
+        "fields": [
+            {"property": "id"},
+            {"property": "courseid"},
+            {"property": "categoryid"},
+            {"property": "itemname"},
+            {"property": "itemtype"},
+            {"property": "itemmodule"},
+            {"property": "idnumber", "selected": true},
+            {"property": "grademin"},
+            {"property": "grademax"}
+        ],
+        "col": {
+            "editable": 1
+        }
     }
 }}
 

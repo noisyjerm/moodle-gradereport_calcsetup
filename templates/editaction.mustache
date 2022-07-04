@@ -15,29 +15,44 @@ You should have received a copy of the GNU General Public License
 along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template gradereport_calcsetup/catinfo
+    @template gradereport_calcsetup/editaction
 
-    Category Info template.
+    Template for content in Edit rule action dialog.
 
     Context variables required for this template:
-    * actionurl - String - The url the form should submit to.
-    * rules - Array - A list of rules configured
+    * exists - boolean, are we updating a rule or making a new one
+    * fields - array of objects
+    * fieldswhen - array of objects
+    * action - object
 
     Example context (json): {
-        "exists": true,
-        "fields": [{
-            "property": "gradepass"
-        }],
+        "exists": 1,
+        "fields": [
+            {"property": "id"},
+            {"property": "courseid"},
+            {"property": "categoryid"},
+            {"property": "itemname"},
+            {"property": "itemtype"},
+            {"property": "itemmodule"},
+            {"property": "idnumber", "selected": true},
+            {"property": "grademin"},
+            {"property": "grademax"}
+        ],
+        "fieldswhen": [
+            {"property": "id"},
+            {"property": "courseid"},
+            {"property": "categoryid"},
+            {"property": "itemname"},
+            {"property": "itemtype"},
+            {"property": "itemmodule"},
+            {"property": "idnumber"},
+            {"property": "grademin"},
+            {"property": "grademax", "selected": true}
+        ],
         "action": {
-            "set": "gradepass",
-            "to": 50,
-            "when":
-            "op":
-            "val"
-        },
-        "fieldswhen": [{
-            "property": "gradepass"
-        }],
+            "to": "50",
+            "val": "100"
+        }
     }
 }}
 

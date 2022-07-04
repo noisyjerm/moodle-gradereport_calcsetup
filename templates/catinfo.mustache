@@ -25,16 +25,20 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
     * rules - array -
     * fields - array - Whether to show the save changes button.
 
-    Example context (json):
-    {
+    Example context (json): {
         "fullname": "Term one assignments",
-        "categories": [{
-            "iteminstance" : 79,
-            "fullname" : "Term two assigments"
-         }],
-        "actionurl" : "#",
-        "sesskey" : 12345,
-        "rules": []],
+        "categories": [
+            {
+                "iteminstance" : 79,
+                "fullname" : "Term one assigments"
+             },
+            {
+                "iteminstance" : 83,
+                "fullname" : "Term two assigments",
+                "selected" : 1
+            }
+        ],
+        "rules": [],
         "fields": []
     }
 }}
