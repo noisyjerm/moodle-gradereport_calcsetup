@@ -75,7 +75,7 @@ const hiderule = (el) => {
                 'action': action
             },
             done: function(data) {
-                if (data.success === false){
+                if (data.success === false) {
                     return;
                 }
                 if (action == 1) {
@@ -117,7 +117,7 @@ const deleterule = (el) => {
                     'id': ruleid
                 },
                 done: function(data) {
-                    if (data.success === false){
+                    if (data.success === false) {
                         return false;
                     }
                     let row = el.parentNode.parentNode;

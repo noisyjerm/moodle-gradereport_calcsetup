@@ -62,7 +62,9 @@ const showFormattedCalc = (e) => {
         // Handle save event.
         modal.getRoot().on(ModalEvents.save, function(evt) {
             let textarea = document.getElementById('modifiedcalc');
-            evt.isDefaultPrevented = function() { return true; };
+            evt.isDefaultPrevented = function() {
+                return true;
+            };
             // Validate the formula.
             Ajax.call([{
                 methodname: 'gradereport_calcsetup_validatecalc',
@@ -90,7 +92,7 @@ const showFormattedCalc = (e) => {
                                 body.insertBefore(warning, textarea);
                                 return true;
                             }
-                        );
+                        ).fail(Notification.exception);
                     }
                 },
                 fail: Notification.exception

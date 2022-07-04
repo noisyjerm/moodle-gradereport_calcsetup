@@ -3,33 +3,14 @@
     font-weight: bold;
 }
 
-/*
-tr.mod.level-2 td:first-of-type,
-tr.item.level-2 td:first-of-type,
-tr.category.level-3 td:first-of-type {
-    padding-left:2em;
-}
-
-tr.mod.level-3 td:first-of-type,
-tr.item.level-3 td:first-of-type,
-tr.category.level-4 td:first-of-type {
-    padding-left:4em;
-}
-
-tr.mod.level-4 td:first-of-type,
-tr.item.level-4 td:first-of-type {
-    padding-left:6em;
-}
-*/
-
 #categoryitemform dt,
 #categoryitemform dd {
-   display: inline-flex;
+    display: inline-flex;
     margin: .5em 0;
 }
 
 table.itemsettings td input {
-    width:100%;
+    width: 100%;
 }
 
 .calcs {
@@ -40,7 +21,7 @@ table.itemsettings td input {
     width: 100%;
     height: 200px;
     padding: 0.5em;
-    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .pseudo-input {
@@ -56,7 +37,7 @@ table.itemsettings td input {
         color: #000;
     }
     50% {
-        color: #F00;
+        color: #f00;
     }
     100% {
         color: #000;
@@ -72,7 +53,7 @@ table.itemsettings td input {
 
 .row.rule-fields:hover,
 .row.rule-cols:hover,
-.row.rule-actions:hover{
+.row.rule-actions:hover {
     background-color: #eee;
 }
 
@@ -92,18 +73,18 @@ table.itemsettings td input {
 
 #page-grade-report-calcsetup-editrule .row.rule-cols a i,
 #page-grade-report-calcsetup-editrule .row.rule-fields i,
-#page-grade-report-calcsetup-editrule .row.rule-actions i{
+#page-grade-report-calcsetup-editrule .row.rule-actions i {
     margin: 0;
     padding: 0 3px;
 }
 
 #page-grade-report-calcsetup-editrule .row.rule-cols a:last-of-type i[data-action=edit],
-#page-grade-report-calcsetup-editrule .row.rule-fields a:last-of-type i[data-action=edit]{
+#page-grade-report-calcsetup-editrule .row.rule-fields a:last-of-type i[data-action=edit] {
     margin-right: 0;
 }
 
 #page-grade-report-calcsetup-editrule .modal-body label {
-    width:30%;
+    width: 30%;
 }
 
 textarea#id_calc {

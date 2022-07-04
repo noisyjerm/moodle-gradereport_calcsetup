@@ -94,7 +94,7 @@ const editrule = (evt) => {
                    ? Str.get_string("editfield", "gradereport_calcsetup")
                    : Str.get_string("editcols", "gradereport_calcsetup");
 
-        ModalFactory.create({
+        return ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
             body: "",
             title: title,
@@ -154,7 +154,7 @@ const editaction = (evt) => {
     let action = el.dataset.action;
 
     if (action === 'edit') {
-        ModalFactory.create({
+        return ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
             body: "",
             title: Str.get_string("editaction", "gradereport_calcsetup"),
@@ -200,6 +200,8 @@ const editaction = (evt) => {
                         actionrow.action = index < actions.length ? actions[index] : [];
                         actionrow.exists = index < actions.length;
                         actionrow.fields = getCorefields(data.fields, actionrow.exists ? actions[index].set : null, string);
+                        // Todo: When should have all fields not just editable ones.
+                        // Todo: include all condition and any value.
                         actionrow.fieldswhen = getCorefields(data.fields, actionrow.exists ? actions[index].when : null, string);
                         Templates.renderForPromise("gradereport_calcsetup/editaction", actionrow)
                             .then(({html, js}) => {
@@ -284,6 +286,7 @@ const saveFields = (e) => {
             : strings[1];
     });
     field.value = JSON.stringify(columns);
+
 };
 
 const tryParseJSONObject = (jsonString) => {
@@ -343,7 +346,7 @@ const loopHelper = (evt) => {
                         Templates.appendNodeContents(".modal-body", html, js);
                         let copyBtn = modal.getRoot()[0].querySelector('.copyme');
                         if (navigator.clipboard) {
-                            copyBtn.addEventListener('click', function (e) {
+                            copyBtn.addEventListener('click', function(e) {
                                 let copyText = e.target.previousElementSibling;
                                 copyText.select();
                                 copyText.setSelectionRange(0, 99999);
