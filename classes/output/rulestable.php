@@ -39,11 +39,12 @@ require_once($CFG->libdir . '/grade/constants.php');
  */
 class rulestable extends \flexible_table implements \renderable {
 
+    /** @var string A shortcut */
     private $pluginname = 'gradereport_calcsetup';
 
     /**
      * rulestable constructor.
-     * @param $uniqueid
+     * @param string $uniqueid
      * @throws \coding_exception
      */
     public function __construct($uniqueid) {
@@ -75,10 +76,12 @@ class rulestable extends \flexible_table implements \renderable {
 
     /**
      * Displays the table with the given set of templates
-     * @param array $templates
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public function display() {
-        global $DB, $OUTPUT;
+        global $DB;
 
         $rules = $DB->get_records('gradereport_calcsetup_rules', null, '', 'id, name, idnumber, descr, visible');
 
@@ -93,6 +96,7 @@ class rulestable extends \flexible_table implements \renderable {
     }
 
     /**
+     * HTML (links and icons) for the actions that can be performed on this rule
      * @param $rule
      * @return string
      * @throws \coding_exception

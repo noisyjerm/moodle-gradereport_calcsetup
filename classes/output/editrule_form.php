@@ -42,6 +42,7 @@ class editrule_form extends \moodleform {
     private $rules = [];
 
     /**
+     * Describes the form elements
      * @throws \coding_exception
      * @throws \dml_exception
      */
@@ -150,6 +151,13 @@ class editrule_form extends \moodleform {
         return $errors;
     }
 
+    /**
+     * Prepares HTML 'table' for static form 'field'
+     * @param $data
+     * @param $elename
+     * @return string
+     * @throws \coding_exception
+     */
     private function displayfields($data, $elename) {
         $cols = '';
         $i = 0;
@@ -202,6 +210,13 @@ class editrule_form extends \moodleform {
         return $cols;
     }
 
+    /**
+     * Prepares HTML 'table' for static form 'field'
+     * @param $data
+     * @param $elename
+     * @return string
+     * @throws \coding_exception
+     */
     private function displayactions($data, $elename) {
         $stradd  = get_string('add');
         $stredit = get_string('edit');
@@ -261,6 +276,11 @@ class editrule_form extends \moodleform {
         return $html;
     }
 
+    /**
+     * Validation rule for idnumber field.
+     * @param $val
+     * @return bool
+     */
     public function checkifidused($val) {
         foreach ($this->rules as $rule) {
             if ($val === $rule->idnumber) {

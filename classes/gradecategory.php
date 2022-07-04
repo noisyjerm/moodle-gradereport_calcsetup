@@ -26,8 +26,13 @@
 namespace gradereport_calcsetup;
 use grade_item;
 
+/** @const array 'tag' used in regular expression to find data stored in iteminfo field */
 const PATTERN = ['open' => '{{gradereportcalcsetup}}', 'close' => '{{/gradereportcalcsetup}}'];
 
+/**
+ * Class gradecategory
+ * @package gradereport_calcsetup
+ */
 class gradecategory {
     /** @var int */
     private $courseid;
@@ -48,7 +53,6 @@ class gradecategory {
      * gradecategory constructor.
      * @param int $courseid
      * @param int $categoryid
-     * @param string $rulename
      */
     public function __construct($courseid = 0, $categoryid = 0) {
         $this->courseid = $courseid;
@@ -83,6 +87,7 @@ class gradecategory {
     }
 
     /**
+     * Getter for courseid
      * @return int
      */
     public function get_courseid() {
@@ -90,6 +95,7 @@ class gradecategory {
     }
 
     /**
+     * Getter for grade item id.
      * @return int
      */
     public function get_itemid() {
@@ -97,6 +103,7 @@ class gradecategory {
     }
 
     /**
+     * Getter for categroy id
      * @return int
      */
     public function get_catid() {
@@ -104,6 +111,7 @@ class gradecategory {
     }
 
     /**
+     * Getter for grade item or items
      * @return array|\grade_item
      */
     public function get_gradeitems($id = 0) {
@@ -119,6 +127,7 @@ class gradecategory {
     }
 
     /**
+     * Getter for iteminfo.
      * @return mixed|\stdClass|null
      */
     public function get_iteminfo() {
@@ -126,6 +135,7 @@ class gradecategory {
     }
 
     /**
+     * Getter for grade item.
      * @return mixed
      */
     public function get_item() {
@@ -133,6 +143,7 @@ class gradecategory {
     }
 
     /**
+     * Getter for grade calculation rule.
      * @return rule|\stdClass
      */
     public function get_rule() {
@@ -140,6 +151,7 @@ class gradecategory {
     }
 
     /**
+     * Gets the rule as an object from the JSON string.
      * @param $item
      * @return mixed|null
      */
@@ -161,6 +173,7 @@ class gradecategory {
     }
 
     /**
+     * Adds or updates the iteminfo field with the property and value so it can be retrieved later.
      * @param \grade_item $item
      * @param string $prop
      * @param string $val
@@ -185,8 +198,9 @@ class gradecategory {
     }
 
     /**
-     * @param $item
-     * @return mixed
+     * Gets the grade item and normalises the name for consistent usage.
+     * @param \stdClass $item
+     * @return mixed gradeitem or boolean if doesn't exist
      */
     private function set_item($item) {
         $gradeitem = grade_item::fetch(array('id' => $item->id, 'courseid' => $item->courseid));
@@ -195,6 +209,7 @@ class gradecategory {
     }
 
     /**
+     * Get the grade items as stdClass from the grade items table.
      * @param $courseid
      * @param $categoryid
      * @return array
@@ -228,7 +243,8 @@ class gradecategory {
     }
 
     /**
-     * @param $items
+     * Get the custom properties from the grade item iteminfo and add them to the object.
+     * @param array $items
      */
     private function add_customdata($items) {
         // Now add the custom columns.
@@ -253,6 +269,12 @@ class gradecategory {
         }
     }
 
+    /**
+     * Save the form data to the database.
+     * @param $data
+     * @param $fields
+     * @throws \coding_exception
+     */
     public function update_items($data, $fields) {
         $last = 'nomatch';
         $corefields = $this->rule->get_core_fields();

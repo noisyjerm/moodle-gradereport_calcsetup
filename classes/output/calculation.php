@@ -30,7 +30,6 @@ use gradereport_calcsetup\gradecategory;
 
 /**
  * Class calculation
- * @package gradereport_calcsetup\output
  */
 class calculation {
     /** @var array */

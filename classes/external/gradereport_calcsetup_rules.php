@@ -33,11 +33,11 @@ require_once("$CFG->libdir/mathslib.php");
 
 /**
  * Class gradereport_calcsetup_updatecalc
- * @package gradereport_calcsetup\external
  */
 class gradereport_calcsetup_rules extends \external_api {
 
     /**
+     * Validate incoming parameters
      * @return \external_function_parameters
      */
     public static function get_rules_parameters() {
@@ -49,10 +49,11 @@ class gradereport_calcsetup_rules extends \external_api {
     }
 
     /**
-     * @param $courseid
-     * @param $gradeitemid
-     * @param $formula
-     * @return false[]
+     * List the rules that can be used.
+     * @param integer $ruleid
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     public static function get_rules($ruleid) {
         global $DB;
@@ -77,6 +78,7 @@ class gradereport_calcsetup_rules extends \external_api {
     }
 
     /**
+     * Describe the returned data structure.
      * @return \external_single_structure
      */
     public static function get_rules_returns() {
@@ -94,6 +96,7 @@ class gradereport_calcsetup_rules extends \external_api {
 
 
     /**
+     * Validate incoming parameters
      * @return \external_function_parameters
      */
     public static function hide_rule_parameters() {
@@ -106,6 +109,7 @@ class gradereport_calcsetup_rules extends \external_api {
     }
 
     /**
+     * Toggle the visibility of a rule.
      * @param int $id The database table id of the rule
      * @param int $action Are we hiding (0) or showing (1) this rule
      * @return bool[]
@@ -122,6 +126,7 @@ class gradereport_calcsetup_rules extends \external_api {
     }
 
     /**
+     * Describe the returned data structure.
      * @return \external_single_structure
      */
     public static function hide_rule_returns() {
@@ -133,6 +138,7 @@ class gradereport_calcsetup_rules extends \external_api {
 
 
     /**
+     * Validate incoming parameters
      * @return \external_function_parameters
      */
     public static function delete_rule_parameters() {
@@ -144,6 +150,7 @@ class gradereport_calcsetup_rules extends \external_api {
     }
 
     /**
+     * Remove a rule from the db.
      * @param int $id The database table id of the rule
      * @return bool[]
      * @throws \dml_exception
@@ -156,6 +163,7 @@ class gradereport_calcsetup_rules extends \external_api {
     }
 
     /**
+     * Describe the returned data structure.
      * @return \external_single_structure
      */
     public static function delete_rule_returns() {
@@ -166,6 +174,7 @@ class gradereport_calcsetup_rules extends \external_api {
 
 
     /**
+     * Validate incoming parameters
      * @return \external_function_parameters
      */
     public static function get_coreitemfields_parameters() {
@@ -177,7 +186,9 @@ class gradereport_calcsetup_rules extends \external_api {
     }
 
     /**
-     * @return array
+     * Get a list of core grade item properties, optionally filtered by only editable properties.
+     * @param boolean $editableonly
+     * @return array[]
      */
     public static function get_coreitemfields($editableonly) {
         $fields = [
@@ -231,6 +242,7 @@ class gradereport_calcsetup_rules extends \external_api {
 
 
     /**
+     * Describe the returned data structure.
      * @return \external_single_structure
      */
     public static function get_coreitemfields_returns() {

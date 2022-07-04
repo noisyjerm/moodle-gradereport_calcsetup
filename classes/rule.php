@@ -40,9 +40,11 @@ class rule {
     private $item;
 
     /**
-     * actions constructor.
+     * rule constructor.
      * @param string $rulename
-     * @param \gradereport_calcsetup\gradecategory $gradecategory
+     * @param array $items list of {@link \grade_item} objects
+     * @param $item
+     * @throws \dml_exception
      */
     public function __construct($rulename, $items, $item) {
         $this->item = $item;
@@ -53,6 +55,7 @@ class rule {
     }
 
     /**
+     * Getter for calc property of rule object.
      * @return mixed
      */
     public function get_calc() {
@@ -60,6 +63,7 @@ class rule {
     }
 
     /**
+     * Getter for idnumber property of rule object.
      * @return string
      */
     public function get_idnumber() {
@@ -67,6 +71,7 @@ class rule {
     }
 
     /**
+     * Getter for cols property of rule object.
      * @return mixed
      */
     public function get_columns() {
@@ -74,22 +79,7 @@ class rule {
     }
 
     /**
-     * @deprecated
-     * @return array
-     */
-    public function get_customcolumns() {
-        $cols = $this->get_columns();
-        $customcols = [];
-        foreach ($cols as $col) {
-            if (!in_array($col->property, $this->item->required_fields) ) {
-                $customcols[] = $col;
-            }
-        }
-
-        return $customcols;
-    }
-
-    /**
+     * Returns simple array of column property names.
      * @return array
      */
     public function get_fields() {
@@ -102,6 +92,7 @@ class rule {
     }
 
     /**
+     * Getter for rule object.
      * @return false|mixed|\stdClass
      */
     public function get_rule() {
@@ -109,6 +100,7 @@ class rule {
     }
 
     /**
+     * Getter for name of rule.
      * @return string
      */
     public function get_name() {
@@ -116,6 +108,7 @@ class rule {
     }
 
     /**
+     * Getter for description of rule.
      * @return string
      */
     public function get_description() {
@@ -123,6 +116,8 @@ class rule {
     }
 
     /**
+     * Getter for fields property of rule object:
+     * array of the fields of the grade item to display.
      * @return array
      */
     public function get_displayoptions() {
@@ -132,8 +127,10 @@ class rule {
 
     /**
      * Save the rule to the category and apply any actions.
+     * @param $rule
+     * @return bool
+     * @throws \coding_exception
      * @throws \dml_exception
-     * @throws \dml_transaction_exception
      */
     public function apply($rule) {
         global $DB;
@@ -208,9 +205,11 @@ class rule {
     }
 
     /**
-     * @param $iteminfo
+     * Gets the rule as an object from the JSON string.
+     * @param \stdClass $iteminfo
      * @param string $rule
-     * @return \stdClass
+     * @return false|mixed|\stdClass|string
+     * @throws \coding_exception
      * @throws \dml_exception
      */
     private function extract_rule($iteminfo, $rule = '') {
@@ -245,10 +244,12 @@ class rule {
     }
 
     /**
+     * Reduce the child grade items according to conditions.
      * @param array $items
-     * @param array|string $cond
+     * @param \stdClass $action
      * @return array
      */
+
     protected function filter_items($items, $action) {
         if ($action->when === 'all') {
             return $items;
@@ -266,6 +267,7 @@ class rule {
     }
 
     /**
+     * Descibe how the core fields can be used.
      * @return array
      * @throws \coding_exception
      */
@@ -323,7 +325,8 @@ class rule {
     }
 
     /**
-     * @param $display
+     * Get a readable name for the grade display type.
+     * @param integer $display
      * @return \lang_string|string
      * @throws \coding_exception
      */

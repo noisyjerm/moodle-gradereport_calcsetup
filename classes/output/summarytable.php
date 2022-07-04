@@ -162,6 +162,7 @@ class summarytable extends \flexible_table implements \renderable {
     }
 
     /**
+     * Gets name of grade item. Differs depending on type is category or grade item
      * @param $result
      * @return string
      * @throws \coding_exception
@@ -179,7 +180,8 @@ class summarytable extends \flexible_table implements \renderable {
     }
 
     /**
-     * @param $columndata
+     * Get a simple array of column names.
+     * @param array $columndata
      * @return string[]
      */
     private function get_column_ids($columndata) {
@@ -192,7 +194,8 @@ class summarytable extends \flexible_table implements \renderable {
     }
 
     /**
-     * @param $columndata
+     * Get tale column headers.
+     * @param array $columndata
      * @return array
      * @throws \coding_exception
      */

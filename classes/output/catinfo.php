@@ -32,7 +32,6 @@ use renderer_base;
 
 /**
  * Class catinfo
- * @package gradereport_calcsetup\output
  */
 class catinfo implements renderable, templatable {
 

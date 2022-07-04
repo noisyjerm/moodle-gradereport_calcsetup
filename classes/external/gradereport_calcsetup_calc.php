@@ -33,11 +33,11 @@ require_once("$CFG->libdir/mathslib.php");
 
 /**
  * Class gradereport_calcsetup_updatecalc
- * @package gradereport_calcsetup\external
  */
 class gradereport_calcsetup_validatecalc extends \external_api {
 
     /**
+     * Validate incoming parameters
      * @return \external_function_parameters
      */
     public static function get_calculation_valid_parameters() {
@@ -51,9 +51,10 @@ class gradereport_calcsetup_validatecalc extends \external_api {
     }
 
     /**
-     * @param $courseid
-     * @param $gradeitemid
-     * @param $formula
+     * Check if the entered calculation formula can be used.
+     * @param integer $courseid
+     * @param integer $gradeitemid
+     * @param string $formula
      * @return false[]
      */
     public static function get_calculation_valid($courseid, $gradeitemid, $formula) {
@@ -69,6 +70,7 @@ class gradereport_calcsetup_validatecalc extends \external_api {
     }
 
     /**
+     * Describe the returned data structure.
      * @return \external_single_structure
      */
     public static function get_calculation_valid_returns() {
