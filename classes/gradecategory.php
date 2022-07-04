@@ -26,7 +26,7 @@
 namespace gradereport_calcsetup;
 use grade_item;
 
-/** @const array 'tag' used in regular expression to find data stored in iteminfo field */
+/** array 'tag' used in regular expression to find data stored in iteminfo field */
 const PATTERN = ['open' => '{{gradereportcalcsetup}}', 'close' => '{{/gradereportcalcsetup}}'];
 
 /**
@@ -112,6 +112,7 @@ class gradecategory {
 
     /**
      * Getter for grade item or items
+     * @param int $id
      * @return array|\grade_item
      */
     public function get_gradeitems($id = 0) {
@@ -152,7 +153,7 @@ class gradecategory {
 
     /**
      * Gets the rule as an object from the JSON string.
-     * @param $item
+     * @param grade_item $item
      * @return mixed|null
      */
     public static function extract_iteminfo($item) {
@@ -210,8 +211,8 @@ class gradecategory {
 
     /**
      * Get the grade items as stdClass from the grade items table.
-     * @param $courseid
-     * @param $categoryid
+     * @param int $courseid
+     * @param int $categoryid
      * @return array
      * @throws \dml_exception
      */
@@ -271,8 +272,8 @@ class gradecategory {
 
     /**
      * Save the form data to the database.
-     * @param $data
-     * @param $fields
+     * @param array $data
+     * @param array $fields
      * @throws \coding_exception
      */
     public function update_items($data, $fields) {

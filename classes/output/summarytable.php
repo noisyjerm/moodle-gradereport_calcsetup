@@ -58,7 +58,7 @@ class summarytable extends \flexible_table implements \renderable {
 
     /**
      * table_report constructor.
-     * @param $uniqueid
+     * @param string $uniqueid
      * @param null $filterparams
      * @throws coding_exception
      */
@@ -85,8 +85,7 @@ class summarytable extends \flexible_table implements \renderable {
     }
 
     /**
-     * Displays the table with the given set of templates
-     * @param array $templates
+     * Displays the table
      */
     public function display() {
         global $OUTPUT;
@@ -163,7 +162,7 @@ class summarytable extends \flexible_table implements \renderable {
 
     /**
      * Gets name of grade item. Differs depending on type is category or grade item
-     * @param $result
+     * @param \grade_item $result
      * @return string
      * @throws \coding_exception
      * @throws \moodle_exception

@@ -37,6 +37,7 @@ export const init = () => {
 /**
  * Decide which edit button was pressed
  * @param {Event} evt
+ * @return {*}
  */
 const editrule = (evt) => {
     let el = evt.target;
@@ -94,7 +95,7 @@ const editrule = (evt) => {
                    ? Str.get_string("editfield", "gradereport_calcsetup")
                    : Str.get_string("editcols", "gradereport_calcsetup");
 
-        return ModalFactory.create({
+        ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
             body: "",
             title: title,
@@ -134,7 +135,7 @@ const editrule = (evt) => {
             }]);
 
             return true;
-        });
+        }).catch(Notification.exception);
     }
 };
 
@@ -154,7 +155,7 @@ const editaction = (evt) => {
     let action = el.dataset.action;
 
     if (action === 'edit') {
-        return ModalFactory.create({
+        ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
             body: "",
             title: Str.get_string("editaction", "gradereport_calcsetup"),
@@ -215,7 +216,7 @@ const editaction = (evt) => {
                 }
             }]);
             return true;
-        });
+        }).catch(Notification.exception);
 
     }
 

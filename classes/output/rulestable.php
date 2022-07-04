@@ -97,7 +97,7 @@ class rulestable extends \flexible_table implements \renderable {
 
     /**
      * HTML (links and icons) for the actions that can be performed on this rule
-     * @param $rule
+     * @param \stdClass $rule database record
      * @return string
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -107,9 +107,10 @@ class rulestable extends \flexible_table implements \renderable {
         $url = new \moodle_url('editrule.php', array('id' => $rule->id));
         $eye = $rule->visible ? $OUTPUT->pix_icon('t/hide', get_string('hide')) : $OUTPUT->pix_icon('t/show', get_string('show'));
         $can = $OUTPUT->pix_icon('t/delete', get_string('delete'));
+        $hideme = !$rule->visible;
 
         $buttons[] = \html_writer::link($url, $can, ['class' => 'delete', 'data-ruleid' => $rule->id]);
-        $buttons[] = \html_writer::link($url, $eye, ['class' => 'showhide', 'data-ruleid' => $rule->id, 'data-action' => !$rule->visible]);
+        $buttons[] = \html_writer::link($url, $eye, ['class' => 'showhide', 'data-ruleid' => $rule->id, 'data-action' => $hideme]);
         $buttons[] = \html_writer::link($url, $OUTPUT->pix_icon('t/edit', get_string('edit')), ['class' => 'edit']);
 
         return implode(' ', $buttons);

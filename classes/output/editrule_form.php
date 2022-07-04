@@ -140,21 +140,20 @@ class editrule_form extends \moodleform {
     }
 
     /**
+     *  mform validation
      * @param array $data
      * @param array $files
      * @return array
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        // Todo: validate idnumber format.
-        // Todo: something better with the JSON fields.
         return $errors;
     }
 
     /**
      * Prepares HTML 'table' for static form 'field'
-     * @param $data
-     * @param $elename
+     * @param string $data JSON string
+     * @param string $elename
      * @return string
      * @throws \coding_exception
      */
@@ -212,12 +211,11 @@ class editrule_form extends \moodleform {
 
     /**
      * Prepares HTML 'table' for static form 'field'
-     * @param $data
-     * @param $elename
+     * @param string $data JSON string
      * @return string
      * @throws \coding_exception
      */
-    private function displayactions($data, $elename) {
+    private function displayactions($data) {
         $stradd  = get_string('add');
         $stredit = get_string('edit');
         $strdel  = get_string('delete');
@@ -278,7 +276,7 @@ class editrule_form extends \moodleform {
 
     /**
      * Validation rule for idnumber field.
-     * @param $val
+     * @param string $val
      * @return bool
      */
     public function checkifidused($val) {

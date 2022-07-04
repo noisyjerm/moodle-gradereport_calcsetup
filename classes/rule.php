@@ -42,8 +42,8 @@ class rule {
     /**
      * rule constructor.
      * @param string $rulename
-     * @param array $items list of {@link \grade_item} objects
-     * @param $item
+     * @param array $items list of {@see \grade_item} objects
+     * @param \grade_item $item
      * @throws \dml_exception
      */
     public function __construct($rulename, $items, $item) {
@@ -127,13 +127,12 @@ class rule {
 
     /**
      * Save the rule to the category and apply any actions.
-     * @param $rule
+     * @param string $rule
      * @return bool
      * @throws \coding_exception
      * @throws \dml_exception
      */
     public function apply($rule) {
-        global $DB;
         $updated = false;
         $propsset = 0;
         // Save the rulename to the cateory.
@@ -249,7 +248,6 @@ class rule {
      * @param \stdClass $action
      * @return array
      */
-
     protected function filter_items($items, $action) {
         if ($action->when === 'all') {
             return $items;
@@ -275,7 +273,7 @@ class rule {
         // Todo: somehow refactor this and get_coreitemfields into one.
         global $CFG;
         $defaultgradedisplaytype = grade_get_setting($this->item->courseid, 'displaytype', $CFG->grade_displaytype);
-        $defaultgradedisplay = $this->get_displaytypename($defaultgradedisplaytype);
+        $defaultdisplay = $this->get_displaytypename($defaultgradedisplaytype);
         return [
             'id'               => (object) ['locked' => true],
             'courseid'         => (object) ['locked' => true],
@@ -301,7 +299,7 @@ class rule {
             'sortorder'        => (object) ['locked' => true],
             'display'          => (object) [
                 'options'          => [
-                    (object) ['val' => GRADE_DISPLAY_TYPE_DEFAULT, 'name' => get_string('defaultprev', 'grades', $defaultgradedisplay)],
+                    (object) ['val' => GRADE_DISPLAY_TYPE_DEFAULT, 'name' => get_string('defaultprev', 'grades', $defaultdisplay)],
                     (object) ['val' => GRADE_DISPLAY_TYPE_REAL, 'name' => get_string('real', 'grades')],
                     (object) ['val' => GRADE_DISPLAY_TYPE_REAL_PERCENTAGE, 'name' => get_string('realpercentage', 'grades')],
                     (object) ['val' => GRADE_DISPLAY_TYPE_REAL_LETTER, 'name' => get_string('realletter', 'grades')],

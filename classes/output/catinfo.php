@@ -35,7 +35,7 @@ use renderer_base;
  */
 class catinfo implements renderable, templatable {
 
-    /** * @var  */
+    /** @var  */
     private $item;
 
     /** @var */
@@ -66,11 +66,11 @@ class catinfo implements renderable, templatable {
     }
 
     /**
+     * Export the renderer data in a format that is suitable for the mustache template.
      * @param renderer_base $output
      * @return array|mixed|\stdClass
      */
     public function export_for_template(renderer_base $output) {
-        global $CFG;
         $this->item->categories = $this->get_catselector();
         $this->item->rules = $this->get_rules();
 
@@ -134,6 +134,7 @@ class catinfo implements renderable, templatable {
     }
 
     /**
+     * Get a list of grade categories in this course.
      * @return array
      * @throws \dml_exception
      */
@@ -161,6 +162,7 @@ class catinfo implements renderable, templatable {
     }
 
     /**
+     * Get list of rules marking current rule as selected.
      * @return array
      * @throws \dml_exception
      */
