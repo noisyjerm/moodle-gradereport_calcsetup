@@ -180,7 +180,7 @@ class gradereport_calcsetup_rules extends \external_api {
     public static function get_coreitemfields_parameters() {
         return new \external_function_parameters (
             array(
-                'editableonly' => new \external_value(PARAM_BOOL, 'Rule Id', VALUE_OPTIONAL),
+                'editableonly' => new \external_value(PARAM_BOOL, 'Rule Id', VALUE_DEFAULT),
             )
         );
     }

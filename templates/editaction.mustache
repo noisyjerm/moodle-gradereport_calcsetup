@@ -61,7 +61,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
         <label class="col-md-3" for="actionset">{{#str}}set, gradereport_calcsetup{{/str}}</label>
         <select id="actionset" {{#exists}}disabled="disabled"{{/exists}} class="custom-select py-1">
             {{#fields}}
-            <option {{#selected}}selected="selected"{{/selected}} {{#value}}value="{{value}}"{{/value}}>{{property}}</option>
+            <option {{#locked}}disabled{{/locked}} {{#selected}}selected="selected"{{/selected}} {{#value}}value="{{value}}"{{/value}}>{{property}}</option>
             {{/fields}}
         </select>
     </div>
@@ -72,13 +72,14 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
     <div class="row py-2">
         <label class="col-md-3" for="actionwhen">{{#str}}when, gradereport_calcsetup{{/str}}</label>
         <select id="actionwhen" class="custom-select py-1">
+            <option value="all">{{#str}}allitems, gradereport_calcsetup{{/str}}</option>
             {{#fieldswhen}}
             <option {{#selected}}selected="selected"{{/selected}} {{#value}}value="{{value}}"{{/value}}>{{property}}</option>
             {{/fieldswhen}}
         </select>
     </div>
     <div class="row py-2">
-        <label class="col-md-3" for="actionval">{{#str}}equals, gradereport_calcsetup{{/str}}</label> <input id="actionval" value="{{#action}}{{val}}{{/action}}">
+        <label class="col-md-3" for="actionval">{{#str}}equals, gradereport_calcsetup{{/str}}</label> <input id="actionval" disabled value="{{#action}}{{val}}{{/action}}">
     </div>
 
 </div>

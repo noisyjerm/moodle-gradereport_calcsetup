@@ -35,7 +35,9 @@ Set gradepass to 50 when grademax is 100
 Set itemgroup to \'activity\' when itemtype is \'mod\'
 
 The logic is very basic with "is" being the only comparison available. There is minimal validation here so use with caution.';
-$string['action']       = 'Set {$a->set} to \'{$a->to}\' when {$a->when} {$a->op} {$a->val}';
+$string['action']       = 'Set {$a->set} to \'{$a->to}\' when {$a->when} {$a->op} \'{$a->val}\'';
+$string['actionall']    = 'Set {$a->set} to \'{$a->to}\'';
+$string['allitems']     = 'All items';
 $string['calculation']  = 'Calculation';
 $string['calculationupdated']  = 'Calculation updated.';
 $string['cantupdate']   = 'The property \'{$a}\' cannot be updated.';

@@ -227,10 +227,14 @@ class editrule_form extends \moodleform {
                 if (empty($action->op)) {
                     $action->op = 'equals';
                 }
+                $stringid = 'action';
+                if ($action->val === '') {
+                    $stringid = 'actionall';
+                }
                 $action->op = get_string($action->op, 'gradereport_calcsetup');
                 $html .= \html_writer::start_div('row rule-actions', ['data-index' => $i]);
                 $html .= \html_writer::span(
-                    get_string('action', 'gradereport_calcsetup', $action),
+                    get_string($stringid, 'gradereport_calcsetup', $action),
                    'col-md-9'
                 );
                 $html .= \html_writer::start_span('col-md-3 text-right');

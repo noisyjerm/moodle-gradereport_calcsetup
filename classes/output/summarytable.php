@@ -50,17 +50,18 @@ class summarytable extends \flexible_table implements \renderable {
     /** @var array|\grade_item  */
     protected $items = [];
 
-    /**  @var \gradereport_calcsetup\gradecategory*/
+    /**  @var \gradereport_calcsetup\gradecategory */
     protected $gradecategory;
 
     /** @var array */
     private $corefields;
 
     /**
-     * table_report constructor.
+     * summarytable constructor.
      * @param string $uniqueid
-     * @param null $filterparams
-     * @throws coding_exception
+     * @param \gradereport_calcsetup\gradecategory $gradecategory
+     * @param int $courseid
+     * @throws \coding_exception
      */
     public function __construct($uniqueid, $gradecategory, $courseid = 0) {
         global $CFG;

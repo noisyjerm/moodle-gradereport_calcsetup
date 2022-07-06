@@ -35,9 +35,10 @@ export const init = () => {
 };
 
 /**
- * Decide which edit button was pressed
+ * Perform action on Fields or Columns
+ * reorder up, reorder down, delete, edit.
  * @param {Event} evt
- * @return {*}
+ * @return {boolean}
  */
 const editrule = (evt) => {
     let el = evt.target;
@@ -137,8 +138,14 @@ const editrule = (evt) => {
             return true;
         }).catch(Notification.exception);
     }
+    return false;
 };
 
+/**
+ * Perform acitons on actions:
+ * delete or edit.
+ * @param {event} evt
+ */
 const editaction = (evt) => {
     let el = evt.target;
 
@@ -161,6 +168,9 @@ const editaction = (evt) => {
             title: Str.get_string("editaction", "gradereport_calcsetup"),
             removeOnClose: true
         }).then(function(modal) {
+            modal.getRoot().on(ModalEvents.hidden, function() {
+                modal.destroy();
+            });
             modal.getRoot().on('change', swapSelect);
             modal.getRoot().on(ModalEvents.save, function() {
                 if (index === actions.length) {
@@ -180,9 +190,13 @@ const editaction = (evt) => {
 
                 // First get operator string
                 let operator = Str.get_string(actions[index].op, 'gradereport_calcsetup', actions[index]);
+                let astring = 'action';
+                if (actions[index].val === "") {
+                    astring = 'actionall';
+                }
                 operator.done(function(string) {
                     actions[index].op = string;
-                    let description = Str.get_string('action', 'gradereport_calcsetup', actions[index]);
+                    let description = Str.get_string(astring, 'gradereport_calcsetup', actions[index]);
                     description.done(function(string) {
                         row.querySelector('span:first-of-type').innerHTML = string;
                     });
@@ -192,7 +206,7 @@ const editaction = (evt) => {
             Ajax.call([{
                 methodname: "gradereport_calcsetup_get_corefields",
                 args: {
-                    'editableonly': true
+                    'editableonly': false
                 },
                 done: function(data) {
                     let stringsPromise = Str.get_string("free", "gradereport_calcsetup");
@@ -201,8 +215,6 @@ const editaction = (evt) => {
                         actionrow.action = index < actions.length ? actions[index] : [];
                         actionrow.exists = index < actions.length;
                         actionrow.fields = getCorefields(data.fields, actionrow.exists ? actions[index].set : null, string);
-                        // Todo: When should have all fields not just editable ones.
-                        // Todo: include all condition and any value.
                         actionrow.fieldswhen = getCorefields(data.fields, actionrow.exists ? actions[index].when : null, string);
                         Templates.renderForPromise("gradereport_calcsetup/editaction", actionrow)
                             .then(({html, js}) => {
@@ -230,7 +242,19 @@ const editaction = (evt) => {
     }
 };
 
+/**
+ * Replace Select element with Input on Change event when value is "free"
+ * @param {event} e
+ */
 const swapSelect = (e) => {
+    if (e.target.getAttribute("id") === "actionwhen") {
+        let valInput = document.getElementById("actionval");
+        if (e.target.value !== "all") {
+            valInput.removeAttribute('disabled');
+        } else {
+            valInput.setAttribute('disabled', 'disabled');
+        }
+    }
     if (e.target.value === "free") {
         let input = document.createElement("input");
         input.setAttribute("id", e.target.getAttribute("id"));
@@ -239,6 +263,11 @@ const swapSelect = (e) => {
     }
 };
 
+/**
+ * Store Fields or Columns info in appropriate hidden form field as JSON string
+ * and update UI when dialog "save" button is clicked.
+ * @param {event} e
+ */
 const saveFields = (e) => {
     let columns = e.data.columns;
     let row = e.data.row;
@@ -290,6 +319,11 @@ const saveFields = (e) => {
 
 };
 
+/**
+ * Safely parse JSON string
+ * @param {JSON} jsonString
+ * @return {any}
+ */
 const tryParseJSONObject = (jsonString) => {
     try {
         var o = JSON.parse(jsonString);
@@ -303,6 +337,13 @@ const tryParseJSONObject = (jsonString) => {
     return jsonString;
 };
 
+/**
+ * Prepare a list of core fields for select elements
+ * @param {array} data array of objects
+ * @param {string|null} property name of selected property
+ * @param {string} string lang string for 'free form' option
+ * @return {any}
+ */
 const getCorefields = (data, property, string) => {
     // We need a deep clone.
     let dataString = JSON.stringify(data);
@@ -327,6 +368,11 @@ const getCorefields = (data, property, string) => {
     return giProperties;
 };
 
+/**
+ * Show tool (dialog) to construct a loop portion of the calculation formula template.
+ * @param {event} evt
+ * @return {boolean}
+ */
 const loopHelper = (evt) => {
     evt.preventDefault();
     return ModalFactory.create({
@@ -365,6 +411,11 @@ const loopHelper = (evt) => {
     });
 };
 
+/**
+ * Displays the template loop string as inputs in loopHelper dialog change.
+ * @param {event} evt
+ * @return {boolean}
+ */
 const updateCalc = (evt) => {
     let container = evt.target.closest('.modal-body');
     let group = container.querySelector('#loopgroup').value;
