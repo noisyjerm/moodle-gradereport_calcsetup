@@ -67,7 +67,9 @@ table.itemsettings td input {
 #fitem_id_fieldcontrol .row.rule-fields:first-of-type a.up,
 #fitem_id_fieldcontrol .row.rule-fields:nth-last-child(2) a.down,
 #fitem_id_colcontrol .row.rule-cols:first-of-type a.up,
-#fitem_id_colcontrol .row.rule-cols:nth-last-child(2) a.down {
+#fitem_id_colcontrol .row.rule-cols:nth-last-child(2) a.down,
+#fitem_id_actioncontrol .row.rule-actions:first-of-type a.up,
+#fitem_id_actioncontrol .row.rule-actions:nth-last-child(2) a.down {
     visibility: hidden;
 }
 
@@ -87,8 +89,7 @@ table.itemsettings td input {
     width: 30%;
 }
 
-textarea#id_calc {
+#page-grade-report-calcsetup-editrule textarea {
     width: 75%;
     height: 7em;
 }
-

@@ -23,9 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . "/grade/report/calcsetup/constants.php");
-
 /**
  * Code run after the calcsetup grade report database tables have been created.
  * @return bool
@@ -35,42 +32,70 @@ function xmldb_gradereport_calcsetup_install() {
 
     // Pre-populate a couple of rules.
     $actions = [
-        (object)['set' => 'itemgroup', 'val' => 'category', 'cond' => ["itemtype" => "category"]],
-        (object)['set' => 'itemgroup', 'val' => 'mod', 'cond' => ["itemtype" => "mod"]]
+        (object)['set' => 'gradetype', 'to' => '2', 'when' => "itemtype", "op" => "equals", "val" => "category"],
+        (object)['set' => 'scaleid', 'to' => '2', 'when' => "gradetype", "op" => "equals", "val" => "2"],
+        (object)['set' => 'gradepass', 'to' => '2', 'when' => "scaleid", "op" => "equals", "val" => "2"]
     ];
     $fields = [
-        (object)['title' => (object)['identifier' => 'idnumber'], 'property' => 'idnumber'],
-        (object)['title' => (object)['categorytotalname' => 'idnumber', 'component' => 'core_grades'], 'property' => 'itemname'],
-        (object)['title' => (object)['gradedisplaytype' => 'idnumber', 'component' => 'core_grades'], 'property' => 'display'],
+        (object)[
+            'title' => (object)['identifier' => 'gradepass', 'component' => 'core_grades'],
+            'property' => 'gradepass',
+            'editable' => true
+        ]
     ];
     $cols = [
-        (object)['name' => 'Weighting', 'id' => 'weight'],
-        (object)['name' => 'Required', 'id' => 'req', 'val' => 'gradepass'],
+        (object)['title' => (object)['identifier' => 'idnumber'], 'property' => 'idnumber', 'editable' => true],
+        (object)[
+            'title' => (object)['identifier' => 'gradepass',
+            'component' => 'core_grades'],
+            'property' => 'gradepass',
+            'editable' => true
+        ],
+        (object)['title' => (object)['identifier' => 'scale'], 'property' => 'scaleid', 'editable' => false]
     ];
 
     $data = new \stdClass();
-    $data->name = 'Complex Course';
-    $data->idnumber = 'complexcourse';
-    $data->descr = 'For courses where items outside the category contribute to the total.
-                   Applying this rule will set a virtual property itemgroup for all child items to the itemtype.';
+    $data->name = 'Course achievement';
+    $data->idnumber = 'achievecourse';
+    $data->descr = 'This course will use the Default competence scale.
+
+Grade items within this category (course) that are set to this scale will have a grade to pass set to 2, competent.
+
+Note: If the category aggregation should be set to something other than "Natural".';
     $data->visible = true;
-    $data->calc = '=IF(
- AND(
-  {{#mod}}[[{{idnumber}}]]>={{gradepass}}{{^last}},
-  {{/last}}{{/mod}}
- ),
- SUM(
-  {{#category}}[[{{idnumber}}]]{{^last}},
-  {{/last}}{{/category}}
- ),
- 0
-)';
+    $data->calc = '=min({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
     $data->actions = json_encode($actions);
-    $data->cols = json_encode($fields);
+    $data->fields = json_encode($fields);
     $data->cols = json_encode($cols);
 
     // Add initial data.
     $DB->insert_record('gradereport_calcsetup_rules', $data);
 
+    $actions = [
+        (object)['set' => 'gradepass', 'to' => '2', 'when' => "scaleid", "op" => "equals", "val" => "2"]
+    ];
+    $cols = [
+        (object)['title' => (object)['identifier' => 'idnumber'], 'property' => 'idnumber', 'editable' => true],
+        (object)[
+            'title' => (object)['identifier' => 'grademax', 'component' => 'core_grades'],
+            'property' => 'grademax',
+            'editable' => false
+        ],
+        (object)[
+            'title' => (object)['identifier' => 'gradepass', 'component' => 'core_grades'],
+            'property' => 'gradepass',
+            'editable' => true
+        ]
+    ];
+    $data->name = 'Category achievement';
+    $data->idnumber = 'achievecategory';
+    $data->descr = 'This category will use the Default competence scale.
+    Grade items within this category that are set to this scale will have a grade to pass set to 2, competent.';
+    $data->calc = '=min({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
+    $data->actions = json_encode($actions);
+    $data->fields = json_encode($fields);
+    $data->cols = json_encode($cols);
+
+    $DB->insert_record('gradereport_calcsetup_rules', $data);
     return true;
 }

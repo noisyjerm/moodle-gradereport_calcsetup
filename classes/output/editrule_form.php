@@ -219,6 +219,8 @@ class editrule_form extends \moodleform {
         $stradd  = get_string('add');
         $stredit = get_string('edit');
         $strdel  = get_string('delete');
+        $strup = get_string('moveup');
+        $strdn = get_string('movedown');
         $html = '';
         $i = 0;
         if (!empty($data)) {
@@ -237,24 +239,20 @@ class editrule_form extends \moodleform {
                     get_string($stringid, 'gradereport_calcsetup', $action),
                    'col-md-9'
                 );
-                $html .= \html_writer::start_span('col-md-3 text-right');
-                $html .= \html_writer::link('#',
-                    \html_writer::tag('i', '', [
-                        'class' => 'icon fa fa-trash fa-fw',
-                        'title' => $strdel,
-                        'aria-label' => $strdel,
-                        'data-action' => 'delete'
-                    ])
-                );
-                $html .= \html_writer::link('#',
-                    \html_writer::tag('i', '', [
-                        'class' => 'icon fa fa-cog fa-fw',
-                        'title' => $stredit,
-                        'aria-label' => $stredit,
-                        'data-action' => 'edit'
-                    ])
-                );
-                $html .= \html_writer::end_span();
+                $html .= " <span class='col-md-3 text-right'>" .
+                    "<a class='up' href='#'>
+                              <i class='icon fa fa-arrow-up fa-fw ' title='$strup' aria-label='$strup' data-action='up'></i>
+                          </a>" .
+                    "<a class='down' href='#'>
+                              <i class='icon fa fa-arrow-down fa-fw ' title='$strdn' aria-label='$strdn' data-action='down'></i>
+                          </a>" .
+                    "<a class='delete' href='#'>
+                              <i class='icon fa fa-trash fa-fw ' title='$strdel' aria-label='$strdel' data-action='delete'></i>
+                          </a>" .
+                    "<a class='edit' href='#'>
+                              <i class='icon fa fa-cog fa-fw ' title='$stredit' aria-label='$stredit' data-action='edit'></i>
+                          </a>" .
+                    "</span>";
                 $i++;
                 $html .= \html_writer::end_div();
             }

@@ -203,7 +203,7 @@ class gradereport_calcsetup_rules extends \external_api {
              ['property' => 'iteminfo'],
              ['property' => 'idnumber'],
              ['property' => 'calculation'],
-             ['property' => 'gradetype', 'locked' => true],
+             ['property' => 'gradetype'],
              ['property' => 'grademax', 'validation' => 'number'],
              ['property' => 'grademin', 'validation' => 'number'],
              ['property' => 'scaleid', 'validation' => 'number'],

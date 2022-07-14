@@ -166,6 +166,7 @@ class rule {
             }
 
             // Todo: improve the validation.
+            // E.g. check aggregation before changing gradetype and check gradetype = 2 before setting scale.
             if (!empty($corefields[$set]->validation) && $corefields[$set]->validation === 'number') {
                 if (!is_numeric($action->to)) {
                     \core\notification::warning(get_string('wrongtype', 'gradereport_calcsetup', $action->to));
@@ -189,7 +190,7 @@ class rule {
                     $item->update();
                 } else if ($update) {
                     $item->$set = $action->to;
-                    $item->update();
+                    $success = $item->update();
                 }
             }
         }
@@ -286,7 +287,7 @@ class rule {
             'iteminfo'         => null,
             'idnumber'         => null,
             'calculation'      => null,
-            'gradetype'        => (object) ['locked' => true],
+            'gradetype'        => null,
             'grademax'         => (object) ['validation' => 'number'],
             'grademin'         => (object) ['validation' => 'number'],
             'scaleid'          => null,

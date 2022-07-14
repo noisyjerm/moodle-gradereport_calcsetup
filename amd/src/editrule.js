@@ -161,6 +161,32 @@ const editaction = (evt) => {
     let actions = JSON.parse(field.value);
     let action = el.dataset.action;
 
+    if (action === "up") {
+        let oldfield = actions[index - 1];
+        actions[index - 1] = actions[index];
+        actions[index] = oldfield;
+
+        row.dataset.index = index - 1;
+        row.previousSibling.dataset.index = index;
+        container.insertBefore(row, row.previousSibling);
+
+        field.value = JSON.stringify(actions);
+        return;
+    }
+
+    if (action === "down") {
+        let oldfield = actions[index + 1];
+        actions[index + 1] = actions[index];
+        actions[index] = oldfield;
+
+        row.dataset.index = index + 1;
+        row.nextSibling.dataset.index = index;
+        container.insertBefore(row.nextSibling, row);
+
+        field.value = JSON.stringify(actions);
+        return;
+    }
+
     if (action === 'edit') {
         ModalFactory.create({
             type: ModalFactory.types.SAVE_CANCEL,
@@ -177,7 +203,11 @@ const editaction = (evt) => {
                     actions.push({'op': 'equals'});
                     let addrow = row.parentElement.appendChild(row.cloneNode(true));
                     addrow.dataset.index = index + 1;
-                    row.querySelector('span:last-of-type').innerHTML = '<a href="#">' +
+                    row.querySelector('span:last-of-type').innerHTML = "<a class='up' href='#'>" +
+                        "<i class='icon fa fa-arrow-up fa-fw ' title='$strup' aria-label='$strup' data-action='up'></i>" +
+                        "</a><a class='down' href='#'>" +
+                        "<i class='icon fa fa-arrow-down fa-fw ' title='$strdn' aria-label='$strdn' data-action='down'></i>" +
+                        '</a><a href="#">' +
                         '<i class="icon fa fa-trash fa-fw" title="Delete" aria-label="Delete" data-action="delete"></i></a>' +
                         '<a href="#" ><i class="icon fa fa-cog fa-fw" title="Edit" aria-label="Edit" data-action="edit"></i></a>';
                 }
