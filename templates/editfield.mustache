@@ -45,7 +45,9 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 <div>
     <input type="hidden" name="sesskey" value="{{globals.config.sesskey}}">
     <div class="row py-2">
-        <label class="col-md-3" for="coltitle">{{#str}}title, gradereport_calcsetup{{/str}}</label> <input id="coltitle" value="{{title}}">
+        <label class="col-md-3" for="coltitle">{{#str}}title, gradereport_calcsetup{{/str}}</label>
+        <input type="text" id="coltitle" value="{{title}}" placeholder="{{#str}}stringidentifier, gradereport_calcsetup{{/str}}">
+        <input type="text" id="titlecomp" value="{{component}}" placeholder="{{#str}}stringcomponent, gradereport_calcsetup{{/str}}">
     </div>
     <div class="row py-2">
         <label class="col-md-3" for="colproperty">{{#str}}property, gradereport_calcsetup{{/str}}</label>

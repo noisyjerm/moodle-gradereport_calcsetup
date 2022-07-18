@@ -65,7 +65,7 @@ const editrule = (evt) => {
         container.insertBefore(row, row.previousSibling);
 
         field.value = JSON.stringify(columns);
-        return;
+        return true;
     }
 
     if (action === "down") {
@@ -78,7 +78,7 @@ const editrule = (evt) => {
         container.insertBefore(row.nextSibling, row);
 
         field.value = JSON.stringify(columns);
-        return;
+        return true;
     }
 
     if (action === "delete") {
@@ -88,7 +88,7 @@ const editrule = (evt) => {
         }
         row.remove();
         field.value = JSON.stringify(columns);
-        return;
+        return true;
     }
 
     if (action === "edit") {
@@ -120,9 +120,12 @@ const editrule = (evt) => {
                         let prop = data.exists ? data.col.property : null;
                         data.fields = getCorefields(data.fields, prop, string);
                         if (typeof data.col !== 'undefined') {
-                            data.title = typeof columns[index].title === "object"
-                                ? JSON.stringify(columns[index].title)
-                                : columns[index].title;
+                            if (typeof columns[index].title === "object") {
+                                data.title = columns[index].title.identifier;
+                                data.component = columns[index].title.component;
+                            } else {
+                                data.title = columns[index].title;
+                            }
                         }
                         Templates.renderForPromise("gradereport_calcsetup/editfield", data)
                             .then(({html, js}) => {
@@ -215,6 +218,7 @@ const editaction = (evt) => {
                 actions[index].set = document.getElementById("actionset").value;
                 actions[index].to = document.getElementById("actionto").value;
                 actions[index].when = document.getElementById("actionwhen").value;
+                actions[index].op = "equals";
                 actions[index].val = document.getElementById("actionval").value;
                 field.value = JSON.stringify(actions);
 
@@ -324,47 +328,34 @@ const saveFields = (e) => {
     ];
 
     // Set the data.
-    columns[index].title = tryParseJSONObject(document.getElementById("coltitle").value);
+    let title = document.getElementById("coltitle").value;
+    let component = document.getElementById("titlecomp").value;
+    columns[index].title = {"identifier": title, "component": component};
     columns[index].property = document.getElementById("colproperty").value;
     columns[index].editable = document.getElementById("coleditable").checked;
     // Set the dom.
-    if (typeof columns[index].title === "object") {
-        reqStrings.push({
-            "key": columns[index].title.identifier,
-            "component": columns[index].title.component
-        });
-    }
+    reqStrings.push({
+        "key": columns[index].title.identifier,
+        "component": columns[index].title.component
+    });
 
     let stringsPromise = Str.get_strings(reqStrings);
     stringsPromise.done(function(strings) {
-        row.querySelector("span:first-of-type").innerHTML = typeof columns[index].title === "object"
-            ? strings[2]
-            : columns[index].title;
+        let re = /^\[\[.+\]\]$/;
+        if (re.test(strings[2])) {
+            columns[index].title = title;
+            row.querySelector("span:first-of-type").innerHTML = title;
+        } else {
+            row.querySelector("span:first-of-type").innerHTML = strings[2];
+        }
+
         row.querySelector("span:nth-of-type(2)").innerHTML = columns[index].property;
         row.querySelector("span:nth-of-type(3)").innerHTML = columns[index].editable
             ? strings[0]
             : strings[1];
+        field.value = JSON.stringify(columns);
     });
-    field.value = JSON.stringify(columns);
 
-};
-
-/**
- * Safely parse JSON string
- * @param {JSON} jsonString
- * @return {any}
- */
-const tryParseJSONObject = (jsonString) => {
-    try {
-        var o = JSON.parse(jsonString);
-        if (o && typeof o === "object") {
-            return o;
-        }
-    } catch (e) {
-        // Do nothing.
-    }
-
-    return jsonString;
 };
 
 /**

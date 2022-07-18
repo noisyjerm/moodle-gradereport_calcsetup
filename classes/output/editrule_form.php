@@ -200,10 +200,10 @@ class editrule_form extends \moodleform {
         }
 
         $cols .= "<div class='row rule-$elename' data-index='$i' data-targetele='$elename'>
-                         <span class='col'></span><span class='col'></span class='col'><span class='col'></span>
-                         <span class='col-md-3 text-right'><a class='add' href='#'>
-                         <i data-action='edit'>$stradd</i>
-                         <i class='icon fa fa-plus fa-fw' title='$stradd' aria-label='$stradd' data-action='edit'></i>
+                      <span class='col'></span><span class='col'></span class='col'><span class='col'></span>
+                      <span class='col-md-3 text-right'><a class='add' href='#'>
+                      <i data-action='edit'>$stradd</i><i
+                         class='icon fa fa-plus fa-fw' title='$stradd' aria-label='$stradd' data-action='edit'></i>
                       </a></span></div>";
 
         return $cols;
@@ -234,11 +234,8 @@ class editrule_form extends \moodleform {
                     $stringid = 'actionall';
                 }
                 $action->op = get_string($action->op, 'gradereport_calcsetup');
-                $html .= \html_writer::start_div('row rule-actions', ['data-index' => $i]);
-                $html .= \html_writer::span(
-                    get_string($stringid, 'gradereport_calcsetup', $action),
-                   'col-md-9'
-                );
+                $html .= "<div class='row rule-actions' data-index='$i'>";
+                $html .= "<span class='col-md-9'>" .  get_string($stringid, 'gradereport_calcsetup', $action) . "</span>";
                 $html .= " <span class='col-md-3 text-right'>" .
                     "<a class='up' href='#'>
                               <i class='icon fa fa-arrow-up fa-fw ' title='$strup' aria-label='$strup' data-action='up'></i>
@@ -258,20 +255,12 @@ class editrule_form extends \moodleform {
             }
         }
 
-        $html .= \html_writer::start_div('row rule-actions', ['data-index' => $i]);
-        $html .= \html_writer::span('', 'col-md-9');
-        $html .= \html_writer::start_span('col-md-3 text-right');
-        $html .= \html_writer::link('#',
-            \html_writer::tag('i', $stradd, ['data-action' => 'edit'])
-            . \html_writer::tag('i', '', [
-                'class' => 'icon fa fa-plus fa-fw',
-                'title' => $stradd,
-                'aria-label' => $stradd,
-                'data-action' => 'edit'
-            ]), ['title' => $stradd]);
-        $html .= \html_writer::end_tag('a');
-        $html .= \html_writer::end_span();
-        $html .= \html_writer::end_div();
+        $html .= "<div class='row rule-actions' data-index='$i'>
+                      <span class='col'></span><span class='col'></span class='col'><span class='col'></span>
+                      <span class='col-md-3 text-right'><a class='add' href='#'>
+                      <i data-action='edit'>$stradd</i><i
+                         class='icon fa fa-plus fa-fw' title='$stradd' aria-label='$stradd' data-action='edit'></i>
+                      </a></span></div>";
 
         return $html;
     }

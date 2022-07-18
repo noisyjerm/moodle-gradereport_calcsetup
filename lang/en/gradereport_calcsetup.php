@@ -93,6 +93,8 @@ $string['ruleupdated']       = 'Rule updated';
 $string['separator']         = 'Separator';
 $string['set']               = 'Set';
 $string['standardfields']    = '[{"title":{"identifier":"maxgrade","component":"core_grades"},"property":"grademax"}]';
+$string['stringidentifier']  = 'Title or string identifier';
+$string['stringcomponent']   = 'Blank or string component';
 $string['template']          = 'Calculation template';
 $string['template_help']     = 'The calculation template uses Mustache markup. mustache(5) - Logic-less templates. All grade item properties are available as variables, e.g. {{gradepass}}
 

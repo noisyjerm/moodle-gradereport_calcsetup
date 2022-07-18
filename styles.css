@@ -85,6 +85,12 @@ table.itemsettings td input {
     margin-right: 0;
 }
 
+#page-grade-report-calcsetup-editrule .modal-body input[type=text],
+#page-grade-report-calcsetup-editrule .modal-body select {
+    height: calc(1.5em + .75rem + 2px);
+    width: 35%;
+}
+
 #page-grade-report-calcsetup-editrule .modal-body label {
     width: 30%;
 }

@@ -312,7 +312,7 @@ class gradecategory {
                     if ($property === 'calculation') {
                         $p = $gradeitem->denormalize_formula($gradeitem->calculation, $gradeitem->courseid);
                     } else {
-                        $p = $gradeitem->$property;
+                        $p = !empty($gradeitem->$property) ? $gradeitem->$property : null;
                     }
 
                     if ($p != $value) {

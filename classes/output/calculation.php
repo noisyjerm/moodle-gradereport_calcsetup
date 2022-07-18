@@ -60,7 +60,8 @@ class calculation {
      */
     public function format_calc_string() {
         // Prepare the data.
-        $data = (array)$this->item;
+        $data = array();
+        $data['category'] = $this->item;
         $data['items'] = array_values($this->items);
         if ($last = end($this->items)) {
             $last->last = true;

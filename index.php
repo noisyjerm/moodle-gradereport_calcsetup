@@ -70,7 +70,9 @@ $event->trigger();
 
 // Get the data.
 $gradecategory = new \gradereport_calcsetup\gradecategory($courseid, $categoryid, $rule);
-
+if (empty($categoryid)) {
+    $categoryid = $gradecategory->get_catid();
+}
 
 // Save the info.
 $data = data_submitted() and confirm_sesskey();
