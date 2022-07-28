@@ -65,7 +65,7 @@ const editrule = (evt) => {
         container.insertBefore(row, row.previousSibling);
 
         field.value = JSON.stringify(columns);
-        return true;
+        return;
     }
 
     if (action === "down") {
@@ -78,7 +78,7 @@ const editrule = (evt) => {
         container.insertBefore(row.nextSibling, row);
 
         field.value = JSON.stringify(columns);
-        return true;
+        return;
     }
 
     if (action === "delete") {
@@ -88,7 +88,7 @@ const editrule = (evt) => {
         }
         row.remove();
         field.value = JSON.stringify(columns);
-        return true;
+        return;
     }
 
     if (action === "edit") {
@@ -141,7 +141,6 @@ const editrule = (evt) => {
             return true;
         }).catch(Notification.exception);
     }
-    return false;
 };
 
 /**

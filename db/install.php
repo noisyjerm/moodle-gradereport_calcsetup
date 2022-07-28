@@ -32,7 +32,7 @@ function xmldb_gradereport_calcsetup_install() {
 
     // Pre-populate a couple of rules.
     $actions = [
-        (object)['set' => 'gradetype', 'to' => '2', 'when' => "itemtype", "op" => "equals", "val" => "category"],
+        (object)['set' => 'gradetype', 'to' => '2', 'when' => "itemmodule", "op" => "equals", "val" => "assign"],
         (object)['set' => 'scaleid', 'to' => '2', 'when' => "gradetype", "op" => "equals", "val" => "2"],
         (object)['set' => 'gradepass', 'to' => '2', 'when' => "scaleid", "op" => "equals", "val" => "2"]
     ];
@@ -46,24 +46,24 @@ function xmldb_gradereport_calcsetup_install() {
     $cols = [
         (object)['title' => (object)['identifier' => 'idnumber'], 'property' => 'idnumber', 'editable' => true],
         (object)[
-            'title' => (object)['identifier' => 'gradepass',
-            'component' => 'core_grades'],
+            'title' => (object)['identifier' => 'gradepass', 'component' => 'core_grades'],
             'property' => 'gradepass',
             'editable' => true
         ],
-        (object)['title' => (object)['identifier' => 'scale'], 'property' => 'scaleid', 'editable' => false]
+        (object)['title' => (object)['identifier' => 'scale'], 'property' => 'scaleid', 'editable' => false],
+        (object)[
+            'title' => (object)['identifier' => 'grademax', 'component' => 'core_grades'],
+            'property' => 'grademax',
+            'editable' => false
+        ]
     ];
 
     $data = new \stdClass();
-    $data->name = 'Course achievement';
-    $data->idnumber = 'achievecourse';
-    $data->descr = 'This course will use the Default competence scale.
-
-Grade items within this category (course) that are set to this scale will have a grade to pass set to 2, competent.
-
-Note: If the category aggregation should be set to something other than "Natural".';
+    $data->name = get_string('example1_name', 'gradereport_calcsetup');
+    $data->idnumber = 'achievement';
+    $data->descr = get_string('example1_desc', 'gradereport_calcsetup');
     $data->visible = true;
-    $data->calc = '=min({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
+    $data->calc = '=MIN({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
     $data->actions = json_encode($actions);
     $data->fields = json_encode($fields);
     $data->cols = json_encode($cols);
@@ -71,27 +71,41 @@ Note: If the category aggregation should be set to something other than "Natural
     // Add initial data.
     $DB->insert_record('gradereport_calcsetup_rules', $data);
 
-    $actions = [
-        (object)['set' => 'gradepass', 'to' => '2', 'when' => "scaleid", "op" => "equals", "val" => "2"]
-    ];
+    $actions = [];
     $cols = [
         (object)['title' => (object)['identifier' => 'idnumber'], 'property' => 'idnumber', 'editable' => true],
+        (object)[
+            'title' => (object)['identifier' => 'gradepass', 'component' => 'core_grades'],
+            'property' => 'gradepass',
+            'editable' => true
+        ],
         (object)[
             'title' => (object)['identifier' => 'grademax', 'component' => 'core_grades'],
             'property' => 'grademax',
             'editable' => false
         ],
         (object)[
-            'title' => (object)['identifier' => 'gradepass', 'component' => 'core_grades'],
-            'property' => 'gradepass',
+            'title' => 'Group',
+            'property' => 'itemgroup',
             'editable' => true
-        ]
+        ],
     ];
-    $data->name = 'Category achievement';
-    $data->idnumber = 'achievecategory';
-    $data->descr = 'This category will use the Default competence scale.
-    Grade items within this category that are set to this scale will have a grade to pass set to 2, competent.';
-    $data->calc = '=min({{#items}}[[{{idnumber}}]]{{^last}},{{/last}}{{/items}})';
+    $data->name = get_string('example2_name', 'gradereport_calcsetup');
+    $data->idnumber = 'passorzero';
+    $data->descr = get_string('example2_desc', 'gradereport_calcsetup');
+    $data->calc = '=IF(
+  OR(
+{{#items}}
+    [[{{idnumber}}]]<{{gradepass}}{{^last}},{{/last}}
+{{/items}}
+  ),
+  0,
+  {{category.grademax}}*SUM(
+{{#items}}
+    [[{{idnumber}}]]/{{grademax}}{{^last}}+{{/last}}
+{{/items}}
+  )/{{category.item_count}}
+)';
     $data->actions = json_encode($actions);
     $data->fields = json_encode($fields);
     $data->cols = json_encode($cols);

@@ -43,7 +43,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 <form id="categoryruleform" method="post" action="{{actionurl}}" class="row">
     <input type="hidden" name="sesskey" value="{{globals.config.sesskey}}">
-    <div class="col-md-6">
+    <div class="col-md-5">
         {{#rules}}
         <div>
             <input type="radio" value="{{idnumber}}" id="rule-{{id}}" name="rule" data-description="{{descr}}"
@@ -51,7 +51,7 @@ along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
         </div>
         {{/rules}}
     </div>
-    <div class="col-md-6" >
+    <div class="col-md-7" >
         <p id="ruledescription">{{#rules}}{{#selected}}{{descr}}{{/selected}}{{/rules}}</p>
     </div>
 

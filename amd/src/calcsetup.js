@@ -28,6 +28,7 @@ import * as Templates from 'core/templates';
 import Notification from 'core/notification';
 
 let pageurl = '';
+let ruleSelector = false;
 export const init = (url) => {
     pageurl = url;
     document.getElementById('newcalcview').addEventListener('click', showFormattedCalc);
@@ -114,35 +115,40 @@ const changeRule = (evt) => {
     let ruleid = evt.target.dataset.ruleid || 0;
     let actionurl = evt.target.getAttribute("href");
 
-    return ModalFactory.create({
-        type: ModalFactory.types.SAVE_CANCEL,
-        body: "",
-        title: Str.get_string('rule', 'gradereport_calcsetup'),
-        removeOnClose: true
-    }).then(function(modal) {
-        modal.modal[0].addEventListener('change', showrule);
-        modal.getRoot().on(ModalEvents.save, function() {
-            document.getElementById('categoryruleform').submit();
-        });
+    if (ruleSelector) {
+        ruleSelector.show();
+    } else {
+        return ModalFactory.create({
+            type: ModalFactory.types.SAVE_CANCEL,
+            body: "",
+            title: Str.get_string('rule', 'gradereport_calcsetup'),
+            removeOnClose: false
+        }).then(function (modal) {
+            ruleSelector = modal;
+            modal.modal[0].addEventListener('change', showrule);
+            modal.getRoot().on(ModalEvents.save, function () {
+                document.getElementById('categoryruleform').submit();
+            });
 
-        Ajax.call([{
-            methodname: 'gradereport_calcsetup_getrules',
-            args: {
-                'id': ruleid
-            },
-            done: function(data) {
-                data.actionurl = actionurl;
-                Templates.renderForPromise('gradereport_calcsetup/ruleselector', data)
-                .then(({html, js}) => {
-                    Templates.appendNodeContents('.modal-body', html, js);
-                    return true;
-                })
-                .catch(Notification.exception);
-            }
-        }]);
-        modal.show();
-        return true;
-    });
+            Ajax.call([{
+                methodname: 'gradereport_calcsetup_getrules',
+                args: {
+                    'id': ruleid
+                },
+                done: function (data) {
+                    data.actionurl = actionurl;
+                    Templates.renderForPromise('gradereport_calcsetup/ruleselector', data)
+                        .then(({html, js}) => {
+                            Templates.appendNodeContents('.modal-body', html, js);
+                            return true;
+                        })
+                        .catch(Notification.exception);
+                }
+            }]);
+            modal.show();
+            return true;
+        });
+    }
 };
 
 const showrule = (evt) => {

@@ -72,6 +72,7 @@ class gradecategory {
             $gradeitem->coursename = $item->coursename;
             $this->gradeitems[$item->id] = $gradeitem;
         }
+        $this->item->item_count = count($gradeitems);
         $this->item->grademax_total = $grademaxtotal;
         $this->item->aggregationcoef_total = $aggregationcoeftotal;
 
@@ -236,7 +237,7 @@ class gradecategory {
                 AND gi.grademax > 0
                 AND gi.gradetype > 0
                 AND (gc.parent = ? OR gi.categoryid = ? OR gi.iteminstance = ?)
-                ORDER BY gi.sortorder";
+                ORDER BY gc2.depth, gi.sortorder";
 
         $items = $DB->get_records_sql($sql, [$courseid, $categoryid, $categoryid, $categoryid]);
 
@@ -300,6 +301,8 @@ class gradecategory {
                             break;
                         }
                     }
+
+                    // Todo: unique validation.
 
                     if ($last !== $aid) {
                         $last = $aid;

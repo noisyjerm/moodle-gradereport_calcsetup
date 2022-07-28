@@ -235,7 +235,7 @@ class rule {
             $rule->idnumber = '';
             $rule->name = '';
             $rule->descr = get_string('norule', 'gradereport_calcsetup');
-            $rule->cols = [];
+            $rule->cols = [(object)["title" => (object)["identifier" => "idnumber"], "property" => "idnumber"]];
             $rule->fields = get_string('standardfields', 'gradereport_calcsetup');
             $rule->calc = '';
         }
@@ -285,7 +285,7 @@ class rule {
             'iteminstance'     => (object) ['locked' => true],
             'itemnumber'       => (object) ['locked' => true],
             'iteminfo'         => null,
-            'idnumber'         => null,
+            'idnumber'         => (object) ['validation' => 'unique'],
             'calculation'      => null,
             'gradetype'        => null,
             'grademax'         => (object) ['validation' => 'number'],

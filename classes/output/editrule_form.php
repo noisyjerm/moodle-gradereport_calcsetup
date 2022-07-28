@@ -256,7 +256,7 @@ class editrule_form extends \moodleform {
         }
 
         $html .= "<div class='row rule-actions' data-index='$i'>
-                      <span class='col'></span><span class='col'></span class='col'><span class='col'></span>
+                      <span class='col col-md-9'></span>
                       <span class='col-md-3 text-right'><a class='add' href='#'>
                       <i data-action='edit'>$stradd</i><i
                          class='icon fa fa-plus fa-fw' title='$stradd' aria-label='$stradd' data-action='edit'></i>
